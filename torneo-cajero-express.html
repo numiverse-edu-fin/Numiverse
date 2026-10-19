@@ -8,7 +8,7 @@
 *{box-sizing:border-box}
 body{margin:0;padding:10px;background:transparent;font-family:'Segoe UI',sans-serif;user-select:none}
 .shop{max-width:500px;margin:0 auto;border-radius:22px;overflow:hidden;border:3px solid #207168;background:#fffdf2;box-shadow:0 8px 24px rgba(32,113,104,.15);position:relative}
-.top{display:flex;justify-content:space-between;align-items:center;background:#207168;color:#fff;padding:8px 12px;font-weight:700;font-size:13px;gap:6px}
+.top{display:flex;justify-content:space-between;align-items:center;background:#207168;color:#fff;padding:8px 12px;font-weight:700;font-size:13px;gap:6px;position:relative;z-index:30;flex-wrap:wrap}
 .hoja{background:#fff;color:#207168;border-radius:12px;padding:2px 10px}
 .mu{background:none;border:0;font-size:16px;cursor:pointer;padding:0}
 .tm{height:8px;background:#d9ece7}.tm i{display:block;height:100%;width:100%;background:#2ecc71;transition:width .25s linear,background .3s}
@@ -48,11 +48,15 @@ body{margin:0;padding:10px;background:transparent;font-family:'Segoe UI',sans-se
 .ov h2{margin:6px 0;color:#207168;font-size:26px}.ov p{margin:6px 0 14px;color:#4a5a56;font-weight:700;font-size:14px;line-height:1.4}
 .ov .big{font-size:56px}
 .ov button{padding:14px 30px;font-size:16px;font-weight:800;border:0;border-radius:14px;background:#207168;color:#fff;cursor:pointer;box-shadow:0 4px 0 #16524a;font-family:inherit}
+.pz{background:#fff;color:#207168;border:0;border-radius:12px;padding:3px 10px;font:800 12px inherit;font-family:inherit;cursor:pointer}
+.pz[hidden]{display:none}
+.ov button+button{margin-top:10px}
+.ov button.sec{background:#d7e0dd;color:#207168;box-shadow:none}
 </style>
 </head>
 <body>
 <div class="shop" id="shop">
-<div class="top"><span>🏪 Cajero Express</span><span class="hoja">🍃 <b id="hj">0</b></span><span id="cl">Cliente 1/5</span><span id="rc"></span><button class="mu" id="mu">🔊</button></div>
+<div class="top"><span>🏪 Cajero Express</span><span class="hoja">🍃 <b id="hj">0</b></span><span id="cl">Nivel 1/50</span><span id="rc"></span><button class="pz" id="pz" hidden>⏸ Pausar</button><button class="mu" id="mu">🔊</button></div>
 <div class="tm"><i id="tb"></i></div>
 <div class="scene" id="scene"><div class="toldo"></div>
 <div class="cli"><div><div class="cara" id="cara"></div><div class="nombre" id="nom"></div></div><div class="dialogo" id="dlg"></div></div></div>
@@ -70,32 +74,55 @@ const $=id=>document.getElementById(id);
 const DEN=[1,5,10,20,50];
 const ART=[['🧸','un osito'],['🎈','un globo'],['🍎','unas manzanas'],['🌻','un girasol'],['🧺','una canasta'],['🔔','una campanita'],['🥖','un pan dorado'],['🎁','un regalo']];
 const CLI=[['🦊','Sami'],['🐢','Cael'],['🦉','Kiro'],['👵','La abuela'],['🦝','Riku']];
-const TOTAL=5, TIEMPO=45;
-let i=0,hojas=0,racha=0,aciertos=0,tray=[],err=0,tleft=0,timer=null,bloq=true,costo=0,pago=0,need=0,mute=false,ac=null;
+const TOTAL=50;
+let i=0,hojas=0,racha=0,aciertos=0,tray=[],err=0,tleft=0,timer=null,bloq=true,costo=0,pago=0,need=0,mute=false,ac=null,tmax=45,paused=false,jugando=false,pend=false;
 
 function tono(f,d){if(mute)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.value=.07;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
 $('mu').onclick=()=>{mute=!mute;$('mu').textContent=mute?'🔇':'🔊'};
 
 function r(n){return Math.floor(Math.random()*n)}
 function precio(k){
-  if(k<3)return 5+5*r(9);          // 5 a 45
-  if(k===3)return 55+5*r(9);       // 55 a 95
-  return 5+5*r(19);                // 5 a 95
+  if(k<10)return 5+5*r(9);          // niveles 1-10: 5 a 45, de 5 en 5
+  if(k<20)return 5+5*r(19);         // 11-20: 5 a 95, de 5 en 5
+  if(k<35)return 2*(1+r(49));       // 21-35: precios pares
+  return 1+r(99);                   // 36-50: cualquier precio
 }
 function sumTray(){return tray.reduce((a,b)=>a+b,0)}
 function msg(t,ok){$('msg').textContent=t;$('msg').className='msg'+(ok?' ok':'')}
 function ov(h){$('ov').style.display=h?'flex':'none';$('ov').innerHTML=h||''}
 
+function guardarProg(){try{localStorage.setItem('cajero_progreso',JSON.stringify({i,hojas,racha,aciertos}))}catch(e){}}
+function borrarProg(){try{localStorage.removeItem('cajero_progreso')}catch(e){}}
+
 function portada(){
-  ov('<div class="big">🏪</div><h2>El Cajero Express</h2><p>Atiende a 5 clientes de la feria de Guardalia.<br>Cada vuelto correcto gana <b>5 Hojas de la Sabiduría</b> 🍃<br>¡Rápido, que los clientes se impacientan!</p><button id="go">¡Abrir la tienda!</button>');
-  $('go').onclick=()=>{i=0;hojas=0;racha=0;aciertos=0;$('hj').textContent=0;ov('');tono(660,.15);cliente()};
+  jugando=false;paused=false;pend=false;$('pz').hidden=true;
+  let p=null;try{p=JSON.parse(localStorage.getItem('cajero_progreso'))}catch(e){}
+  const hay=p&&p.i>0&&p.i<TOTAL;
+  ov('<div class="big">🏪</div><h2>El Cajero Express</h2><p>Atiende a '+TOTAL+' clientes de la feria de Guardalia.<br>Cada vuelto correcto gana <b>5 Hojas de la Sabiduría</b> 🍃<br>¡Rápido, que los clientes se impacientan!</p>'+(hay?'<button id="cont">▶ Continuar (nivel '+(p.i+1)+')</button><button class="sec" id="go">Empezar de nuevo</button>':'<button id="go">¡Abrir la tienda!</button>'));
+  const iniciar=s=>{i=s?s.i:0;hojas=s?s.hojas:0;racha=s?s.racha:0;aciertos=s?s.aciertos:0;$('hj').textContent=hojas;jugando=true;$('pz').hidden=false;$('pz').textContent='⏸ Pausar';ov('');tono(660,.15);cliente()};
+  $('go').onclick=()=>{borrarProg();iniciar(null)};
+  if(hay)$('cont').onclick=()=>iniciar(p);
 }
 
+function pausar(){
+  if(!jugando)return;
+  if(!paused){
+    paused=true;clearInterval(timer);guardarProg();
+    $('pz').textContent='▶ Continuar';
+    ov('<div class="big">⏸</div><h2>Juego en pausa</h2><p>Hasta ahora llevas <b>'+hojas+' Hojas de la Sabiduría</b> 🍃<br>Nivel '+(i+1)+' de '+TOTAL+' · '+aciertos+' vueltos correctos<br>Pulsa <b>Continuar</b> para seguir juntando hojas.</p>');
+  }else{
+    paused=false;$('pz').textContent='⏸ Pausar';ov('');
+    if(pend){pend=false;siguiente()}
+    else if(!bloq){clearInterval(timer);timer=setInterval(tick,250)}
+  }
+}
+$('pz').onclick=pausar;
+
 function cliente(){
-  const c=CLI[i],a=ART[r(ART.length)];
-  costo=precio(i);pago=(i===2||i===3)?100:(costo<50?50:100);need=pago-costo;
-  tray=[];err=0;tleft=TIEMPO;bloq=false;
-  $('cl').textContent='Cliente '+(i+1)+'/'+TOTAL;$('rc').textContent=racha>=2?'🔥 x'+racha:'';
+  const c=CLI[i%CLI.length],a=ART[r(ART.length)];
+  costo=precio(i);pago=(costo>=50||(i>=10&&r(2)))?100:50;need=pago-costo;
+  tray=[];err=0;tmax=Math.max(25,45-Math.floor(i/3));tleft=tmax;bloq=false;
+  $('cl').textContent='Nivel '+(i+1)+'/'+TOTAL;$('rc').textContent=racha>=2?'🔥 x'+racha:'';
   $('cara').innerHTML=c[0]+'<small id="mood">😊</small>';$('nom').textContent=c[1];
   $('dlg').innerHTML='Quiero '+a[1]+' '+a[0]+'<br><span class="etq">'+costo+' Lumis</span> · te pago con <span class="pago">💵 '+pago+'</span>';
   $('lc').textContent=costo;$('lp').textContent=pago;
@@ -105,7 +132,7 @@ function cliente(){
 
 function tick(){
   if(bloq)return;
-  tleft-=.25;const p=Math.max(0,tleft/TIEMPO);
+  tleft-=.25;const p=Math.max(0,tleft/tmax);
   $('tb').style.width=(p*100)+'%';$('tb').style.background=p>.5?'#2ecc71':(p>.25?'#f1c40f':'#e74c3c');
   const m=$('mood');if(m)m.textContent=p>.5?'😊':(p>.25?'😐':'😠');
   if(tleft<=0)fuga(true);
@@ -153,8 +180,11 @@ function fuga(tiempo){
   setTimeout(siguiente,3600);
 }
 function siguiente(){
-  i++;if(i<TOTAL){cliente();return}
-  const est=aciertos>=5?'⭐⭐⭐':(aciertos>=3?'⭐⭐':(aciertos>=1?'⭐':'💪'));
+  if(paused){pend=true;return}
+  i++;
+  if(i<TOTAL){guardarProg();cliente();return}
+  jugando=false;$('pz').hidden=true;borrarProg();
+  const est=aciertos>=45?'⭐⭐⭐':(aciertos>=25?'⭐⭐':(aciertos>=1?'⭐':'💪'));
   ov('<div class="big">'+est+'</div><h2>¡Turno terminado!</h2><p>Atendiste bien a <b>'+aciertos+' de '+TOTAL+'</b> clientes.<br>Ganaste <b>'+hojas+' Hojas de la Sabiduría</b> 🍃</p><button id="again">Jugar otra vez</button>');
   $('again').onclick=portada;tono(784,.15);
 }

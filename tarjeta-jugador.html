@@ -50,6 +50,19 @@
 .avatar .nom { font-size: .85rem; font-weight: 600; text-align: center; line-height: 1.2; }
 .avatar.activo { border-color: #2ecc71; background: #eafaf1; }
 .avatar.activo .foto { transform: scale(1.15); }
+.acciones{display:flex;gap:12px;justify-content:flex-end;align-items:center;margin-top:22px;flex-wrap:wrap}
+.estado{margin-right:auto;font-weight:600;color:#27ae60;font-size:.95rem;min-height:1.2em}
+.btn{border:0;border-radius:14px;padding:13px 26px;font:inherit;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .2s,background .2s,border-color .2s}
+.btn[hidden]{display:none}
+.btn-guardar{background:#2ecc71;color:#fff;box-shadow:0 6px 16px rgba(46,204,113,.35)}
+.btn-guardar:hover:not(:disabled){transform:translateY(-1px);background:#27c46a}
+.btn-guardar:disabled{background:#cfd8dc;box-shadow:none;cursor:not-allowed}
+.btn-cambiar{background:#fff;color:#2c3e50;border:2px solid #e5e8ec}
+.btn-cambiar:hover{border-color:#2ecc71;color:#27ae60}
+.campo input:read-only{background:#f1f3f5;color:#5f6b76}
+.avatar:disabled{color:inherit}
+.pista.bloqueado .avatar{cursor:default}
+.pista.bloqueado .avatar:not(.activo){opacity:.35}
 </style>
 
 <section class="perfil-card">
@@ -129,6 +142,12 @@
     <button type="button" class="flecha next" id="btnNext" aria-label="Siguiente">❯</button>
   </div>
 
+  <div class="acciones">
+    <span class="estado" id="estado" role="status" aria-live="polite"></span>
+    <button type="button" class="btn btn-cambiar" id="btnCambiar" hidden>✏️ Cambiar perfil</button>
+    <button type="button" class="btn btn-guardar" id="btnGuardar" disabled>💾 Guardar perfil</button>
+  </div>
+
   <!-- Piezas SVG reutilizables (ojos, nariz, boca) -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
@@ -140,39 +159,111 @@
 </section>
 
 <script>
+/* ===== Lógica de la tarjeta ===== */
 document.addEventListener('DOMContentLoaded', () => {
+  const K = { nombre: 'ranking_nombre', avatar: 'ranking_avatar', svg: 'ranking_avatar_svg', ok: 'ranking_guardado' };
   const input = document.getElementById('nombreJugador');
   const pista = document.getElementById('pista');
   const avatares = pista.querySelectorAll('.avatar');
-  const paso = 300;
+  const btnGuardar = document.getElementById('btnGuardar');
+  const btnCambiar = document.getElementById('btnCambiar');
+  const estado = document.getElementById('estado');
+  let elegido = null;
 
   const leer = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
-  const guardar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  const guardar = (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } };
 
-  const activar = (card, centrar) => {
-    avatares.forEach(a => a.classList.toggle('activo', a === card));
-    if (centrar) card.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
+  // Copia del SVG que no depende de los <defs> de esta página (sirve en el ranking)
+  const svgIndependiente = card => {
+    const svg = card.querySelector('svg').cloneNode(true);
+    svg.querySelectorAll('use').forEach(u => {
+      const ref = document.querySelector(u.getAttribute('href'));
+      if (!ref) return u.remove();
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('transform', 'translate(' + (u.getAttribute('x') || 0) + ' ' + (u.getAttribute('y') || 0) + ')');
+      const c = ref.cloneNode(true); c.removeAttribute('id'); g.appendChild(c);
+      u.replaceWith(g);
+    });
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    return svg.outerHTML;
   };
 
-  document.getElementById('btnPrev').addEventListener('click', () =>
-    pista.scrollTo({ left: pista.scrollLeft - paso, behavior: 'smooth' }));
-  document.getElementById('btnNext').addEventListener('click', () =>
-    pista.scrollTo({ left: pista.scrollLeft + paso, behavior: 'smooth' }));
+  const marcar = card => {
+    elegido = card;
+    avatares.forEach(a => a.classList.toggle('activo', a === card));
+    validar();
+  };
+  const validar = () => { btnGuardar.disabled = !(input.value.trim() && elegido); };
 
-  input.addEventListener('input', () => guardar('ranking_nombre', input.value));
+  const bloquear = si => {
+    input.readOnly = si;
+    pista.classList.toggle('bloqueado', si);
+    avatares.forEach(a => a.disabled = si);
+    btnGuardar.hidden = si;
+    btnCambiar.hidden = !si;
+  };
 
-  avatares.forEach(card => card.addEventListener('click', () => {
-    guardar('ranking_avatar', card.dataset.id);
-    activar(card, false);
-  }));
+  document.getElementById('btnPrev').addEventListener('click', () => pista.scrollTo({ left: pista.scrollLeft - 300, behavior: 'smooth' }));
+  document.getElementById('btnNext').addEventListener('click', () => pista.scrollTo({ left: pista.scrollLeft + 300, behavior: 'smooth' }));
 
-  // Restaurar datos guardados
-  const nombre = leer('ranking_nombre');
-  if (nombre) input.value = nombre;
-  const idGuardado = leer('ranking_avatar');
-  if (idGuardado) {
-    const card = pista.querySelector('.avatar[data-id="' + idGuardado + '"]');
-    if (card) activar(card, true);
+  input.addEventListener('input', validar);
+  avatares.forEach(card => card.addEventListener('click', () => marcar(card)));
+
+  btnGuardar.addEventListener('click', () => {
+    const nombre = input.value.trim();
+    if (!nombre || !elegido) return;
+    const ok = guardar(K.nombre, nombre) && guardar(K.avatar, elegido.dataset.id) &&
+               guardar(K.svg, svgIndependiente(elegido)) && guardar(K.ok, '1');
+    if (!ok) { estado.style.color = '#e74c3c'; estado.textContent = 'No se pudo guardar en este navegador.'; return; }
+    input.value = nombre;
+    bloquear(true);
+    estado.style.color = '#27ae60';
+    estado.textContent = '✔ Perfil guardado';
+    window.dispatchEvent(new CustomEvent('perfil:actualizado'));
+  });
+
+  btnCambiar.addEventListener('click', () => {
+    bloquear(false);
+    estado.textContent = '';
+    validar();
+    input.focus();
+  });
+
+  // Restaurar perfil guardado
+  if (leer(K.ok) === '1') {
+    const nombre = leer(K.nombre) || '';
+    const id = leer(K.avatar);
+    input.value = nombre;
+    const card = id && pista.querySelector('.avatar[data-id="' + id + '"]');
+    if (card) { marcar(card); card.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' }); }
+    bloquear(true);
+    estado.textContent = '✔ Perfil guardado';
   }
 });
+</script>
+
+<script id="sincronizador-perfil">
+/* ===== Sincronizador con los rankings =====
+   Copia este bloque también en la página del ranking si está separada de esta tarjeta.
+   En el ranking, marca los elementos así:
+     <span data-perfil-nombre></span>   -> se rellena con el nombre
+     <span data-perfil-avatar></span>   -> se rellena con el avatar (SVG)
+   Si el ranking se dibuja con JS, llama a PerfilJugador.aplicar() después de dibujarlo. */
+(function () {
+  const leer = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  function obtener() {
+    return { nombre: leer('ranking_nombre') || '', avatar: leer('ranking_avatar') || '',
+             svg: leer('ranking_avatar_svg') || '', guardado: leer('ranking_guardado') === '1' };
+  }
+  function aplicar() {
+    const p = obtener();
+    if (!p.guardado) return;
+    document.querySelectorAll('[data-perfil-nombre]').forEach(e => e.textContent = p.nombre);
+    document.querySelectorAll('[data-perfil-avatar]').forEach(e => e.innerHTML = p.svg);
+  }
+  window.PerfilJugador = { obtener, aplicar };
+  document.addEventListener('DOMContentLoaded', aplicar);
+  window.addEventListener('perfil:actualizado', aplicar);
+  window.addEventListener('storage', e => { if (e.key && e.key.indexOf('ranking_') === 0) aplicar(); });
+})();
 </script>

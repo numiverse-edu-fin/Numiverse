@@ -1,0 +1,59 @@
+<!-- ======================================================= -->
+<!-- CÓDIGO CON TEXTO ARCOÍRIS ESTILO HOJA DE CRISTAL        -->
+<!-- ======================================================= -->
+
+<style>
+/* Contenedor compacto sin espacios forzados */
+.billetera-hojas-box {
+    display: inline-flex;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-left: 20px; 
+    box-sizing: border-box;
+}
+
+/* Alineación vertical */
+.hoja-billetera-texto {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+/* --- EFECTO ARCOÍRIS PARA LOS TEXTOS --- */
+.hoja-billetera-titulo, 
+.hoja-billetera-valor {
+    /* Creamos el degradado con los mismos tonos de tu hoja */
+    background: linear-gradient(45deg, #e74c3c, #e67e22, #f1c40f, #2ecc71, #3498db, #9b59b6);
+    
+    /* Este truco hace que el degradado se pinte SOLO dentro de las letras */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    
+    display: inline-block;
+    margin: 0;
+}
+
+/* Estilo para el título superior */
+.hoja-billetera-titulo {
+    font-size: 0.75rem;
+    font-weight: 800; /* Más grueso para que el color se note mejor */
+    letter-spacing: 1.5px;
+    padding-bottom: 2px;
+}
+
+/* Estilo para el número de saldo */
+.hoja-billetera-valor {
+    font-size: 1.3rem;
+    font-weight: 800; /* Letra bien robusta para resaltar el degradado */
+}
+</style>
+
+<!-- Estructura compacta de solo texto -->
+<div class="billetera-hojas-box">
+    <div class="hoja-billetera-texto">
+        <span class="hoja-billetera-titulo">SABIDURÍA</span>
+        <span class="hoja-billetera-valor"><span id="contadorHojasActuales">0</span> Hojas</span>
+    </div>
+</div>

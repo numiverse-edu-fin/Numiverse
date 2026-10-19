@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego 2 Numiverse</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: transparent; text-align: center; padding: 10px; margin: 0; user-select: none; }
+        .game-box { max-width: 460px; margin: 0 auto; background: linear-gradient(135deg, #fffdf2 0%, #f3faf6 100%); padding: 20px; border-radius: 20px; border: 2px solid #207168; box-shadow: 0 4px 15px rgba(32, 113, 104, 0.08); position: relative; overflow: hidden; min-height: 420px; display: flex; flex-direction: column; justify-content: space-between; }
+
+        .instruction-container { display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #207168; color: white; padding: 10px; border-radius: 10px; margin-bottom: 15px; }
+        .instruction { font-size: 15px; font-weight: bold; text-align: left; flex: 1; margin: 0; }
+        .audio-btn { background: #d4af37; border: none; border-radius: 50%; width: 34px; height: 34px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.15); color: white; flex-shrink: 0; }
+
+        .warehouse { display: flex; justify-content: center; gap: 12px; background: white; padding: 12px; border-radius: 12px; border: 2px dashed #207168; margin-bottom: 15px; }
+        .spawn-card { display: flex; flex-direction: column; align-items: center; cursor: grab; background: #fffcf2; padding: 6px 10px; border-radius: 8px; border: 1px solid #d4af37; flex: 1; touch-action: none; }
+        .spawn-card:active { cursor: grabbing; }
+        .icon-b { font-size: 34px; margin: 0; }
+        .icon-p { font-size: 28px; margin: 2px 0; }
+        .lbl { font-size: 10px; font-weight: bold; color: #207168; white-space: nowrap; }
+
+        .drop-zone { min-height: 120px; background: #fff; border: 3px dashed #d4af37; border-radius: 15px; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; align-content: flex-start; position: relative; transition: background .15s, border-color .15s; }
+        .drop-zone.over { background: #eaf6ef; border-color: #207168; }
+        .drop-zone::before { content: "Arrastra aquí el pedido"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #b3c2bf; font-size: 13px; font-weight: bold; display: var(--p-display, block); pointer-events: none; }
+
+        .placed { background: #fffdf6; padding: 6px 10px; border-radius: 8px; border: 1px solid #d4af37; display: flex; align-items: center; justify-content: center; position: relative; font-weight: bold; color: #207168; font-size: 13px; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: left; }
+        .del { position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; cursor: pointer; font-weight: bold; }
+        .resumen { flex-basis: 100%; text-align: left; font-size: 12px; font-weight: bold; color: #207168; border-top: 1px dashed #e6d9a8; padding-top: 6px; margin-top: 2px; }
+        .ghost { position: fixed; z-index: 1000; font-size: 44px; pointer-events: none; transform: translate(-50%, -60%); filter: drop-shadow(0 4px 6px rgba(0,0,0,.25)); display: none; }
+
+        .controls { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; }
+        .btn { padding: 12px 20px; font-size: 14px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; text-transform: uppercase; flex: 1; }
+        .btn-v { background-color: #d4af37; color: white; }
+        .btn-c { background-color: #b3c2bf; color: #207168; }
+        .fb { font-size: 15px; font-weight: bold; margin-top: 10px; color: #b9650a; min-height: 44px; line-height: 1.35; }
+
+        .victory-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fffdf2; align-items: center; justify-content: center; flex-direction: column; animation: celebration 0.5s ease-out forwards; z-index: 10; }
+        .victory-title { font-size: 32px; color: #27ae60; font-weight: 900; margin: 10px; letter-spacing: 1px; }
+        .victory-amount { font-size: 36px; color: #e6b800; font-weight: 900; text-shadow: 1px 1px 0px #fff; }
+        @keyframes celebration { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+<div class="game-box">
+    <div class="victory-screen" id="victory-layer">
+        <div class="victory-title">¡LO LOGRASTE! 🎉</div>
+        <div class="victory-amount">+15 LUMIS</div>
+    </div>
+    <div>
+        <div class="instruction-container">
+            <button class="audio-btn" onclick="speakText()">🔊</button>
+            <p class="instruction" id="question-text">Un cliente pide 34 panes. ¿Cuántas canastas y cuántos panes sueltos necesita? Arrástralos al pedido.</p>
+        </div>
+
+        <div class="warehouse">
+            <div class="spawn-card" data-v="10" data-icon="🧺">
+                <span class="icon-b">🧺</span><span class="lbl">CANASTA (10)</span>
+            </div>
+           
+            <div class="spawn-card" data-v="1" data-icon="🥖">
+                <span class="icon-p">🥖</span><span class="lbl">SUELTO (1)</span>
+            </div>
+        </div>
+        <div class="drop-zone" id="drop-area"></div>
+    </div>
+    <div>
+        <div class="fb" id="msg"></div>
+        <div class="controls">
+            <button class="btn btn-c" onclick="clearZone()">Borrar</button>
+            <button class="btn btn-v" onclick="verify()">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const TARGET = 34;
+    const CANASTAS_OK = 3;
+    const SUELTOS_OK = 4;
+    const CANASTA = '🧺 (🥖🥖🥖🥖<br>🥖🥖🥖🥖🥖🥖)';
+    const PAQUETE = '📦 (🥖\u200B🥖\u200B🥖\u200B🥖\u200B🥖)';
+    const SUELTO = '🥖';
+    function etiqueta(v) { return v === 10 ? CANASTA : (v === 5 ? PAQUETE : SUELTO); }
+
+    // MENSAJES FIJOS, para poder grabarlos con una voz real.
+    const TEXTOS = {
+        pregunta: "Un cliente pide 34 panes. ¿Cuántas canastas y cuántos panes sueltos necesita? Arrástralos al pedido.",
+        vacio: "Primero arrastra canastas o panes al pedido.",
+        p1: "Mmm, casi... Mira tu pedido otra vez, con calma. ¿Cuántas canastas llevas y cuántos panes sueltos?",
+        p1b: "Mmm, ya tienes los panes que pidió el cliente. Pero ¿se podrán acomodar en más canastas? Piénsalo.",
+        p2: "Hagamos una prueba. Mira el número 34. ¿Qué crees que cuenta el 3, y qué crees que cuenta el 4? Piénsalo y vuelve a intentar.",
+        p3: "Te ayudo a armarlo. Son 3 canastas de 10 y 4 panes sueltos. ¡Mira cómo queda! Ahora toca Enviar.",
+        exito: "¡Lo lograste! Ganaste quince Lumis."
+    };
+
+    // Cuando tengas los audios grabados, pega aquí la dirección de cada uno.
+    // Si dejas una vacía, el juego usa la voz del dispositivo para ese mensaje.
+    const MP3 = { pregunta: "", vacio: "", p1: "", p1b: "", p2: "", p3: "", exito: "" };
+
+    let items = [];
+    let tries = 0;
+    let finished = false;
+    let voz = null;
+    let audioActual = null;
+    const zone = document.getElementById("drop-area");
+
+    /* ---------- VOZ ---------- */
+    function elegirVoz() {
+        if (!('speechSynthesis' in window)) return;
+        const vs = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().indexOf('es') === 0);
+        if (!vs.length) return;
+        const puntos = v => {
+            const n = v.name.toLowerCase(), l = v.lang.toLowerCase();
+            let s = 0;
+            if (/natural|online/.test(n)) s += 6;
+            if (/google/.test(n)) s += 4;
+            if (/paulina|monica|mónica|sabina|dalia|elvira|helena|lucia|lucía|paloma|luciana|camila|salome|salomé|valentina|sofia|sofía|marisol/.test(n)) s += 3;
+            if (/es-pe|es-mx|es-us|es-419|es-co|es-ar/.test(l)) s += 2;
+            if (/jorge|diego|pablo|raul|raúl/.test(n)) s -= 1;
+            return s;
+        };
+        voz = vs.sort((a, b) => puntos(b) - puntos(a))[0];
+    }
+    if ('speechSynthesis' in window) {
+        elegirVoz();
+        speechSynthesis.onvoiceschanged = elegirVoz;
+    }
+
+    function hablar(clave) {
+        if (audioActual) { audioActual.pause(); audioActual = null; }
+        if (MP3[clave]) {
+            audioActual = new Audio(MP3[clave]);
+            audioActual.play().catch(() => leer(TEXTOS[clave]));
+            return;
+        }
+        leer(TEXTOS[clave]);
+    }
+
+    function leer(texto) {
+        if (!('speechSynthesis' in window)) return;
+        speechSynthesis.cancel();
+        const limpio = texto.replace(/[^\u0020-\u007E\u00A1-\u00FF]/g, ' ');
+        const frases = limpio.replace(/([.!?])\s+/g, '$1|').split('|');
+        frases.forEach(f => {
+            if (!f.trim()) return;
+            const u = new SpeechSynthesisUtterance(f.trim());
+            u.lang = voz ? voz.lang : 'es-MX';
+            if (voz) u.voice = voz;
+            u.rate = 0.88;
+            u.pitch = f.indexOf('¡') >= 0 ? 1.25 : (f.indexOf('¿') >= 0 ? 1.18 : 1.08);
+            speechSynthesis.speak(u);
+        });
+    }
+
+    function speakText() { hablar('pregunta'); }
+
+    /* ---------- ARRASTRAR ---------- */
+    document.querySelectorAll('.spawn-card').forEach(card => {
+        card.addEventListener('pointerdown', e => {
+            if (finished) return;
+            e.preventDefault();
+            const v = parseInt(card.dataset.v, 10);
+            const sx = e.clientX, sy = e.clientY;
+            let moved = false;
+            const ghost = document.createElement('div');
+            ghost.className = 'ghost';
+            ghost.textContent = card.dataset.icon;
+            document.body.appendChild(ghost);
+
+            const sobreZona = ev => {
+                const r = zone.getBoundingClientRect();
+                return ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
+            };
+            const mover = ev => {
+                if (!moved && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 8) { moved = true; ghost.style.display = 'block'; }
+                if (moved) {
+                    ghost.style.left = ev.clientX + 'px';
+                    ghost.style.top = ev.clientY + 'px';
+                    zone.classList.toggle('over', sobreZona(ev));
+                }
+            };
+            const soltar = ev => {
+                window.removeEventListener('pointermove', mover);
+                window.removeEventListener('pointerup', soltar);
+                window.removeEventListener('pointercancel', soltar);
+                ghost.remove();
+                zone.classList.remove('over');
+                if (ev.type === 'pointercancel') return;
+                // Si lo arrastró y lo soltó sobre el pedido, o si solo lo tocó, se agrega
+                if (!moved || sobreZona(ev)) addItem(v);
+            };
+            window.addEventListener('pointermove', mover);
+            window.addEventListener('pointerup', soltar);
+            window.addEventListener('pointercancel', soltar);
+        });
+    });
+
+    /* ---------- PEDIDO ---------- */
+    function addItem(v) {
+        if (finished) return;
+        items.push({ id: Date.now() + Math.random(), v: v });
+        render();
+    }
+
+    function removeItem(id) {
+        items = items.filter(i => i.id !== id);
+        render();
+    }
+
+    function clearZone() {
+        items = [];
+        render();
+        document.getElementById("msg").innerText = "";
+    }
+
+    function contar() {
+        return {
+            c: items.filter(i => i.v === 10).length,
+            p: items.filter(i => i.v === 5).length,
+            s: items.filter(i => i.v === 1).length
+        };
+    }
+
+    function render() {
+        zone.innerHTML = "";
+        document.documentElement.style.setProperty('--p-display', items.length > 0 ? 'none' : 'block');
+        // Se ordenan solas: primero canastas, luego paquetes, luego sueltos
+        items.slice().sort((a, b) => b.v - a.v).forEach(i => {
+            const div = document.createElement("div");
+            div.className = "placed";
+            div.innerHTML = `${etiqueta(i.v)}<button class="del" onclick="removeItem(${i.id})">×</button>`;
+            zone.appendChild(div);
+        });
+        const n = contar();
+        const partes = [];
+        if (n.c) partes.push(`🧺 ${n.c} ${n.c === 1 ? 'canasta' : 'canastas'}`);
+        if (n.p) partes.push(`📦 ${n.p} ${n.p === 1 ? 'paquete' : 'paquetes'}`);
+        if (n.s) partes.push(`🥖 ${n.s} ${n.s === 1 ? 'suelto' : 'sueltos'}`);
+        if (partes.length) {
+            const r = document.createElement("div");
+            r.className = "resumen";
+            r.innerText = "En tu pedido: " + partes.join("  ·  ");
+            zone.appendChild(r);
+        }
+    }
+
+    function mensaje(clave) {
+        document.getElementById("msg").innerText = TEXTOS[clave];
+        hablar(clave);
+    }
+
+    function verify() {
+        if (finished) return;
+        if (items.length === 0) { mensaje('vacio'); return; }
+        const n = contar();
+        const total = n.c * 10 + n.p * 5 + n.s;
+
+        if (n.c === CANASTAS_OK && n.s === SUELTOS_OK && n.p === 0) {
+            finished = true;
+            document.getElementById("victory-layer").style.display = "flex";
+            hablar('exito');
+            try {
+                let wallet = parseInt(localStorage.getItem('savedLumis')) || 0;
+                localStorage.setItem('savedLumis', wallet + 15);
+            } catch (e) {}
+            return;
+        }
+
+        tries++;
+        if (tries === 1) {
+            // Si ya juntó 34 panes pero mal acomodados, la pista cambia
+            mensaje(total === TARGET ? 'p1b' : 'p1');
+        } else if (tries === 2) {
+            mensaje('p2');
+        } else {
+            // Tercera vez: se muestra la respuesta armada
+            items = [
+                { id: Date.now() + 1, v: 10 },
+                { id: Date.now() + 2, v: 10 },
+                { id: Date.now() + 3, v: 10 },
+                { id: Date.now() + 4, v: 1 },
+                { id: Date.now() + 5, v: 1 },
+                { id: Date.now() + 6, v: 1 },
+                { id: Date.now() + 7, v: 1 }
+            ];
+            render();
+            mensaje('p3');
+        }
+    }
+
+    setTimeout(speakText, 600);
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billetera Numiverse</title>
+    <style>
+        /* Ajuste de márgenes para evitar saltos o desalineaciones en Google Sites */
+        html, body { 
+            margin: 0; 
+            padding: 0; 
+            background: transparent; 
+            overflow: hidden; 
+            height: 100%;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Contenedor principal que fuerza el centrado vertical a la par de la moneda */
+        .lumi-wrapper {
+            display: flex;
+            align-items: center; 
+            height: 100vh;
+            padding-left: 5px; 
+            box-sizing: border-box;
+        }
+
+        .lumi-text {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            user-select: none;
+            line-height: 1.1;
+        }
+        
+        /* --- DEGRADADO DORADO CON DESTELLOS VERDE ESMERALDA CRISTALINO --- */
+        .lumi-label, 
+        .lumi-amount {
+            /* Transición idéntica a tu moneda: Dorado -> Verde Menta Cristalino -> Oro Brillante */
+            background: linear-gradient(135deg, #e6b800 0%, #f1c40f 25%, #4ade80 48%, #a7f3d0 60%, #f5d042 75%, #bfa15f 100%);
+            
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            
+            display: inline-block;
+        }
+        
+        /* Ajustes específicos de tamaño y grosor para el título */
+        .lumi-label {
+            font-size: 10px;
+            font-weight: 800; /* Letra bien robusta para que se noten los sutiles cambios de tono */
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 2px;
+        }
+        
+        /* Ajustes específicos de tamaño y grosor para el monto */
+        .lumi-amount {
+            font-size: 21px;
+            font-weight: 800; /* Estilo de videojuego idéntico al de Sabiduría */
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="lumi-wrapper">
+    <div class="lumi-text">
+        <span class="lumi-label">Billetera</span>
+        <span class="lumi-amount"><span id="global-display">0</span> Lumis</span>
+    </div>
+</div>
+
+<script>
+    // Sincronización en tiempo real del almacenamiento local
+    function updateLumiDisplay() {
+        let currentLumis = localStorage.getItem('savedLumis') || 0;
+        document.getElementById("global-display").innerText = currentLumis;
+    }
+    updateLumiDisplay();
+    setInterval(updateLumiDisplay, 1000); // Monitoreo continuo
+</script>
+
+</body>
+</html>

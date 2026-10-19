@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bicicletas 1 Numiverse</title>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:transparent;text-align:center;padding:10px;margin:0;user-select:none}
+.game-box{max-width:460px;margin:0 auto;background:linear-gradient(135deg,#fffdf2,#f3faf6);padding:20px;border-radius:20px;border:2px solid #207168;box-shadow:0 4px 15px rgba(32,113,104,.08);position:relative;overflow:hidden;min-height:420px;display:flex;flex-direction:column;justify-content:space-between}
+.ins{display:flex;align-items:center;gap:8px;background:#207168;color:#fff;padding:10px;border-radius:10px;margin-bottom:10px}
+.ins p{font-size:15px;font-weight:bold;text-align:left;flex:1;margin:0}
+.aud{background:#d4af37;border:0;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer;flex-shrink:0;color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+.dots{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;font-weight:bold;color:#207168}
+.dots i{width:12px;height:12px;border-radius:50%;background:#dfeee7;border:2px solid #207168;display:inline-block}
+.dots i.now{background:#d4af37;border-color:#b8860b}.dots i.done{background:#207168}
+.pile{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;background:#fff;border:2px dashed #207168;border-radius:12px;padding:10px;min-height:58px;margin-bottom:10px;align-items:center}
+.pb{border:1px solid #d4af37;background:#fffcf2;border-radius:10px;font-size:26px;width:46px;height:42px;cursor:grab;touch-action:none;padding:0}
+.pb.sel{outline:4px solid #f2c94c;transform:scale(1.1)}
+.vacio{color:#9fb3af;font-size:13px;font-weight:bold}
+.racks{display:flex;gap:10px}
+.rack{flex:1;min-height:120px;background:#fff;border:3px dashed #d4af37;border-radius:14px;padding:8px;transition:background .15s;cursor:pointer}
+.rack.over{background:#eaf6ef}
+.rack.ra{border-color:#4F95DE}.rack.rb2{border-color:#4DB37A}
+.rt{font-size:11px;font-weight:bold;color:#207168;margin-bottom:4px}
+.ri{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;min-height:56px}
+.rb{border:0;background:none;font-size:22px;padding:0;cursor:pointer}
+.rc{font-size:20px;font-weight:800;color:#207168;margin-top:4px}
+.found{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:10px;flex-wrap:wrap;font-size:12px;font-weight:bold;color:#207168}
+.chip{min-width:62px;padding:6px 10px;border-radius:10px;border:2px dashed #d4af37;color:#d4af37;background:#fff}
+.chip.ok{border:2px solid #1c8f5a;background:#d8f3e4;color:#207168;animation:brota .4s ease-out}
+@keyframes brota{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.ghost{position:fixed;z-index:1000;font-size:44px;pointer-events:none;transform:translate(-50%,-60%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.25));display:none}
+.controls{display:flex;gap:10px;margin-top:10px}
+.btn{padding:12px 20px;font-size:14px;font-weight:bold;border:0;border-radius:10px;cursor:pointer;text-transform:uppercase;flex:1}
+.btn-v{background:#d4af37;color:#fff}.btn-c{background:#b3c2bf;color:#207168}
+.fb{font-size:15px;font-weight:bold;margin-top:10px;color:#b9650a;min-height:44px;line-height:1.35}
+.vic{display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:#fffdf2;align-items:center;justify-content:center;flex-direction:column;animation:cel .5s ease-out forwards;z-index:10}
+.vt{font-size:32px;color:#27ae60;font-weight:900;margin:10px}.va{font-size:36px;color:#e6b800;font-weight:900;text-shadow:1px 1px 0 #fff}.vn{font-size:15px;color:#207168;font-weight:bold;margin-top:8px;padding:0 16px}
+@keyframes cel{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+<div class="game-box">
+<div class="vic" id="vic"><div class="vt">¡LO LOGRASTE! 🎉</div><div class="va">+15 LUMIS</div><div class="vn">¡Un número se puede separar de muchas maneras!</div></div>
+<div>
+<div class="ins"><button class="aud" onclick="speakText()">🔊</button><p id="question-text"></p></div>
+<div class="dots" id="dots"></div>
+<div class="pile" id="pile"></div>
+<div class="racks">
+<div class="rack ra" data-r="a"><div class="rt">PORTABICIS AZUL</div><div class="ri" id="ria"></div><div class="rc" id="rca"></div></div>
+<div class="rack rb2" data-r="b"><div class="rt">PORTABICIS VERDE</div><div class="ri" id="rib"></div><div class="rc" id="rcb"></div></div>
+</div>
+<div class="found" id="found"></div>
+</div>
+<div>
+<div class="fb" id="msg"></div>
+<div class="controls"><button class="btn btn-c" onclick="reset()">Borrar</button><button class="btn btn-v" onclick="listo()">Listo</button></div>
+</div>
+</div>
+<script>
+// MENSAJES FIJOS (para grabarlos con una voz real) y direcciones de audio: pega cada enlace en MP3.
+const RONDAS=[{n:6,need:2},{n:8,need:3},{n:10,need:3}];
+const TEXTOS={quedan:"Todavía quedan bicis sin estacionar. Ponlas en un portabicis.",una:"Mmm, prueba poner algunas bicis en cada portabicis.",nueva:"¡Esa es una forma nueva! Muy bien.",p1:"Mmm, esa forma ya la encontraste. Mueve una bici al otro portabicis y mira qué pasa.",p2:"Hagamos una prueba. Si dejas más bicis en un portabicis, ¿cuántas quedan en el otro? Cuenta con calma y vuelve a intentar.",p3:"Te ayudo. Mira esta forma nueva. ¡Cuenta cuántas hay en cada portabicis!",bien:"¡Las encontraste todas! Muy bien.",exito:"¡Lo lograste! Ganaste quince Lumis."};
+const MP3={quedan:"",una:"",nueva:"",p1:"",p2:"",p3:"",bien:"",exito:""};
+const W=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez'];
+const $=id=>document.getElementById(id);
+let ronda=0,tries=0,bloq=false,fin=false,voz=null,audio=null,p=0,a=0,b=0,found=[],sel=false;
+
+function elegirVoz(){if(!('speechSynthesis' in window))return;const vs=speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().indexOf('es')===0);if(!vs.length)return;
+const pt=v=>{const n=v.name.toLowerCase(),l=v.lang.toLowerCase();let s=0;if(/natural|online/.test(n))s+=6;if(/google/.test(n))s+=4;
+if(/paulina|monica|mónica|sabina|dalia|elvira|helena|lucia|lucía|paloma|luciana|camila|salome|salomé|valentina|sofia|sofía|marisol/.test(n))s+=3;
+if(/es-pe|es-mx|es-us|es-419|es-co|es-ar/.test(l))s+=2;if(/jorge|diego|pablo|raul|raúl/.test(n))s-=1;return s};
+voz=vs.sort((x,y)=>pt(y)-pt(x))[0]}
+if('speechSynthesis' in window){elegirVoz();speechSynthesis.onvoiceschanged=elegirVoz}
+function hablar(k){if(audio){audio.pause();audio=null}if(MP3[k]){audio=new Audio(MP3[k]);audio.play().catch(()=>leer(TEXTOS[k]));return}leer(TEXTOS[k])}
+function leer(t){if(!('speechSynthesis' in window))return;speechSynthesis.cancel();
+t.replace(/[^\u0020-\u007E\u00A1-\u00FF]/g,' ').replace(/([.!?])\s+/g,'$1|').split('|').forEach(f=>{if(!f.trim())return;const u=new SpeechSynthesisUtterance(f.trim());
+u.lang=voz?voz.lang:'es-MX';if(voz)u.voice=voz;u.rate=.88;u.pitch=f.indexOf('¡')>=0?1.25:(f.indexOf('¿')>=0?1.18:1.08);speechSynthesis.speak(u)})}
+function msg(k){$('msg').innerText=TEXTOS[k];hablar(k)}
+function QTXT(){const r=RONDAS[ronda];return 'Hay '+W[r.n]+' bicis. Estaciónalas en los dos portabicis. Encuentra '+W[r.need]+' formas distintas.'}
+function speakText(){leer(QTXT())}
+function dots(){let h='';for(let i=0;i<RONDAS.length;i++)h+='<i class="'+(i<ronda?'done':(i===ronda?'now':''))+'"></i>';$('dots').innerHTML=h+'<span>Ronda '+Math.min(ronda+1,RONDAS.length)+' de '+RONDAS.length+'</span>'}
+
+function iniciar(){const r=RONDAS[ronda];tries=0;bloq=false;found=[];$('msg').innerText='';dots();
+$('question-text').innerText='Hay '+r.n+' bicis. Estaciónalas en los dos portabicis. Encuentra '+r.need+' formas distintas.';
+reset();setTimeout(speakText,500)}
+function reset(){if(bloq)return;p=RONDAS[ronda].n;a=0;b=0;sel=false;render()}
+function render(){
+const pile=$('pile');pile.innerHTML='';
+if(p===0){pile.innerHTML='<span class="vacio">¡Ya estacionaste todas!</span>'}
+for(let i=0;i<p;i++){const x=document.createElement('button');x.className='pb';x.textContent='🚲';conectar(x);pile.appendChild(x)}
+['a','b'].forEach(k=>{const n=k==='a'?a:b,c=$('ri'+k);c.innerHTML='';
+for(let i=0;i<n;i++){const x=document.createElement('button');x.className='rb';x.textContent='🚲';x.onclick=e=>{e.stopPropagation();if(bloq||fin)return;if(k==='a')a--;else b--;p++;render()};c.appendChild(x)}
+$('rc'+k).innerText=n?n:''});
+const f=$('found');f.innerHTML='<span>Formas encontradas:</span>';
+for(let i=0;i<RONDAS[ronda].need;i++){const c=document.createElement('span');c.className='chip'+(found[i]?' ok':'');c.innerText=found[i]?found[i].replace('-',' y '):'❔';f.appendChild(c)}}
+function place(k){if(bloq||fin||p<=0)return;p--;if(k==='a')a++;else b++;sel=false;render()}
+document.querySelectorAll('.rack').forEach(r=>{r.onclick=()=>{if(sel&&!bloq)place(r.dataset.r)}});
+
+function conectar(btn){btn.addEventListener('pointerdown',e=>{if(bloq||fin)return;e.preventDefault();const sx=e.clientX,sy=e.clientY;let m=false;
+const g=document.createElement('div');g.className='ghost';g.textContent='🚲';document.body.appendChild(g);
+const rk=ev=>{const el=document.elementFromPoint(ev.clientX,ev.clientY);return el?el.closest('.rack'):null};
+const mv=ev=>{if(!m&&Math.hypot(ev.clientX-sx,ev.clientY-sy)>8){m=true;g.style.display='block'}
+if(m){g.style.left=ev.clientX+'px';g.style.top=ev.clientY+'px';document.querySelectorAll('.rack').forEach(r=>r.classList.remove('over'));const r=rk(ev);if(r)r.classList.add('over')}};
+const up=ev=>{window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);g.remove();
+document.querySelectorAll('.rack').forEach(r=>r.classList.remove('over'));if(ev.type==='pointercancel')return;
+if(m){const r=rk(ev);if(r)place(r.dataset.r)}else{sel=!sel;document.querySelectorAll('.pb').forEach(x=>x.classList.toggle('sel',sel))}};
+window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up)})}
+
+function nueva(clave,msgKey,esperar){found.push(clave);bloq=true;render();
+if(found.length>=RONDAS[ronda].need){msg('bien');pasar(2800)}
+else{msg(msgKey);setTimeout(()=>{bloq=false;tries=0;reset()},esperar)}}
+function listo(){if(bloq||fin)return;
+if(p>0){msg('quedan');return}
+if(a===0||b===0){msg('una');return}
+const n=RONDAS[ronda].n,clave=Math.min(a,b)+'-'+Math.max(a,b);
+if(found.indexOf(clave)<0){nueva(clave,'nueva',2400);return}
+tries++;
+if(tries===1){msg('p1');return}
+if(tries===2){msg('p2');return}
+// Tercera vez: se muestra una forma nueva ya armada
+for(let i=1;i<=Math.floor(n/2);i++){const c=i+'-'+(n-i);if(found.indexOf(c)<0){p=0;a=i;b=n-i;sel=false;found.push(c);bloq=true;render();
+if(found.length>=RONDAS[ronda].need){msg('p3');pasar(4200)}else{msg('p3');setTimeout(()=>{bloq=false;tries=0;reset()},4200)}return}}}
+function pasar(ms){setTimeout(()=>{ronda++;if(ronda>=RONDAS.length)ganar();else iniciar()},ms)}
+function ganar(){fin=true;dots();$('vic').style.display='flex';hablar('exito');try{let w=parseInt(localStorage.getItem('savedLumis'))||0;localStorage.setItem('savedLumis',w+15)}catch(e){}}
+iniciar();
+</script>
+</body>
+</html>

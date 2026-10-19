@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reiniciar pruebas Numiverse</title>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:transparent;margin:0;padding:10px;text-align:center;color:#207168}
+.box{max-width:460px;margin:0 auto;background:linear-gradient(135deg,#fffdf2,#f3faf6);border:2px solid #207168;border-radius:18px;padding:16px;box-shadow:0 4px 15px rgba(32,113,104,.08)}
+h1{font-size:16px;margin:0 0 4px}
+.aviso{font-size:12px;color:#b9650a;font-weight:bold;margin-bottom:10px}
+.dato{font-size:15px;font-weight:bold;margin:6px 0}
+.lista{font-size:12px;background:#fff;border:2px dashed #207168;border-radius:10px;padding:8px;margin:8px 0;min-height:24px;text-align:left;word-break:break-word}
+.btn{display:block;width:100%;padding:12px;margin-top:8px;font-size:14px;font-weight:bold;border:0;border-radius:10px;cursor:pointer;font-family:inherit;color:#fff}
+.rojo{background:#c0392b}.dorado{background:#d4af37}.gris{background:#8aa09c}
+#msg{font-size:13px;font-weight:bold;margin-top:10px;min-height:18px;color:#1c8f5a}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>🔧 Reiniciar pruebas de Numiverse</h1>
+  <div class="aviso">Solo para ti. Quita esta página del sitio antes de que entren los estudiantes.</div>
+  <div class="dato">Lumis guardados: <span id="lumis">0</span></div>
+  <div class="dato">Juegos completados: <span id="cant">0</span></div>
+  <div class="lista" id="lista"></div>
+
+  <button class="btn rojo" onclick="reiniciar('todo')">Reiniciar TODO (Lumis y juegos)</button>
+  <button class="btn dorado" onclick="reiniciar('juegos')">Reiniciar solo los juegos (conserva los Lumis)</button>
+  <button class="btn gris" onclick="reiniciar('lumis')">Reiniciar solo los Lumis (conserva los juegos)</button>
+  <div id="msg"></div>
+</div>
+<script>
+function claves(){
+  try{return Object.keys(localStorage).filter(function(k){return k.indexOf('ganado_')===0}).sort()}catch(e){return []}
+}
+function pintar(){
+  var l=0;try{l=parseInt(localStorage.getItem('savedLumis'))||0}catch(e){}
+  var c=claves();
+  document.getElementById('lumis').innerText=l;
+  document.getElementById('cant').innerText=c.length;
+  document.getElementById('lista').innerText=c.length?c.map(function(k){return k.replace('ganado_','')}).join(' · '):'(ninguno)';
+}
+function reiniciar(que){
+  try{
+    if(que==='todo'||que==='lumis')localStorage.setItem('savedLumis',0);
+    if(que==='todo'||que==='juegos')claves().forEach(function(k){localStorage.removeItem(k)});
+    document.getElementById('msg').innerText='✔ Listo. Recarga las demás páginas con F5.';
+  }catch(e){
+    document.getElementById('msg').innerText='No se pudo borrar: el navegador bloquea el almacenamiento.';
+  }
+  pintar();
+}
+pintar();
+window.addEventListener('storage',pintar);
+</script>
+</body>
+</html>

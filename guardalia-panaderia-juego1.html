@@ -210,8 +210,11 @@
             document.getElementById("victory-layer").style.display = "flex";
             hablar('exito');
             try {
-                let wallet = parseInt(localStorage.getItem('savedLumis')) || 0;
-                localStorage.setItem('savedLumis', wallet + 15);
+                if (!localStorage.getItem(CLAVE)) {
+                    localStorage.setItem(CLAVE, '1');
+                    let wallet = parseInt(localStorage.getItem('savedLumis')) || 0;
+                    localStorage.setItem('savedLumis', wallet + 15);
+                }
             } catch (e) {}
             return;
         }
@@ -235,7 +238,15 @@
         }
     }
 
-    setTimeout(speakText, 600);
+    const CLAVE = 'ganado_panaderia1';
+    let yaHecho = false;
+    try { yaHecho = !!localStorage.getItem(CLAVE); } catch (e) {}
+    if (yaHecho) {
+        finished = true;
+        document.getElementById("victory-layer").style.display = "flex";
+    } else {
+        setTimeout(speakText, 600);
+    }
 </script>
 </body>
 </html>

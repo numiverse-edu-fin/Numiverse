@@ -128,11 +128,14 @@ function msg(k){$('msg').innerText=TEXTOS[k];hablar(k)}
 function dots(){let h='';for(let i=0;i<RONDAS.length;i++)h+='<i class="'+(i<ronda?'done':(i===ronda?'now':''))+'"></i>';$('dots').innerHTML=h+'<span>Ronda '+Math.min(ronda+1,RONDAS.length)+' de '+RONDAS.length+'</span>'}
 function fallo(b){tries++;if(b){b.classList.add('no');setTimeout(()=>b.classList.remove('no'),600)}if(tries===1)msg('p1');else if(tries===2)msg('p2');return tries>=3}
 function pasar(ms){setTimeout(()=>{ronda++;if(ronda>=RONDAS.length)ganar();else iniciar()},ms)}
-function ganar(){fin=true;dots();$('vic').style.display='flex';hablar('exito');try{let w=parseInt(localStorage.getItem('savedLumis'))||0;localStorage.setItem('savedLumis',w+15)}catch(e){}}
+function ganar(){fin=true;dots();$('vic').style.display='flex';hablar('exito');try{if(!localStorage.getItem(CLAVE)){localStorage.setItem(CLAVE,'1');let w=parseInt(localStorage.getItem('savedLumis'))||0;localStorage.setItem('savedLumis',w+15)}}catch(e){}}
 function mezclar(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function svgRab(n){return '<svg viewBox="0 0 80 100"><path d="M40 34C30 18 20 14 14 6c14 0 24 6 26 22C42 14 52 8 66 8c-4 8-14 14-26 26z" fill="#3E9B4F"/><circle cx="40" cy="66" r="30" fill="#D93B4A"/><ellipse cx="28" cy="54" rx="6" ry="9" fill="#fff" opacity=".25"/><text x="40" y="77" text-anchor="middle" font-size="28" font-weight="800" fill="#fff" font-family="Segoe UI,Arial,sans-serif">'+n+'</text></svg>'}
 
-iniciar();
+const CLAVE='ganado_problemas5';
+let yaHecho=false;
+try{yaHecho=!!localStorage.getItem(CLAVE)}catch(e){}
+if(yaHecho){fin=true;ronda=RONDAS.length;dots();$('vic').style.display='flex'}else{iniciar()}
 </script>
 </body>
 </html>

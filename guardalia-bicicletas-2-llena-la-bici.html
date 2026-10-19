@@ -114,8 +114,11 @@ if(n===need){bloq=true;b.classList.add('ok');$('res').innerText='Había '+k+' y 
 tries2++;b.classList.add('no');setTimeout(()=>b.classList.remove('no'),600);
 if(tries2===1)msg('q1');else if(tries2===2)msg('q2');else{document.querySelectorAll('.opt').forEach(x=>{if(+x.dataset.n===need)x.classList.add('ayuda')});msg('q3')}}
 function pasar(ms){setTimeout(()=>{ronda++;if(ronda>=RONDAS.length)ganar();else iniciar()},ms)}
-function ganar(){fin=true;dots();$('vic').style.display='flex';hablar('exito');try{let w=parseInt(localStorage.getItem('savedLumis'))||0;localStorage.setItem('savedLumis',w+15)}catch(e){}}
-iniciar();
+function ganar(){fin=true;dots();$('vic').style.display='flex';hablar('exito');try{if(!localStorage.getItem(CLAVE)){localStorage.setItem(CLAVE,'1');let w=parseInt(localStorage.getItem('savedLumis'))||0;localStorage.setItem('savedLumis',w+15)}}catch(e){}}
+const CLAVE='ganado_bicicletas2';
+let yaHecho=false;
+try{yaHecho=!!localStorage.getItem(CLAVE)}catch(e){}
+if(yaHecho){fin=true;ronda=RONDAS.length;dots();$('vic').style.display='flex'}else{iniciar()}
 </script>
 </body>
 </html>

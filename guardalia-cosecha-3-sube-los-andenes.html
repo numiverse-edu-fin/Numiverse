@@ -70,10 +70,13 @@ function msg(k){$('msg').innerText=TEXTOS[k];hablar(k)}
 function dots(){let h='';for(let i=0;i<RONDAS.length;i++)h+='<i class="'+(i<ronda?'done':(i===ronda?'now':''))+'"></i>';$('dots').innerHTML=h+'<span>Ronda '+Math.min(ronda+1,RONDAS.length)+' de '+RONDAS.length+'</span>'}
 function fallo(b){tries++;if(b){b.classList.add('no');setTimeout(()=>b.classList.remove('no'),600)}if(tries===1)msg('p1');else if(tries===2)msg('p2');return tries>=3}
 function pasar(ms){setTimeout(()=>{ronda++;if(ronda>=RONDAS.length)ganar();else iniciar()},ms)}
-function ganar(){fin=true;dots();$('vic').style.display='flex';hablar('exito');try{let w=parseInt(localStorage.getItem('savedLumis'))||0;localStorage.setItem('savedLumis',w+15)}catch(e){}}
+function ganar(){fin=true;dots();$('vic').style.display='flex';hablar('exito');try{if(!localStorage.getItem(CLAVE)){localStorage.setItem(CLAVE,'1');let w=parseInt(localStorage.getItem('savedLumis'))||0;localStorage.setItem('savedLumis',w+15)}}catch(e){}}
 function mezclar(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-iniciar();
+const CLAVE='ganado_cosecha3';
+let yaHecho=false;
+try{yaHecho=!!localStorage.getItem(CLAVE)}catch(e){}
+if(yaHecho){fin=true;ronda=RONDAS.length;dots();$('vic').style.display='flex'}else{iniciar()}
 </script>
 </body>
 </html>

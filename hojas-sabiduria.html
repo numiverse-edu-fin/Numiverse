@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hojas de Sabiduría</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:6px;background:transparent;font-family:system-ui,'Segoe UI',sans-serif}
+.c{display:flex;align-items:center;gap:16px;justify-content:center}
+.c svg{width:72px;height:72px}
+small{display:block;font-weight:800;letter-spacing:.2em;font-size:15px}
+b{display:block;font-size:34px;font-weight:900;line-height:1.1}
+small,b{background:linear-gradient(90deg,#e74c3c,#f39c12,#2ecc71,#3498db);-webkit-background-clip:text;background-clip:text;color:transparent}
+</style>
+</head>
+<body>
+<div class="c">
+  <svg id="hojaSvg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e74c3c"/><stop offset=".35" stop-color="#f1c40f"/><stop offset=".7" stop-color="#2ecc71"/><stop offset="1" stop-color="#3498db"/></linearGradient></defs><path d="M10 54C8 26 26 8 56 8c0 30-18 48-46 46z" fill="url(#g)"/><path d="M10 54L42 22" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".8"/></svg>
+  <div><small>SABIDURÍA</small><b id="n">0 Hojas</b></div>
+</div>
+<script>
+const HOJA_IMG=''; // opcional: nombre de tu imagen de la hoja, p. ej. 'hoja.png'
+if(HOJA_IMG)document.getElementById('hojaSvg').outerHTML='<img src="'+HOJA_IMG+'" style="width:72px;height:72px;object-fit:contain">';
+const leer=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+function pintar(){const n=parseInt(leer('hojas_actuales'))||0;document.getElementById('n').textContent=n+(n===1?' Hoja':' Hojas')}
+pintar();
+window.addEventListener('storage',pintar);
+setInterval(pintar,800);
+</script>
+</body>
+</html>

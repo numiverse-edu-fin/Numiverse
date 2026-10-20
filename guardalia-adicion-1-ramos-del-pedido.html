@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adición 1 Numiverse</title>
+<style>
+body{font-family:'Segoe UI',sans-serif;background:transparent;text-align:center;padding:10px;margin:0;user-select:none}
+.game-box{max-width:460px;margin:0 auto;background:linear-gradient(135deg,#fffdf2,#f3faf6);padding:20px;border-radius:20px;border:2px solid #207168;box-shadow:0 4px 15px rgba(32,113,104,.08);position:relative;overflow:hidden;min-height:440px;display:flex;flex-direction:column;justify-content:space-between}
+.ins{display:flex;align-items:center;gap:8px;background:#207168;color:#fff;padding:10px;border-radius:10px;margin-bottom:10px}
+.ins p{font-size:15px;font-weight:bold;text-align:left;flex:1;margin:0}
+.aud{background:#d4af37;border:0;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer;flex-shrink:0;color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+.dots{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;font-weight:bold;color:#207168}
+.dots i{width:12px;height:12px;border-radius:50%;background:#dfeee7;border:2px solid #207168;display:inline-block}
+.dots i.now{background:#d4af37;border-color:#b8860b}.dots i.done{background:#207168}
+.et{font-size:11px;font-weight:bold;color:#207168;margin:6px 0 4px}
+.zona{background:#fff;border:2px dashed #207168;border-radius:12px;padding:10px}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pulso{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.calle{display:flex;gap:8px}
+.casa{flex:1;min-height:92px;border:3px dashed #d4af37;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;position:relative;padding-top:16px;transition:background .15s;cursor:pointer}
+.casa::before{content:'🏠';position:absolute;top:1px;left:50%;transform:translateX(-50%);font-size:18px}
+.casa.over{background:#eaf6ef;border-color:#207168}
+.eje{display:flex;justify-content:space-between;font-size:11px;font-weight:bold;color:#207168;margin:6px 4px 0}
+.pile{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;background:#fff;border:2px dashed #207168;border-radius:12px;padding:10px;min-height:66px;align-items:center}
+.vacio{color:#9fb3af;font-size:13px;font-weight:bold}
+.caja{width:60px;height:54px;border-radius:10px;background:linear-gradient(145deg,#e0b070,#b88445);color:#fff;font-weight:800;font-size:22px;border:0;cursor:grab;touch-action:none;box-shadow:0 2px 4px rgba(0,0,0,.2);font-family:inherit}
+.caja.sel{outline:4px solid #f2c94c;transform:scale(1.08)}
+.ghost{position:fixed;z-index:1000;width:60px;height:54px;line-height:54px;text-align:center;font-size:22px;font-weight:800;color:#fff;background:linear-gradient(145deg,#e0b070,#b88445);border-radius:10px;pointer-events:none;transform:translate(-50%,-60%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.25));display:none}
+.bal{position:relative;height:200px}
+.beam{display:flex;justify-content:space-between;gap:16px;padding:0 4px;transition:transform .6s;transform-origin:50% 50%;position:absolute;left:0;right:0;top:20px}
+.pan{flex:1;max-width:180px;height:112px;border:3px solid #d4af37;background:#fffcf2;border-radius:16px;font-size:44px;font-weight:800;color:#207168;cursor:pointer;font-family:inherit;line-height:1.1}
+.pan .cj{font-size:30px}
+.pan.ok{background:#d8f3e4;border-color:#1c8f5a}.pan.no{animation:shake .4s}.pan.ayuda{animation:pulso .9s infinite;border-color:#b8860b;box-shadow:0 0 12px #f2c94c}
+.fulc{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:30px solid transparent;border-right:30px solid transparent;border-bottom:70px solid #b07a3c}
+.res{font-size:13px;font-weight:bold;color:#207168;min-height:18px;margin-top:6px}
+.controls{display:flex;gap:10px;margin-top:8px}
+.btn{padding:12px 20px;font-size:14px;font-weight:bold;border:0;border-radius:10px;cursor:pointer;text-transform:uppercase;flex:1}
+.btn-v{background:#d4af37;color:#fff}.btn-c{background:#b3c2bf;color:#207168}
+.fb{font-size:15px;font-weight:bold;margin-top:8px;color:#b9650a;min-height:44px;line-height:1.35}
+.vic{display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:#fffdf2;align-items:center;justify-content:center;flex-direction:column;animation:cel .5s ease-out forwards;z-index:10}
+.vt{font-size:32px;color:#27ae60;font-weight:900;margin:10px}.va{font-size:36px;color:#e6b800;font-weight:900;text-shadow:1px 1px 0 #fff}.vn{font-size:15px;color:#207168;font-weight:bold;margin-top:8px;padding:0 16px}
+@keyframes cel{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+
+.ops{display:flex;gap:10px;justify-content:center;margin-top:8px}
+.opt{min-width:66px;min-height:52px;font-size:24px;font-weight:800;color:#207168;background:#fff;border:3px solid #207168;border-radius:14px;cursor:pointer;font-family:inherit}
+.opt.ok{background:#d8f3e4;border-color:#1c8f5a}.opt.no{animation:shake .4s}.opt.ayuda{animation:pulso .9s infinite;border-color:#b8860b;box-shadow:0 0 10px #f2c94c}
+.ramo{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;min-height:72px;align-content:flex-start}
+.fl2{border:0;background:none;font-size:28px;padding:0;cursor:pointer}
+.btnf{border:2px solid #d4af37;background:#fffcf2;border-radius:12px;font-size:30px;padding:8px 22px;cursor:pointer;font-family:inherit}
+.frame{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sl{height:44px;border:2px dashed #e2c89a;border-radius:10px;font-size:24px;background:#fff;padding:0}
+.sl.fijo{background:#fff4cc;border:2px solid #d4af37}
+.sl.puesto{background:#d8f3e4;border:2px solid #1c8f5a;animation:brota .3s ease-out}
+@keyframes brota{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.pb{border:1px solid #d4af37;background:#fffcf2;border-radius:10px;font-size:24px;width:44px;height:40px;cursor:grab;touch-action:none;padding:0}
+.zona.over{background:#eaf6ef;border-color:#207168}
+.ghost2{position:fixed;z-index:1000;font-size:42px;pointer-events:none;transform:translate(-50%,-60%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.25));display:none}
+</style>
+</head>
+<body>
+<div class="game-box">
+<div class="vic" id="vic"><div class="vt">¡LO LOGRASTE! 🎉</div><div class="va">+15 LUMIS</div><div class="vn">¡Ya sabes juntar flores y contarlas!</div></div>
+<div>
+<div class="ins"><button class="aud" onclick="speakText()">🔊</button><p id="question-text">Arma el ramo que pide el cliente.</p></div>
+<div class="dots" id="dots"></div>
+<div class="et">EL RAMO</div><div class="zona"><div class="ramo" id="ramo"></div><div class="res" id="cnt"></div></div><div class="et">TOCA PARA AGREGAR FLORES</div><div class="ops" id="bts"><button class="btnf" onclick="add('r')">🌹</button><button class="btnf" onclick="add('t')">🌷</button></div><div class="ops" id="ops"></div><div class="res" id="res"></div><div class="controls" id="ctl"><button class="btn btn-c" onclick="borrar()">Borrar</button><button class="btn btn-v" onclick="listo()">Listo</button></div>
+</div>
+<div><div class="fb" id="msg"></div></div>
+</div>
+<script>
+// MENSAJES FIJOS (para grabarlos con una voz real) y direcciones de audio: pega cada enlace en MP3.
+
+function eq(a,b,l){const t=a+b;return l===0?a+' y '+b+' son '+t+'.':(l===1?a+' + '+b+' son '+t+'.':a+' + '+b+' = '+t+'.')}
+function opc(t){return mezclar([t,t-1,t+1].filter(n=>n>=1))}
+
+const RONDAS=[{r:3,t:4,l:0},{r:5,t:4,l:1},{r:8,t:6,l:2}];
+const TEXTOS={quedan:"Primero arma el pedido: toca las flores para agregarlas al ramo.",p1:"Mmm, casi... Lee otra vez el pedido y cuenta las flores de cada clase.",p2:"Hagamos una prueba. Cuenta solo las rosas y luego solo los tulipanes. Piénsalo y vuelve a intentar.",p3:"Te ayudo a armar el ramo. ¡Mira cómo queda!",cuantas:"¡Pedido listo! Ahora dime: ¿cuántas flores lleva el ramo?",q1:"Mmm, casi... Cuenta todas las flores del ramo, una por una, con tu dedo.",q2:"Hagamos una prueba. Cuenta primero las rosas y sigue contando con los tulipanes. Piénsalo y vuelve a intentar.",q3:"Te ayudo. Mira el número que brilla. Esa es la cantidad de flores del ramo. ¡Tócalo!",bien:"¡Muy bien! El ramo está listo.",exito:"¡Lo lograste! Ganaste quince Lumis."};
+const MP3={quedan:"",p1:"",p2:"",p3:"",cuantas:"",q1:"",q2:"",q3:"",bien:"",exito:""};
+let cr=0,ct=0,fase=1,tries2=0;
+function QTXT(){const R=RONDAS[ronda];return fase===1?'Un cliente pide '+palabras(R.r)+' rosas y '+palabras(R.t)+' tulipanes. Arma el ramo.':TEXTOS.cuantas}
+function iniciar(){const R=RONDAS[ronda];cr=0;ct=0;fase=1;tries=0;tries2=0;bloq=false;$('msg').innerText='';$('res').innerText='';$('ops').innerHTML='';$('ctl').style.display='flex';$('bts').style.display='flex';
+$('question-text').innerText='Un cliente pide '+R.r+' rosas y '+R.t+' tulipanes. Arma el ramo.';dots();draw();setTimeout(speakText,500)}
+function fl(e,k){const b=document.createElement('button');b.className='fl2';b.textContent=e;b.onclick=()=>{if(bloq||fin||fase!==1)return;if(k==='r')cr--;else ct--;draw()};return b}
+function draw(){const z=$('ramo');z.innerHTML='';for(let i=0;i<cr;i++)z.appendChild(fl('🌹','r'));for(let i=0;i<ct;i++)z.appendChild(fl('🌷','t'));$('cnt').innerText=(cr||ct)?'🌹 '+cr+'   ·   🌷 '+ct:''}
+function add(k){if(bloq||fin||fase!==1||cr+ct>=20)return;if(k==='r')cr++;else ct++;draw()}
+function borrar(){if(bloq||fin||fase!==1)return;cr=0;ct=0;$('msg').innerText='';draw()}
+function listo(){if(bloq||fin||fase!==1)return;const R=RONDAS[ronda];
+if(cr+ct===0){msg('quedan');return}
+if(cr===R.r&&ct===R.t){f2();return}
+tries++;if(tries===1)msg('p1');else if(tries===2)msg('p2');else{bloq=true;cr=R.r;ct=R.t;draw();msg('p3');setTimeout(f2,3800)}}
+function f2(){const R=RONDAS[ronda],tot=R.r+R.t;fase=2;bloq=false;tries2=0;$('ctl').style.display='none';$('bts').style.display='none';
+$('question-text').innerText='¡Pedido listo! ¿Cuántas flores lleva el ramo?';const o=$('ops');o.innerHTML='';
+opc(tot).forEach(n=>{const b=document.createElement('button');b.className='opt';b.dataset.n=n;b.textContent=n;b.onclick=()=>elegir(n,b);o.appendChild(b)});msg('cuantas')}
+function elegir(n,b){if(bloq||fin)return;const R=RONDAS[ronda],tot=R.r+R.t;
+if(n===tot){bloq=true;b.classList.add('ok');$('res').innerText=eq(R.r,R.t,R.l);msg('bien');pasar(3800);return}
+tries2++;b.classList.add('no');setTimeout(()=>b.classList.remove('no'),600);
+if(tries2===1)msg('q1');else if(tries2===2)msg('q2');else{document.querySelectorAll('.opt').forEach(x=>{if(+x.dataset.n===tot)x.classList.add('ayuda')});msg('q3')}}
+
+
+const $=id=>document.getElementById(id);
+const U=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve'];
+const D=['','','','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
+function palabras(n){if(n<30)return U[n];const d=Math.floor(n/10),u=n%10;return D[d]+(u?' y '+U[u]:'')}
+let ronda=0,tries=0,bloq=false,fin=false,voz=null,audio=null;
+function elegirVoz(){if(!('speechSynthesis' in window))return;const vs=speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().indexOf('es')===0);if(!vs.length)return;
+const pt=v=>{const n=v.name.toLowerCase(),l=v.lang.toLowerCase();let s=0;if(/natural|online/.test(n))s+=6;if(/google/.test(n))s+=4;
+if(/paulina|monica|mónica|sabina|dalia|elvira|helena|lucia|lucía|paloma|luciana|camila|salome|salomé|valentina|sofia|sofía|marisol/.test(n))s+=3;
+if(/es-pe|es-mx|es-us|es-419|es-co|es-ar/.test(l))s+=2;if(/jorge|diego|pablo|raul|raúl/.test(n))s-=1;return s};
+voz=vs.sort((a,b)=>pt(b)-pt(a))[0]}
+if('speechSynthesis' in window){elegirVoz();speechSynthesis.onvoiceschanged=elegirVoz}
+function hablar(k){if(audio){audio.pause();audio=null}if(MP3[k]){audio=new Audio(MP3[k]);audio.play().catch(()=>leer(TEXTOS[k]));return}leer(TEXTOS[k])}
+function leer(t){if(!('speechSynthesis' in window))return;speechSynthesis.cancel();
+const fr=t.replace(/[^\u0020-\u007E\u00A1-\u00FF]/g,' ').replace(/([.!?])\s+/g,'$1|').split('|');
+fr.forEach(f=>{if(!f.trim())return;const u=new SpeechSynthesisUtterance(f.trim());u.lang=voz?voz.lang:'es-MX';if(voz)u.voice=voz;u.rate=.88;
+u.pitch=f.indexOf('¡')>=0?1.25:(f.indexOf('¿')>=0?1.18:1.08);speechSynthesis.speak(u)})}
+function speakText(){leer(QTXT())}
+function msg(k){$('msg').innerText=TEXTOS[k];hablar(k)}
+function dots(){let h='';for(let i=0;i<RONDAS.length;i++)h+='<i class="'+(i<ronda?'done':(i===ronda?'now':''))+'"></i>';$('dots').innerHTML=h+'<span>Ronda '+Math.min(ronda+1,RONDAS.length)+' de '+RONDAS.length+'</span>'}
+function fallo(b){tries++;if(b){b.classList.add('no');setTimeout(()=>b.classList.remove('no'),600)}if(tries===1)msg('p1');else if(tries===2)msg('p2');return tries>=3}
+function pasar(ms){setTimeout(()=>{ronda++;if(ronda>=RONDAS.length)ganar();else iniciar()},ms)}
+function ganar(){fin=true;dots();$('vic').style.display='flex';hablar('exito');try{if(!localStorage.getItem(CLAVE)){localStorage.setItem(CLAVE,'1');let w=parseInt(localStorage.getItem('savedLumis'))||0;localStorage.setItem('savedLumis',w+15)}}catch(e){}}
+function mezclar(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function svgRab(n){return '<svg viewBox="0 0 80 100"><path d="M40 34C30 18 20 14 14 6c14 0 24 6 26 22C42 14 52 8 66 8c-4 8-14 14-26 26z" fill="#3E9B4F"/><circle cx="40" cy="66" r="30" fill="#D93B4A"/><ellipse cx="28" cy="54" rx="6" ry="9" fill="#fff" opacity=".25"/><text x="40" y="77" text-anchor="middle" font-size="28" font-weight="800" fill="#fff" font-family="Segoe UI,Arial,sans-serif">'+n+'</text></svg>'}
+
+const CLAVE='ganado_adicion1';
+let yaHecho=false;
+try{yaHecho=!!localStorage.getItem(CLAVE)}catch(e){}
+if(yaHecho){fin=true;ronda=RONDAS.length;dots();$('vic').style.display='flex'}else{iniciar()}
+</script>
+</body>
+</html>

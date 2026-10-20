@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reiniciar pruebas de Torneos</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:12px;background:transparent;font-family:system-ui,'Segoe UI',sans-serif}
+.card{max-width:600px;margin:0 auto;padding:22px;border:2px solid #207168;border-radius:22px;background:linear-gradient(135deg,#fffdf0,#f3faf6);box-shadow:0 8px 24px rgba(32,113,104,.15);text-align:center;color:#207168}
+h2{margin:0 0 4px;font-size:1.3rem}
+.av{margin:0 0 14px;color:#b9650a;font-weight:700;font-size:.85rem}
+.dato{font-weight:800;font-size:1.05rem;margin:8px 0}
+.lista{border:2px dashed #207168;border-radius:12px;background:#fff;padding:12px;text-align:left;margin:12px 0 16px;font-size:.95rem}
+.b{display:block;width:100%;margin-top:10px;padding:15px;border:0;border-radius:14px;color:#fff;font:800 .95rem inherit;font-family:inherit;cursor:pointer}
+.b:active{transform:translateY(1px)}
+.rojo{background:#c0392b}.oro{background:#d4af37}.gris{background:#8fa39e}.az{background:#5b7fa6}
+.b.off{background:#207168}.b.on{background:#e67e22}
+#ok{min-height:22px;margin-top:12px;font-weight:800;color:#1c8f5a;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>🔧 Reiniciar pruebas de Torneos</h2>
+  <div class="av">Solo para ti. Quita esta página del sitio antes de que entren los estudiantes.</div>
+  <div class="dato">Hojas en el ranking: <span id="rk">0</span></div>
+  <div class="dato">Hojas del contador: <span id="ha">0</span></div>
+  <div class="dato">Perfil: <span id="perfil">(sin perfil)</span></div>
+  <div class="lista" id="lista">(ninguno)</div>
+  <button class="b off" id="mp"></button>
+  <button class="b rojo" id="todo">Reiniciar TODO (hojas y juegos)</button>
+  <button class="b oro" id="juegos">Reiniciar solo los juegos (conserva las hojas)</button>
+  <button class="b gris" id="hojas">Reiniciar solo las hojas (conserva los juegos)</button>
+  <button class="b az" id="perf">Borrar perfil (nombre y avatar)</button>
+  <div id="ok" role="status"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const HOJAS=['ranking_exploradores_hojas','hojas_actuales'];
+const JUEGOS=['cajero_progreso','reciclaje_progreso'];
+const PERFIL=['ranking_nombre','ranking_avatar','ranking_avatar_svg','ranking_guardado'];
+const g=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const del=ks=>ks.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+function prog(k,campo,txt){try{const p=JSON.parse(g(k));return p&&p[campo]>0?txt+' '+(p[campo]+1):null}catch(e){return null}}
+function pintar(){
+  $('rk').textContent=parseInt(g(HOJAS[0]))||0;
+  $('ha').textContent=parseInt(g(HOJAS[1]))||0;
+  const l=[prog('cajero_progreso','i','Cajero Express: nivel'),prog('reciclaje_progreso','k','Reciclaje: ronda')].filter(Boolean);
+  $('lista').textContent=l.length?l.join(' · '):'(ninguno)';
+  const n=g('ranking_nombre');$('perfil').textContent=g('ranking_guardado')==='1'&&n?n:'(sin perfil)';
+  const pr=g('modo_prueba')==='1';
+  $('mp').textContent=pr?'🧪 Modo prueba ACTIVADO: las hojas no se cuentan (toca para desactivar)':'🧪 Activar modo prueba (las hojas no se cuentan)';
+  $('mp').className='b '+(pr?'on':'off');
+}
+function confirmar(id,fn){
+  const b=$(id),t=b.textContent;let a=false;
+  b.onclick=()=>{
+    if(!a){a=true;b.textContent='¿Seguro? Toca otra vez para confirmar';setTimeout(()=>{a=false;b.textContent=t},3500);return}
+    a=false;b.textContent=t;fn();pintar();
+    $('ok').textContent='✔ Listo. Recarga los juegos que tengas abiertos.';
+  };
+}
+confirmar('todo',()=>del(HOJAS.concat(JUEGOS)));
+confirmar('juegos',()=>del(JUEGOS));
+confirmar('hojas',()=>del(HOJAS));
+confirmar('perf',()=>del(PERFIL));
+$('mp').onclick=()=>{try{g('modo_prueba')==='1'?localStorage.removeItem('modo_prueba'):localStorage.setItem('modo_prueba','1')}catch(e){}pintar();$('ok').textContent='✔ Recarga los juegos abiertos para aplicar el cambio.'};
+pintar();
+window.addEventListener('storage',pintar);
+setInterval(pintar,2000);
+</script>
+</body>
+</html>

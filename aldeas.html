@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aciertos por aldea</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:transparent;font-family:'Segoe UI',system-ui,sans-serif;user-select:none;overflow:hidden}
+body{padding:4px}
+.w{max-width:560px;margin:0 auto}
+.fila{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+.a{border:2px solid var(--c);background:var(--b);border-radius:12px;padding:6px 1px 5px;text-align:center;transition:transform .25s,background .25s,box-shadow .25s}
+.e svg{display:block;margin:0 auto;width:clamp(26px,8.5vw,40px);height:auto;filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))}
+.n{font-size:clamp(16px,5.5vw,26px);font-weight:900;color:var(--c);line-height:1.15;margin-top:1px}
+.n small{font-size:.55em;font-weight:800;opacity:.8}
+.nm{font-size:clamp(8px,2.3vw,11px);font-weight:800;color:#3d4f4b;white-space:nowrap;overflow:hidden}
+.a.on{background:var(--c);transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.a.on .n,.a.on .nm{color:#fff}
+.a.full{box-shadow:0 0 0 3px #f2c94c,0 4px 10px rgba(0,0,0,.2)}
+.tot{margin-top:6px;text-align:center;font-size:12px;font-weight:800;color:#207168}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="fila" id="fila"></div>
+  <div class="tot" id="tot"></div>
+</div>
+<script>
+/* Uso: aldeas.html            -> muestra los aciertos de cada aldea
+        aldeas.html?meta=5     -> muestra 3/5, 4/5... (5 = aciertos que tiene cada aldea)
+   Cada id de acierto debe empezar con el prefijo de su aldea (gua-, tro-, pen-, ord-, jad-, uni-) */
+var P=new URLSearchParams(location.search),META=parseInt(P.get('meta'))||0;
+
+/* Emblemas dibujados como los del mapa: medallón con borde dorado y un símbolo claro */
+function medalla(color,simbolo){
+  return '<svg viewBox="0 0 40 40" aria-hidden="true">'+
+    '<circle cx="20" cy="20" r="18.5" fill="'+color+'" stroke="#e8c25a" stroke-width="2.2"/>'+
+    '<circle cx="20" cy="20" r="15.3" fill="none" stroke="rgba(255,255,255,.35)" stroke-width=".8"/>'+
+    simbolo+'</svg>';
+}
+var S={
+  /* Guardalia: brote dorado */
+  gua:'<path d="M20 33V19" stroke="#f3d27a" stroke-width="2.2" stroke-linecap="round"/>'+
+      '<path d="M20 21C20 14 14 12 9.5 13C9.5 19 14 22 20 21Z" fill="#f3d27a"/>'+
+      '<path d="M20 18C20 11 26 9 30.5 10C30.5 16 26 19 20 18Z" fill="#f8e2a0"/>',
+  /* Trokalia: llama */
+  tro:'<path d="M20 6C22 12 29 15 28 24C27 30 23 33 20 33C16 33 12 30 12 24C12 19 15 17 16 13C18 15 18 17 19 17C21 13 20 10 20 6Z" fill="#ffab2e"/>'+
+      '<path d="M20 18C22 22 25 23 24 28C23 31 21 32 20 32C18 32 16 31 16 28C16 25 19 24 20 18Z" fill="#ffe28a"/>',
+  /* Pensora: flor de loto */
+  pen:'<path d="M20 8C25.5 14 25.5 22 20 28C14.5 22 14.5 14 20 8Z" fill="#f1e4fd"/>'+
+      '<path d="M20 28C12 27 8.5 21 9.5 14C16 16 19.5 21 20 28Z" fill="#d9bcf5"/>'+
+      '<path d="M20 28C28 27 31.5 21 30.5 14C24 16 20.5 21 20 28Z" fill="#d9bcf5"/>'+
+      '<path d="M12 31Q20 35 28 31" stroke="#f1e4fd" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
+  /* Ordenia: cristal */
+  ord:'<polygon points="20,6 30,17 20,34 10,17" fill="#bfe4ff"/>'+
+      '<polygon points="20,6 24.5,17 20,34 15.5,17" fill="#e8f5ff"/>'+
+      '<polyline points="10,17 30,17" stroke="#6fb4ee" stroke-width="1" fill="none"/>'+
+      '<polyline points="20,6 15.5,17 20,34 24.5,17 20,6" stroke="#6fb4ee" stroke-width="1" fill="none"/>',
+  /* Jadelia: hoja */
+  jad:'<path d="M20 7C31 13 31 26 20 33C9 26 9 13 20 7Z" fill="#dff2c4"/>'+
+      '<path d="M20 11V31M20 17L15 14M20 22L14.5 19M20 17L25 14M20 22L25.5 19" stroke="#3f8f3a" stroke-width="1.6" stroke-linecap="round" fill="none"/>',
+  /* Unidalia: flor de cinco pétalos */
+  uni:'<g fill="#fff">'+
+      '<ellipse cx="20" cy="13" rx="4.6" ry="7"/>'+
+      '<ellipse cx="20" cy="13" rx="4.6" ry="7" transform="rotate(72 20 20)"/>'+
+      '<ellipse cx="20" cy="13" rx="4.6" ry="7" transform="rotate(144 20 20)"/>'+
+      '<ellipse cx="20" cy="13" rx="4.6" ry="7" transform="rotate(216 20 20)"/>'+
+      '<ellipse cx="20" cy="13" rx="4.6" ry="7" transform="rotate(288 20 20)"/></g>'+
+      '<circle cx="20" cy="20" r="3.4" fill="#e8a6c4"/>'
+};
+/* Colores tomados de los letreros del mapa */
+var ALDEAS=[
+ {p:'gua-',n:'Guardalia',c:'#7a4a14',b:'#f6ead6',s:'gua'},
+ {p:'tro-',n:'Trokalia', c:'#8c2018',b:'#fbe3df',s:'tro'},
+ {p:'pen-',n:'Pensora',  c:'#5a2a8a',b:'#ece2f6',s:'pen'},
+ {p:'ord-',n:'Ordenia',  c:'#1e3f8f',b:'#e0e8f7',s:'ord'},
+ {p:'jad-',n:'Jadelia',  c:'#1f6d2a',b:'#e2f1e3',s:'jad'},
+ {p:'uni-',n:'Unidalia', c:'#7a1f4d',b:'#f7e0ea',s:'uni'}
+];
+function lista(k){try{return JSON.parse(localStorage.getItem(k))||[]}catch(e){return []}}
+function pintar(){
+  var todos=lista('genially_aciertos'),cobrados=lista('genially_cobrados'),h='',total=0;
+  ALDEAS.forEach(function(a){
+    var n=todos.filter(function(id){return id.indexOf(a.p)===0}).length;
+    total+=n;
+    var cls='a'+(n>0?' on':'')+(META&&n>=META?' full':'');
+    h+='<div class="'+cls+'" style="--c:'+a.c+';--b:'+a.b+'"><div class="e">'+medalla(a.c,S[a.s])+'</div><div class="n">'+n+(META?'<small>/'+META+'</small>':'')+'</div><div class="nm">'+a.n+'</div></div>';
+  });
+  document.getElementById('fila').innerHTML=h;
+  var pend=todos.filter(function(id){return cobrados.indexOf(id)<0}).length;
+  document.getElementById('tot').innerHTML='⭐ '+total+(total===1?' acierto':' aciertos')+' en total'+(total?' · '+pend+' por cobrar':'');
+}
+window.addEventListener('storage',pintar);
+setInterval(pintar,800);
+pintar();
+</script>
+</body>
+</html>

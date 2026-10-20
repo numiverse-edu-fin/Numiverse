@@ -27,10 +27,10 @@ body{padding:4px}
   <div class="tot" id="tot"></div>
 </div>
 <script>
-/* Uso: aldeas.html            -> muestra los aciertos de cada aldea
-        aldeas.html?meta=5     -> muestra 3/5, 4/5... (5 = aciertos que tiene cada aldea)
+/* Uso: aldeas.html            -> muestra 0/6, 1/6... (cada aldea tiene 6 ejercicios)
+        aldeas.html?meta=5     -> cambia el total por aldea (meta=0 muestra solo el número)
    Cada id de acierto debe empezar con el prefijo de su aldea (gua-, tro-, pen-, ord-, jad-, uni-) */
-var P=new URLSearchParams(location.search),META=parseInt(P.get('meta'))||0;
+var P=new URLSearchParams(location.search),META=P.has('meta')?(parseInt(P.get('meta'))||0):6;
 
 /* Emblemas dibujados como los del mapa: medallón con borde dorado y un símbolo claro */
 function medalla(color,simbolo){

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cobrar mis aciertos</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:8px;background:transparent;font-family:'Segoe UI',system-ui,sans-serif;user-select:none}
+.c{max-width:380px;margin:0 auto;padding:14px;border:2px solid #207168;border-radius:18px;background:linear-gradient(135deg,#fffdf0,#f3faf6);box-shadow:0 6px 18px rgba(32,113,104,.15);text-align:center;color:#207168}
+.t{font-weight:800;font-size:15px}
+.n{font-size:38px;font-weight:900;margin:4px 0 0}
+.s{font-size:12px;color:#7a8a86;font-weight:700;margin-bottom:10px}
+.g{display:block;width:100%;padding:13px;border:0;border-radius:12px;background:#207168;color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 #16524a}
+.g:disabled{background:#cfd8dc;box-shadow:none;cursor:default}
+#m{min-height:18px;margin-top:8px;font-size:13px;font-weight:800;color:#1c8f5a}
+</style>
+</head>
+<body>
+<div class="c">
+  <div class="t">🍃 Tus aciertos de la aventura</div>
+  <div class="n" id="n">0</div>
+  <div class="s" id="s"></div>
+  <button class="g" id="b"></button>
+  <div id="m"></div>
+</div>
+<script>
+/* Uso: cobrar-todo.html?grupo=aldea1-&hojas=1
+   grupo = (opcional) cobra solo los aciertos cuyo id empieza así | hojas = hojas por acierto (por defecto 1) */
+const P=new URLSearchParams(location.search),G=P.get('grupo')||'',PER=Math.max(1,Math.min(5,parseInt(P.get('hojas'))||1));
+const $=id=>document.getElementById(id);
+const leer=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const lista=k=>{try{return JSON.parse(leer(k))||[]}catch(e){return []}};
+const prueba=()=>leer('modo_prueba')==='1';
+const pend=()=>{const c=lista('genially_cobrados');return lista('genially_aciertos').filter(id=>id.indexOf(G)===0&&!c.includes(id))};
+let conf=false,tm=null;
+function pintar(){
+  const n=pend().length,ya=lista('genially_cobrados').filter(id=>id.indexOf(G)===0).length;
+  $('n').textContent=n;
+  $('s').textContent=(n===1?'acierto guardado':'aciertos guardados')+' · cada uno = '+PER+(PER===1?' hoja':' hojas')+(ya?' · ya cobrados: '+ya:'');
+  $('b').disabled=n===0;
+  $('b').textContent=n?(conf?'¿Seguro? Toca otra vez':'🍃 Cobrar '+n*PER+(n*PER===1?' hoja':' hojas')):'Aún no hay aciertos por cobrar';
+}
+$('b').onclick=()=>{
+  const ps=pend();if(!ps.length)return;
+  if(!conf){conf=true;pintar();clearTimeout(tm);tm=setTimeout(()=>{conf=false;pintar()},4000);return}
+  conf=false;const p=ps.length*PER;
+  if(prueba()){$('m').textContent='🧪 Modo prueba: no se contaron'}
+  else{
+    try{
+      ['ranking_exploradores_hojas','hojas_actuales'].forEach(k=>localStorage.setItem(k,(parseInt(localStorage.getItem(k))||0)+p));
+      localStorage.setItem('genially_cobrados',JSON.stringify(lista('genially_cobrados').concat(ps)));
+      $('m').textContent='✅ ¡Cobraste '+p+(p===1?' hoja!':' hojas!');
+    }catch(e){$('m').textContent='No se pudo guardar'}
+  }
+  pintar();
+};
+window.addEventListener('storage',pintar);
+setInterval(pintar,800);
+pintar();
+</script>
+</body>
+</html>

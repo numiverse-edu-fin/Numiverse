@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acierto</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:8px;background:transparent;font-family:'Segoe UI',system-ui,sans-serif;user-select:none}
+#c{max-width:340px;margin:0 auto;padding:10px 12px;border:2px solid #207168;border-radius:18px;background:linear-gradient(135deg,#fffdf0,#f3faf6);display:flex;align-items:center;gap:12px;box-shadow:0 6px 18px rgba(32,113,104,.15)}
+.e{font-size:30px}
+.t{flex:1;color:#207168;font-weight:800;font-size:14px;line-height:1.25}
+.t small{display:block;color:#7a8a86;font-size:12px;font-weight:700}
+.ok{color:#1c8f5a}
+button{border:0;border-radius:12px;padding:11px 14px;background:#207168;color:#fff;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 #16524a}
+</style>
+</head>
+<body>
+<div id="c"><span class="e">⭐</span><div class="t" id="t"></div><button id="b" hidden>Guardar</button></div>
+<script>
+/* Uso: acierto.html?id=aldea1-reto01   (un id distinto en cada diapositiva de "¡Correcto!")
+   Opcional: &toque=1 para que el niño toque un botón en vez de guardarse solo. */
+const P=new URLSearchParams(location.search),ID=P.get('id'),TOQUE=P.get('toque')==='1';
+const $=id=>document.getElementById(id);
+const lista=()=>{try{return JSON.parse(localStorage.getItem('genially_aciertos'))||[]}catch(e){return []}};
+let hecho=false,tm=null;
+function pintar(){
+  const ya=hecho||(ID&&lista().includes(ID));
+  $('b').hidden=!(TOQUE&&!ya);
+  $('t').innerHTML=!ID?'Falta el id<small>Añade ?id=nombre al enlace</small>':ya?'<span class="ok">✅ Acierto guardado</span><small>Sigue la aventura</small>':'¡Respuesta correcta!<small>'+(TOQUE?'Toca para guardar tu acierto':'Guardando tu acierto…')+'</small>';
+}
+function registrar(){
+  if(hecho||!ID)return;hecho=true;
+  try{const a=lista();if(!a.includes(ID)){a.push(ID);localStorage.setItem('genially_aciertos',JSON.stringify(a))}}catch(e){}
+  pintar();
+}
+function vigilar(){
+  if(TOQUE||!ID||(hecho))return;
+  if(!('IntersectionObserver' in window)){tm=setTimeout(registrar,1200);return}
+  new IntersectionObserver(es=>{
+    const ve=es.some(e=>e.isIntersecting&&e.intersectionRatio>=.5);
+    clearTimeout(tm);if(ve&&!hecho)tm=setTimeout(registrar,1200);
+  },{threshold:[0,.5,1]}).observe($('c'));
+}
+$('b').onclick=registrar;
+pintar();vigilar();
+</script>
+</body>
+</html>

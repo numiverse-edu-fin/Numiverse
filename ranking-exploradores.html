@@ -1,0 +1,130 @@
+<!-- ======================================================= -->
+<!-- TABLA DE CLASIFICACIÓN: EXPLORADORES TOP 10 VERTICAL     -->
+<!-- ======================================================= -->
+<style>
+.ranking-global-card-exp {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-top: 6px solid #3498db;
+    border-radius: 20px;
+    padding: 22px;
+    max-width: 950px;
+    margin: 10px auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-sizing: border-box;
+}
+.ranking-global-card-exp * { box-sizing: border-box; }
+.ranking-header-exp { text-align: center; margin-bottom: 18px; }
+.ranking-header-exp h3 { margin: 0 0 4px 0; color: #2c3e50; font-size: 1.35rem; font-weight: 800; }
+.ranking-header-exp p { margin: 0; color: #7f8c8d; font-size: 0.85rem; }
+
+/* CONTENEDOR DE DOS COLUMNAS VERTICALES */
+.ranking-list-container-exp {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.ranking-column-exp {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ranking-row-exp { display: flex; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 15px; min-height: 60px; }
+.ranking-row-exp.top-1 { border-color: #f1c40f; background: #fffdf2; }
+.ranking-row-exp.top-2 { border-color: #b4c2c4; background: #f7f9fa; }
+.ranking-row-exp.top-3 { border-color: #e67e22; background: #fffaf5; }
+.ranking-row-exp.usuario-actual { border-color: #2ecc71 !important; background: #f0fdf4 !important; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.12); }
+.pos-badge-exp { width: 28px; font-weight: 800; font-size: 0.95rem; color: #64748b; text-align: left; }
+.top-1 .pos-badge-exp { font-size: 1.2rem; }
+.avatar-wrap-exp { width: 36px; height: 36px; border-radius: 50%; background: #ffffff; border: 1px solid #cbd5e1; overflow: hidden; margin-right: 12px; display: flex; align-items: center; justify-content: center; padding: 2px; }
+.top-1 .avatar-wrap-exp { border-color: #f1c40f; }
+.avatar-wrap-exp svg { width: 100%; height: 100%; }
+.name-exp { flex: 1; font-weight: 700; color: #34495e; text-align: left; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.usuario-actual .name-exp { color: #16a34a; }
+.score-exp { font-size: 0.95rem; font-weight: 800; background: linear-gradient(45deg, #e74c3c, #e67e22, #f1c40f, #2ecc71, #3498db, #9b59b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-fill-color: transparent; }
+</style>
+
+<div class="ranking-global-card-exp">
+    <div class="ranking-header-exp">
+        <h3>🔹 Top 10 Exploradores</h3>
+        <p>Tabla general de clasificación de la liga inicial</p>
+    </div>
+    <!-- Contenedor dividido en bloque izquierdo y derecho -->
+    <div class="ranking-list-container-exp">
+        <div class="ranking-column-exp" id="columnaIzquierdaExp"></div>
+        <div class="ranking-column-exp" id="columnaDerechaExp"></div>
+    </div>
+</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const nombreUsuario = localStorage.getItem('ranking_nombre') || 'Tú (Sin Apodo)';
+    const avatarUsuario = localStorage.getItem('ranking_avatar') || 'leon';
+    const hojasExploradores = parseInt(localStorage.getItem('ranking_exploradores_hojas')) || 0;
+
+    const bots = [
+        { nombre: "FichaVeloz 🐇", avatar: "rana", hojas: 150 },
+        { nombre: "DadoSuertudo", avatar: "gato", hojas: 135 },
+        { nombre: "PrimerPaso", avatar: "koala", hojas: 110 },
+        { nombre: "LudoPanda", avatar: "pinguino", hojas: 95 },
+        { nombre: "MonopolyKid", avatar: "oso", hojas: 85 },
+        { nombre: "FichaRoja", avatar: "zorro", hojas: 75 },
+        { nombre: "DadoLoco", avatar: "buho", hojas: 60 },
+        { nombre: "NovatoPro", avatar: "gato", hojas: 45 },
+        { nombre: "EstrategaLudo", avatar: "koala", hojas: 20 }
+    ];
+
+    const competidores = [...bots, { nombre: nombreUsuario, avatar: avatarUsuario, hojas: hojasExploradores, esUsuarioReal: true }];
+    competidores.sort((a, b) => b.hojas - a.hojas);
+    const top10 = competidores.slice(0, 10);
+
+    const bibliotecaAvatares = {
+        leon: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#f1c40f"/><circle cx="50" cy="53" r="32" fill="#f39c12"/><circle cx="38" cy="45" r="5" fill="#2c3e50"/><circle cx="62" cy="45" r="5" fill="#2c3e50"/><path d="M42 62 Q50 68 58 62" stroke="#2c3e50" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M50 56 L47 60 L53 60 Z" fill="#2c3e50"/></svg>`,
+        zorro: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#e67e22"/><path d="M25 35 L40 50 L20 55 Z" fill="#d35400"/><path d="M75 35 L60 50 L80 55 Z" fill="#d35400"/><path d="M25 55 Q50 85 75 55 Z" fill="#ffffff"/><circle cx="38" cy="52" r="5" fill="#2c3e50"/><circle cx="62" cy="52" r="5" fill="#2c3e50"/><circle cx="50" cy="62" r="4" fill="#2c3e50"/></svg>`,
+        oso: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#9c5a3c"/><circle cx="28" cy="28" r="12" fill="#7d462d"/><circle cx="72" cy="28" r="12" fill="#7d462d"/><circle cx="50" cy="58" r="18" fill="#e0b094"/><circle cx="40" cy="45" r="5" fill="#2c3e50"/><circle cx="60" cy="45" r="5" fill="#2c3e50"/><ellipse cx="50" cy="54" rx="6" ry="4" fill="#2c3e50"/></svg>`,
+        buho: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#34495e"/><circle cx="35" cy="45" r="14" fill="#ffffff"/><circle cx="65" cy="45" r="14" fill="#ffffff"/><circle cx="35" cy="45" r="6" fill="#2c3e50"/><circle cx="65" cy="45" r="6" fill="#2c3e50"/><path d="M50 52 L44 62 L56 62 Z" fill="#f1c40f"/></svg>`,
+        rana: `<svg viewBox="0 0 100 100"><circle cx="50" cy="55" r="40" fill="#2ecc71"/><circle cx="32" cy="28" r="12" fill="#2ecc71"/><circle cx="68" cy="28" r="12" fill="#2ecc71"/><circle cx="32" cy="28" r="6" fill="#ffffff"/><circle cx="68" cy="28" r="6" fill="#ffffff"/><circle cx="32" cy="28" r="3" fill="#000000"/><circle cx="68" cy="28" r="3" fill="#000000"/><ellipse cx="50" cy="65" rx="15" ry="8" fill="#27ae60"/><path d="M35 58 Q50 68 65 58" stroke="#27ae60" stroke-width="4" fill="none"/></svg>`,
+        gato: `<svg viewBox="0 0 100 100"><circle cx="50" cy="52" r="42" fill="#95a5a6"/><path d="M20 25 L40 45 L15 50 Z" fill="#7f8c8d"/><path d="M80 25 L60 45 L85 50 Z" fill="#7f8c8d"/><circle cx="36" cy="50" r="5" fill="#f1c40f"/><circle cx="64" cy="50" r="5" fill="#f1c40f"/><ellipse cx="50" cy="58" rx="4" ry="3" fill="#e74c3c"/><path d="M42 66 Q50 72 58 66" stroke="#7f8c8d" stroke-width="3" fill="none"/></svg>`,
+        koala: `<svg viewBox="0 0 100 100"><circle cx="22" cy="35" r="15" fill="#bdc3c7"/><circle cx="78" cy="35" r="15" fill="#bdc3c7"/><circle cx="22" cy="35" r="9" fill="#ffcbdb"/><circle cx="78" cy="35" r="9" fill="#ffcbdb"/><circle cx="50" cy="55" r="38" fill="#95a5a6"/><circle cx="36" cy="48" r="4" fill="#2c3e50"/><circle cx="64" cy="48" r="4" fill="#2c3e50"/><ellipse cx="50" cy="58" rx="8" ry="14" fill="#34495e"/></svg>`,
+        pinguino: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#2c3e50"/><ellipse cx="50" cy="55" rx="30" ry="35" fill="#ffffff"/><circle cx="38" cy="40" r="4" fill="#2c3e50"/><circle cx="62" cy="40" r="4" fill="#2c3e50"/><path d="M50 46 L42 54 L58 54 Z" fill="#f39c12"/></svg>`
+    };
+
+    const colIzquierda = document.getElementById('columnaIzquierdaExp');
+    const colDerecha = document.getElementById('columnaDerechaExp');
+    colIzquierda.innerHTML = "";
+    colDerecha.innerHTML = "";
+
+    top10.forEach((jugador, indice) => {
+        const numPosicion = indice + 1;
+        const svgElegido = bibliotecaAvatares[jugador.avatar] || bibliotecaAvatares['leon'];
+
+        let badgePos = numPosicion;
+        if(numPosicion === 1) badgePos = "🥇";
+        if(numPosicion === 2) badgePos = "🥈";
+        if(numPosicion === 3) badgePos = "🥉";
+
+        let claseFila = "ranking-row-exp";
+        if(numPosicion <= 3) claseFila += ` top-${numPosicion}`;
+        if(jugador.esUsuarioReal) claseFila += " usuario-actual";
+
+        const filaHTML = `
+            <div class="${claseFila}">
+                <div class="pos-badge-exp">${badgePos}</div>
+                <div class="avatar-wrap-exp">${svgElegido}</div>
+                <div class="name-exp">${jugador.nombre}</div>
+                <div class="score-exp">${jugador.hojas} 🍃</div>
+            </div>`;
+
+        // Si es del puesto 1 al 5 va a la izquierda, si es del 6 al 10 va a la derecha
+        if(numPosicion <= 5) {
+            colIzquierda.innerHTML += filaHTML;
+        } else {
+            colDerecha.innerHTML += filaHTML;
+        }
+    });
+});
+</script>

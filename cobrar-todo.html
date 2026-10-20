@@ -18,16 +18,20 @@ body{margin:0;padding:8px;background:transparent;font-family:'Segoe UI',system-u
 </head>
 <body>
 <div class="c">
-  <div class="t">🍃 Tus aciertos de la aventura</div>
+  <div class="t" id="t">🍃 Tus aciertos de la aventura</div>
   <div class="n" id="n">0</div>
   <div class="s" id="s"></div>
   <button class="g" id="b"></button>
   <div id="m"></div>
 </div>
 <script>
-/* Uso: cobrar-todo.html?grupo=aldea1-&hojas=1
-   grupo = (opcional) cobra solo los aciertos cuyo id empieza así | hojas = hojas por acierto (por defecto 1) */
-const P=new URLSearchParams(location.search),G=P.get('grupo')||'',PER=Math.max(1,Math.min(5,parseInt(P.get('hojas'))||1));
+/* Uso: cobrar-todo.html?grupo=gua-&ver=1&titulo=Guardalia
+   grupo  = (opcional) solo cuenta/cobra los aciertos cuyo id empieza así
+   ver=1  = solo MUESTRA cuántos aciertos hay (sin botón de cobrar), para el final de cada aldea
+   titulo = (opcional) cambia el título de la tarjeta
+   hojas  = hojas por acierto (por defecto 1)
+   Sin grupo y sin ver = cobra TODO lo pendiente (botón final) */
+const P=new URLSearchParams(location.search),G=P.get('grupo')||'',PER=Math.max(1,Math.min(5,parseInt(P.get('hojas'))||1)),VER=P.get('ver')==='1',TIT=P.get('titulo')||'';
 const $=id=>document.getElementById(id);
 const leer=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const lista=k=>{try{return JSON.parse(leer(k))||[]}catch(e){return []}};
@@ -35,6 +39,8 @@ const prueba=()=>leer('modo_prueba')==='1';
 const pend=()=>{const c=lista('genially_cobrados');return lista('genially_aciertos').filter(id=>id.indexOf(G)===0&&!c.includes(id))};
 let conf=false,tm=null;
 function pintar(){
+  if(TIT)$('t').textContent=TIT;
+  if(VER){const tot=lista('genially_aciertos').filter(id=>id.indexOf(G)===0).length;$('n').textContent=tot;$('s').textContent=(tot===1?'acierto guardado':'aciertos guardados');$('b').style.display='none';return}
   const n=pend().length,ya=lista('genially_cobrados').filter(id=>id.indexOf(G)===0).length;
   $('n').textContent=n;
   $('s').textContent=(n===1?'acierto guardado':'aciertos guardados')+' · cada uno = '+PER+(PER===1?' hoja':' hojas')+(ya?' · ya cobrados: '+ya:'');

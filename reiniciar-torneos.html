@@ -37,7 +37,7 @@ h2{margin:0 0 4px;font-size:1.3rem}
 <script>
 const $=id=>document.getElementById(id);
 const HOJAS=['ranking_exploradores_hojas','hojas_actuales'];
-const JUEGOS=['cajero_progreso','reciclaje_progreso','hojas_cobradas','hojas_mejor','genially_aciertos','genially_cobrados'];
+const JUEGOS=['cajero_progreso','reciclaje_progreso','mercado_progreso','mercado_hechas','hojas_cobradas','hojas_mejor','genially_aciertos','genially_cobrados'];
 const PERFIL=['ranking_nombre','ranking_avatar','ranking_avatar_svg','ranking_guardado'];
 const g=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const del=ks=>ks.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
@@ -45,7 +45,7 @@ function prog(k,campo,txt){try{const p=JSON.parse(g(k));return p&&p[campo]>0?txt
 function pintar(){
   $('rk').textContent=parseInt(g(HOJAS[0]))||0;
   $('ha').textContent=parseInt(g(HOJAS[1]))||0;
-  const l=[prog('cajero_progreso','i','Cajero Express: nivel'),prog('reciclaje_progreso','k','Reciclaje: ronda')].filter(Boolean);
+  const l=[prog('cajero_progreso','i','Cajero Express: nivel'),prog('reciclaje_progreso','k','Reciclaje: ronda'),prog('mercado_progreso','idx','Mercado de Trokalia: ronda')].filter(Boolean);
   $('lista').textContent=l.length?l.join(' · '):'(ninguno)';
   const n=g('ranking_nombre');$('perfil').textContent=g('ranking_guardado')==='1'&&n?n:'(sin perfil)';
   const pr=g('modo_prueba')==='1';

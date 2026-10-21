@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El gran encargo</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:10px;background:transparent;font-family:'Segoe UI',system-ui,sans-serif;user-select:none}
+.card{max-width:560px;margin:0 auto;padding:14px;border:2px solid #207168;border-radius:22px;background:linear-gradient(135deg,#fffdf0,#f3faf6);box-shadow:0 8px 24px rgba(32,113,104,.15)}
+.hd{display:flex;align-items:center;gap:10px;background:#207168;color:#fff;border-radius:14px;padding:10px 12px;font-weight:700;font-size:14px;line-height:1.3}
+.hd div{flex:1}
+.spk{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:#d4af37;font-size:18px;cursor:pointer}
+.hoja{background:#fff;color:#207168;border-radius:10px;padding:1px 8px;font-size:11px}
+.dots{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0;font-size:12px;font-weight:800;color:#207168}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid #207168;background:#d9ece7}
+.dots i.on{background:#d4af37}
+.panel{background:#fff;border:2px dashed #207168;border-radius:14px;padding:12px;color:#207168;font-weight:700;text-align:center}
+table{width:100%;border-collapse:collapse;margin:6px 0}
+td{padding:6px;border-bottom:1px dashed #cfe3de;font-size:15px;text-align:left}
+.caja{font-size:22px;line-height:1.4;background:#fffdf0;border:2px solid #d4af37;border-radius:12px;padding:8px;margin-bottom:6px}
+.stp{text-align:right;white-space:nowrap}
+.stp b{display:inline-block;min-width:28px;text-align:center;font-size:18px}
+.st{width:34px;height:34px;border-radius:50%;border:2px solid #d4af37;background:#fffdf0;color:#7a5200;font-size:18px;font-weight:900;cursor:pointer}
+.num{font-weight:900;text-align:center;font-size:18px}
+.pc{font-size:18px;line-height:1.2}
+.ley{margin:4px 0 8px;font-size:12px;color:#7a8a86}
+.preg{margin:10px 0 8px;font-size:15px}
+.ops{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.op{min-width:72px;padding:11px 14px;border:3px solid #d4af37;border-radius:12px;background:#fffdf0;color:#207168;font-size:17px;font-weight:900;font-family:inherit;cursor:pointer}
+.b{display:block;width:100%;margin-top:8px;padding:12px;border:0;border-radius:12px;background:#207168;color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 #16524a}
+.msg{min-height:22px;margin-top:8px;text-align:center;font-weight:800;font-size:13px;color:#b9650a}
+.msg.ok{color:#1c8f5a}
+.fin{font-size:20px;line-height:1.6;padding:8px 0}
+.gw{position:relative;margin:8px 0 0 24px}
+.ax span{position:absolute;left:-24px;width:18px;text-align:right;font-size:10px;line-height:12px;color:#7a8a86}
+.gr{display:flex;align-items:flex-end;justify-content:space-around;height:140px;border-left:3px solid #207168;border-bottom:3px solid #207168;background:repeating-linear-gradient(to top,#e3ece9 0 1px,transparent 1px 14px)}
+.bar{width:36px;background:linear-gradient(#52b86b,#2e9d52);border-radius:5px 5px 0 0}
+.lb{display:flex;justify-content:space-around;margin:2px 0 0 24px;font-size:11px}
+.barra{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:8px 0}
+.cel{width:40px;height:40px;border:2px solid #207168;border-radius:8px;background:#fff;color:#7a8a86;font-weight:800;cursor:pointer}
+.cel.on{background:linear-gradient(#52b86b,#2e9d52);color:#fff}
+.sec{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.it{display:flex;flex-direction:column;align-items:center;gap:2px}
+.sl{min-width:40px;height:44px;padding:0 4px;border-radius:10px;border:2px solid #d4af37;background:#fffdf0;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#207168}
+.sl[data-k]{cursor:pointer}
+.sl.hueco{border-style:dashed;border-color:#207168;background:#fff}
+.sl.act{box-shadow:0 0 0 3px rgba(46,204,113,.55)}
+.sl.ok{background:#eafaf1;border-color:#2ecc71}
+.dl{font-size:10px;color:#7a8a86;font-weight:700}
+.tl{font-size:22px;letter-spacing:2px;color:#207168;font-weight:900}
+.tl s{text-decoration-thickness:3px}
+.msg{font-size:14px;line-height:1.4}
+.msg .b{max-width:240px;margin:10px auto 0}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="hd"><button class="spk" id="spk" aria-label="Escuchar">🔊</button><div id="ins"></div><span class="hoja" id="mp" hidden>🧪 Prueba</span></div>
+<div class="dots" id="dots"></div>
+<div class="panel" id="panel"></div>
+<div class="msg" id="msg"></div>
+</div>
+<script>
+let S;
+function nuevo(){
+  const E=[['🌻','Regar el vivero'],['🚲','Reparar bicicletas'],['🥖','Llevar pan']];
+  let d;do{d=E.map(x=>{const p=8+r(11),m=1+r(Math.min(p-1,7));return{e:x[0],n:x[1],p,m,g:p-m}})}while(new Set(d.map(x=>x.g)).size<3);
+  const best=d.reduce((a,b)=>a.g>b.g?a:b);
+  let v1,v2;do{v1=2+r(8);v2=2+r(8)}while(v1===v2);
+  const M=mez([['🍾','botellas'],['🥫','latas'],['📦','cajas']]).slice(0,2),A=best.g+v1+v2,P=Math.max(5,A+(r(2)?1+r(6):-(1+r(6)))),compra=A>=P;
+  S={d,best,v1,v2,M,A,P,compra,R:compra?A-P:A,art:['🚲','🧸','🎁'][r(3)]};
+}
+const sob=k=>k===1?'sobra 1':'sobran '+k,fal=k=>k===1?'falta 1':'faltan '+k;
+const tally=v=>'<s>||||</s> '.repeat(v/5|0)+'|'.repeat(v%5);
+const PASOS=[
+ ()=>{
+  ins('En el tablón hay 3 encargos. La <b>ganancia</b> es lo que paga menos lo que cuestan los materiales. ¿Cuál <b>conviene</b> aceptar?');
+  PISTA='resta: lo que paga − los materiales. El que te deja más Lumis es el mejor.';
+  EXPL='Ganancia = paga − materiales. '+S.d.map(x=>x.p+'−'+x.m+'='+x.g).join(' · ')+'.';
+  $('panel').innerHTML='<table>'+S.d.map(x=>'<tr><td>'+x.e+' '+x.n+'</td><td>Paga <b>'+x.p+'</b></td><td>Materiales <b>'+x.m+'</b></td></tr>').join('')+'</table><div class="preg">¿Qué encargo deja más ganancia?</div>';
+  opciones(S.d.map((x,k)=>({v:k,t:x.e+' '+x.n})),S.d.indexOf(S.best),'Conviene '+S.best.n+': '+S.best.p+' − '+S.best.m+' = '+S.best.g+'.');
+ },
+ ()=>{
+  const t=S.v1+S.v2;
+  ins('Mientras trabaja, Numi junta material para reciclar. <b>Cada rayita vale 1 Lumi.</b> ¿Cuántos Lumis junta en total?');
+  PISTA='cuenta las rayitas de cada fila (un grupo tachado vale 5) y júntalas.';
+  EXPL=S.v1+' + '+S.v2+' = '+t+' Lumis.';
+  $('panel').innerHTML='<table><tr><td>'+S.M[0][0]+' '+S.M[0][1]+'</td><td class="tl">'+tally(S.v1)+'</td></tr><tr><td>'+S.M[1][0]+' '+S.M[1][1]+'</td><td class="tl">'+tally(S.v2)+'</td></tr></table><p class="ley">Cada grupo tachado vale 5</p><div class="preg">¿Cuántos Lumis junta en total?</div>';
+  opciones(por3(t,[S.v1,t+1]),t,'Junta '+t+' Lumis.');
+ },
+ ()=>{
+  ins('Numi ganó <b>'+S.best.g+'</b> con su encargo y juntó <b>'+(S.v1+S.v2)+'</b> reciclando. ¿Cuántos Lumis tiene <b>en total</b>?');
+  PISTA='junta las dos cantidades: '+S.best.g+' + '+(S.v1+S.v2)+'.';
+  EXPL=S.best.g+' + '+(S.v1+S.v2)+' = '+S.A+' Lumis.';
+  $('panel').innerHTML=sec([{t:'💼 '+S.best.g,d:'encargo'},{t:'♻️ '+(S.v1+S.v2),d:'reciclaje'}])+'<div class="preg">¿Cuántos Lumis tiene en total?</div>';
+  opciones(por3(S.A,[S.best.g,S.A+1]),S.A,'Tiene '+S.A+' Lumis.');
+ },
+ ()=>{
+  const k=Math.abs(S.A-S.P),c=S.compra;
+  ins('Numi quiere <b>'+S.art+'</b>, que cuesta <b>'+S.P+' Lumis</b>. Tiene '+S.A+'. ¿<b>Compra ahora o espera</b>?');
+  PISTA='compara '+S.A+' con '+S.P+': ¿cuál es el mayor?';
+  EXPL=S.A+(c?' es mayor que ':' es menor que ')+S.P+'. '+(c?'Puede comprarlo y le '+sob(k)+'.':'Debe esperar: le '+fal(k)+'.');
+  const ok=c?'Comprar ahora: '+sob(k):'Esperar: '+fal(k);
+  $('panel').innerHTML=sec([{t:'🪙 '+S.A,d:'tiene'},{t:S.art+' '+S.P,d:'cuesta'}])+'<div class="preg">¿Qué conviene?</div>';
+  opciones(mez([{v:'a',t:ok},{v:'b',t:c?'Esperar: '+fal(k):'Comprar ahora: '+sob(k)},{v:'c',t:c?'Comprar ahora: '+sob(k+1):'Esperar: '+fal(k+1)}]),'a','Conviene: '+ok+'.');
+ },
+ ()=>{
+  const h=[0,0];
+  ins('Numi '+(S.compra?'compró '+S.art+' y le sobraron ':'esperó y guardó ')+'<b>'+S.R+' Lumis</b>. <b>Registra</b> ese ahorro con billetes de 10 y monedas de 1.');
+  PISTA=S.R+' tiene '+Math.floor(S.R/10)+' decenas y '+S.R%10+' unidades.';
+  EXPL=S.R+' = '+Math.floor(S.R/10)+' billetes de 10 y '+S.R%10+' monedas de 1: '+Math.floor(S.R/10)*10+' + '+S.R%10+'.';
+  $('panel').innerHTML='<table><tr><td>💵 Billetes de 10</td><td class="stp"><button class="st" data-k="0" data-d="-1">−</button><b id="d0">0</b><button class="st" data-k="0" data-d="1">+</button></td></tr><tr><td>🪙 Monedas de 1</td><td class="stp"><button class="st" data-k="1" data-d="-1">−</button><b id="d1">0</b><button class="st" data-k="1" data-d="1">+</button></td></tr></table><p class="ley">Total: <b id="tot">0</b> Lumis</p><button class="b" id="ver">Verificar</button>';
+  stepper(h,k=>{$('d'+k).textContent=h[k];$('tot').textContent=h[0]*10+h[1]},9);
+  $('ver').onclick=()=>juzga(h[0]*10+h[1]===S.R,'Eran '+Math.floor(S.R/10)+' billetes de 10 y '+S.R%10+' monedas de 1.');
+ }
+];
+function montar(i){if(i===0)nuevo();PASOS[i]()}
+const por3=(c,x)=>{const s=new Set([c,...x]);while(s.size<3)s.add(Math.max(1,c+r(7)-3));return mez([...s]).map(v=>({v,t:v}))};
+const $=id=>document.getElementById(id);
+const r=n=>Math.floor(Math.random()*n);
+const mez=a=>a.slice().sort(()=>Math.random()-.5);
+const MAT=[['🍾','botellas'],['🥫','latas'],['📦','cajas'],['📰','periódicos'],['🥤','vasos']];
+const prueba=()=>{try{return localStorage.getItem('modo_prueba')==='1'}catch(e){return false}};
+if(prueba())$('mp').hidden=false;
+const TOT=PASOS.length;let ronda=0,aciertos=0,err=0,bloq=false,EXPL='',PISTA='';
+const msg=(t,ok)=>{$('msg').textContent=t;$('msg').className='msg'+(ok?' ok':'')};
+const ins=t=>{$('ins').innerHTML=t};
+$('spk').onclick=()=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance($('ins').textContent);u.lang='es-PE';speechSynthesis.speak(u)}catch(e){}};
+function sumar(n){
+  if(prueba())return;
+  try{['ranking_exploradores_hojas','hojas_actuales'].forEach(k=>localStorage.setItem(k,(parseInt(localStorage.getItem(k))||0)+n))}catch(e){}
+}
+function datos(n,max){let d;do{d=mez(MAT).slice(0,n).map(x=>({e:x[0],n:x[1],v:1+r(max)}))}while(new Set(d.map(x=>x.v)).size<n);return d}
+function ops(c){const s=new Set([c]);while(s.size<3){const v=c+r(5)-2;if(v>=1)s.add(v)}return mez([...s])}
+const num=c=>ops(c).map(v=>({v,t:v}));
+function opciones(lista,ok,rev){
+  const c=document.createElement('div');c.className='ops';
+  lista.forEach(o=>{const b=document.createElement('button');b.className='op';b.innerHTML=o.t;b.onclick=()=>juzga(o.v===ok,rev);c.appendChild(b)});
+  $('panel').appendChild(c);
+}
+function stepper(h,upd,max){
+  $('panel').querySelectorAll('.st').forEach(b=>b.onclick=()=>{if(bloq)return;const k=+b.dataset.k;h[k]=Math.max(0,Math.min(max,h[k]+ +b.dataset.d));upd(k)});
+}
+function seguir(){const b=document.createElement('button');b.className='b';b.textContent=ronda+1<TOT?'Seguir ➜':'Terminar 🎉';b.onclick=sig;$('msg').appendChild(b)}
+function juzga(ok,rev){
+  if(bloq)return;
+  if(ok){bloq=true;aciertos++;sumar(5);msg((prueba()?'¡Muy bien! 🧪 ':'¡Muy bien! +5 Hojas 🍃 ')+EXPL,1);seguir()}
+  else if(++err<2)msg('💡 Pista: '+(PISTA||'mira otra vez con calma.'));
+  else{bloq=true;msg((rev||'Esta vez no salió.')+' '+EXPL);seguir()}
+}
+$('dots').innerHTML=PASOS.map(()=>'<i></i>').join('')+'<span id="rn"></span>';
+function go(i){
+  ronda=i;err=0;bloq=false;EXPL='';PISTA='';msg('');
+  $('rn').textContent='Paso '+(i+1)+' de '+TOT;
+  document.querySelectorAll('.dots i').forEach((e,k)=>e.className=k<=i?'on':'');
+  montar(i);
+}
+function sig(){ronda+1<TOT?go(ronda+1):fin()}
+function fin(){
+  ins('¡Terminaste!');msg('');
+  $('panel').innerHTML='<div class="fin">'+(aciertos===TOT?'🌟':'👏')+'<br><b>Acertaste '+aciertos+' de '+TOT+'</b><br>'+(prueba()?'🧪 Modo prueba: no se contaron las hojas':'Ganaste '+aciertos*5+' Hojas de la Sabiduría 🍃')+'</div><button class="b" id="otra">Jugar otra vez</button>';
+  $('otra').onclick=()=>{aciertos=0;go(0)};
+}
+const DIAS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const sec=a=>'<div class="sec">'+a.map(x=>'<div class="it"><div class="sl'+(x.c?' '+x.c:'')+'"'+(x.k!==undefined?' data-k="'+x.k+'"':'')+'>'+x.t+'</div>'+(x.d?'<span class="dl">'+x.d+'</span>':'')+'</div>').join('')+'</div>';
+
+go(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El gran mercado</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:10px;background:transparent;font-family:'Segoe UI',system-ui,sans-serif;user-select:none}
+.card{max-width:560px;margin:0 auto;padding:14px;border:2px solid #207168;border-radius:22px;background:linear-gradient(135deg,#fffdf0,#f3faf6);box-shadow:0 8px 24px rgba(32,113,104,.15)}
+.hd{display:flex;align-items:center;gap:10px;background:#207168;color:#fff;border-radius:14px;padding:10px 12px;font-weight:700;font-size:14px;line-height:1.3}
+.hd div{flex:1}
+.spk{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:#d4af37;font-size:18px;cursor:pointer}
+.hoja{background:#fff;color:#207168;border-radius:10px;padding:1px 8px;font-size:11px}
+.dots{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0;font-size:12px;font-weight:800;color:#207168}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid #207168;background:#d9ece7}
+.dots i.on{background:#d4af37}
+.panel{background:#fff;border:2px dashed #207168;border-radius:14px;padding:12px;color:#207168;font-weight:700;text-align:center}
+table{width:100%;border-collapse:collapse;margin:6px 0}
+td{padding:6px;border-bottom:1px dashed #cfe3de;font-size:15px;text-align:left}
+.caja{font-size:22px;line-height:1.4;background:#fffdf0;border:2px solid #d4af37;border-radius:12px;padding:8px;margin-bottom:6px}
+.stp{text-align:right;white-space:nowrap}
+.stp b{display:inline-block;min-width:28px;text-align:center;font-size:18px}
+.st{width:34px;height:34px;border-radius:50%;border:2px solid #d4af37;background:#fffdf0;color:#7a5200;font-size:18px;font-weight:900;cursor:pointer}
+.num{font-weight:900;text-align:center;font-size:18px}
+.pc{font-size:18px;line-height:1.2}
+.ley{margin:4px 0 8px;font-size:12px;color:#7a8a86}
+.preg{margin:10px 0 8px;font-size:15px}
+.ops{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.op{min-width:72px;padding:11px 14px;border:3px solid #d4af37;border-radius:12px;background:#fffdf0;color:#207168;font-size:17px;font-weight:900;font-family:inherit;cursor:pointer}
+.b{display:block;width:100%;margin-top:8px;padding:12px;border:0;border-radius:12px;background:#207168;color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 #16524a}
+.msg{min-height:22px;margin-top:8px;text-align:center;font-weight:800;font-size:13px;color:#b9650a}
+.msg.ok{color:#1c8f5a}
+.fin{font-size:20px;line-height:1.6;padding:8px 0}
+.gw{position:relative;margin:8px 0 0 24px}
+.ax span{position:absolute;left:-24px;width:18px;text-align:right;font-size:10px;line-height:12px;color:#7a8a86}
+.gr{display:flex;align-items:flex-end;justify-content:space-around;height:140px;border-left:3px solid #207168;border-bottom:3px solid #207168;background:repeating-linear-gradient(to top,#e3ece9 0 1px,transparent 1px 14px)}
+.bar{width:36px;background:linear-gradient(#52b86b,#2e9d52);border-radius:5px 5px 0 0}
+.lb{display:flex;justify-content:space-around;margin:2px 0 0 24px;font-size:11px}
+.barra{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:8px 0}
+.cel{width:40px;height:40px;border:2px solid #207168;border-radius:8px;background:#fff;color:#7a8a86;font-weight:800;cursor:pointer}
+.cel.on{background:linear-gradient(#52b86b,#2e9d52);color:#fff}
+.sec{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.it{display:flex;flex-direction:column;align-items:center;gap:2px}
+.sl{min-width:40px;height:44px;padding:0 4px;border-radius:10px;border:2px solid #d4af37;background:#fffdf0;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#207168}
+.sl[data-k]{cursor:pointer}
+.sl.hueco{border-style:dashed;border-color:#207168;background:#fff}
+.sl.act{box-shadow:0 0 0 3px rgba(46,204,113,.55)}
+.sl.ok{background:#eafaf1;border-color:#2ecc71}
+.dl{font-size:10px;color:#7a8a86;font-weight:700}
+.tl{font-size:22px;letter-spacing:2px;color:#207168;font-weight:900}
+.tl s{text-decoration-thickness:3px}
+.msg{font-size:14px;line-height:1.4}
+.msg .b{max-width:240px;margin:10px auto 0}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="hd"><button class="spk" id="spk" aria-label="Escuchar">🔊</button><div id="ins"></div><span class="hoja" id="mp" hidden>🧪 Prueba</span></div>
+<div class="dots" id="dots"></div>
+<div class="panel" id="panel"></div>
+<div class="msg" id="msg"></div>
+</div>
+<script>
+let S;
+function nuevo(){
+  const t=2+r(3),u=4+r(5),M=10*t+u,a=1+r(u-1),b=a+2+r(3),c=M+1+r(6),R=M-a;
+  S={t,u,M,a,b,c,R,T:R+6,O:mez([['🎈','un globo'],['🧸','un osito'],['🍎','unas manzanas'],['🥖','un pan'],['🌻','un girasol'],['🔔','una campanita']]).slice(0,3)};
+}
+const PASOS=[
+ ()=>{
+  ins('Numi llega al mercado con billetes de 10 y monedas de 1. <b>Cuenta su dinero.</b>');
+  PISTA='cada billete vale 10 y cada moneda vale 1. Cuenta de 10 en 10 y luego de 1 en 1.';
+  EXPL=S.t+' decenas y '+S.u+' unidades: '+Array.from({length:S.t},()=>10).join(' + ')+' + '+S.u+' = '+S.M+'.';
+  $('panel').innerHTML=sec(Array.from({length:S.t},()=>({t:'10',c:'ok'})).concat(Array.from({length:S.u},()=>({t:'1'}))))+'<p class="ley">Billetes de 10 y monedas de 1</p><div class="preg">¿Cuántos Lumis tiene Numi?</div>';
+  opciones(por3(S.M,[10*S.u+S.t,S.t+S.u]),S.M,'Tiene '+S.M+' Lumis.');
+ },
+ ()=>{
+  const it=mez([{o:S.O[0],p:S.a},{o:S.O[1],p:S.b},{o:S.O[2],p:S.c}]);
+  ins('Numi tiene <b>'+S.M+' Lumis</b>. Mira los precios: ¿cuál artículo <b>no le alcanza</b>?');
+  PISTA='si el precio es mayor que '+S.M+', no le alcanza.';
+  EXPL=S.c+' es mayor que '+S.M+', por eso no le alcanza.';
+  $('panel').innerHTML=sec(it.map(x=>({t:x.o[0]+' '+x.p,d:x.o[1]})))+'<div class="preg">¿Cuál no le alcanza?</div>';
+  opciones(it.map(x=>({v:x.p,t:x.o[0]+' '+x.o[1]})),S.c,'No le alcanzaba '+S.O[2][1]+' ('+S.c+' Lumis).');
+ },
+ ()=>{
+  ins('Numi compra <b>'+S.O[0][1]+' '+S.O[0][0]+'</b>, el más barato: cuesta <b>'+S.a+'</b>. ¿Cuántos Lumis le quedan?');
+  PISTA='quita '+S.a+' de '+S.M+'. Empieza por las unidades: '+S.u+' − '+S.a+'.';
+  EXPL=S.M+' − '+S.a+' = '+S.R+'. Las decenas no cambian: quedan '+S.t+' decenas y '+(S.u-S.a)+' unidades.';
+  $('panel').innerHTML=sec([{t:'🪙 '+S.M,d:'tenía'},{t:S.O[0][0]+' '+S.a,d:'cuesta'}])+'<div class="preg">¿Cuántos Lumis le quedan?</div>';
+  opciones(por3(S.R,[S.M+S.a,S.R-1]),S.R,'Le quedan '+S.R+' Lumis.');
+ },
+ ()=>{
+  ins('Numi guarda lo que le queda y, con <b>constancia</b>, agrega <b>2 Lumis cada día</b>. ¿Cuántos Lumis tendrá el Día 3?');
+  PISTA='cada día suma 2: '+S.R+', '+(S.R+2)+', ...';
+  EXPL=S.R+', '+(S.R+2)+', '+(S.R+4)+', '+S.T+'. En 3 días tendrá '+S.T+' Lumis.';
+  $('panel').innerHTML=sec([{t:S.R,d:'Hoy'},{t:S.R+2,d:'Día 1'},{t:'?',c:'hueco',d:'Día 2'},{t:'?',c:'hueco act',d:'Día 3'}])+'<div class="preg">¿Cuántos Lumis tendrá el Día 3?</div>';
+  opciones(por3(S.T,[S.R+3,S.R+4]),S.T,'Tendrá '+S.T+' Lumis.');
+ },
+ ()=>{
+  const si=S.T>=S.c;
+  ins('Con esos <b>'+S.T+' Lumis</b>, ¿podrá Numi comprar <b>'+S.O[2][1]+' '+S.O[2][0]+'</b> (cuesta '+S.c+')? Así decide <b>comprar ahora o esperar</b>.');
+  PISTA='compara '+S.T+' con '+S.c+': ¿cuál es el mayor?';
+  EXPL=S.T+(si?' es mayor o igual que ':' es menor que ')+S.c+'. '+(si?'Ya puede comprarlo. ¡Ahorrar un poquito cada día funciona!':'Debe esperar y seguir ahorrando con constancia.');
+  $('panel').innerHTML=sec([{t:'🪙 '+S.T,d:'tendrá'},{t:S.O[2][0]+' '+S.c,d:'cuesta'}])+'<div class="preg">¿Qué decide Numi?</div>';
+  opciones([{v:true,t:'✅ Comprarlo ahora'},{v:false,t:'⏳ Esperar y ahorrar'}],si,'Debía '+(si?'comprarlo ahora.':'esperar.'));
+ }
+];
+function montar(i){if(i===0)nuevo();PASOS[i]()}
+const por3=(c,x)=>{const s=new Set([c,...x]);while(s.size<3)s.add(Math.max(1,c+r(7)-3));return mez([...s]).map(v=>({v,t:v}))};
+const $=id=>document.getElementById(id);
+const r=n=>Math.floor(Math.random()*n);
+const mez=a=>a.slice().sort(()=>Math.random()-.5);
+const MAT=[['🍾','botellas'],['🥫','latas'],['📦','cajas'],['📰','periódicos'],['🥤','vasos']];
+const prueba=()=>{try{return localStorage.getItem('modo_prueba')==='1'}catch(e){return false}};
+if(prueba())$('mp').hidden=false;
+const TOT=PASOS.length;let ronda=0,aciertos=0,err=0,bloq=false,EXPL='',PISTA='';
+const msg=(t,ok)=>{$('msg').textContent=t;$('msg').className='msg'+(ok?' ok':'')};
+const ins=t=>{$('ins').innerHTML=t};
+$('spk').onclick=()=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance($('ins').textContent);u.lang='es-PE';speechSynthesis.speak(u)}catch(e){}};
+function sumar(n){
+  if(prueba())return;
+  try{['ranking_exploradores_hojas','hojas_actuales'].forEach(k=>localStorage.setItem(k,(parseInt(localStorage.getItem(k))||0)+n))}catch(e){}
+}
+function datos(n,max){let d;do{d=mez(MAT).slice(0,n).map(x=>({e:x[0],n:x[1],v:1+r(max)}))}while(new Set(d.map(x=>x.v)).size<n);return d}
+function ops(c){const s=new Set([c]);while(s.size<3){const v=c+r(5)-2;if(v>=1)s.add(v)}return mez([...s])}
+const num=c=>ops(c).map(v=>({v,t:v}));
+function opciones(lista,ok,rev){
+  const c=document.createElement('div');c.className='ops';
+  lista.forEach(o=>{const b=document.createElement('button');b.className='op';b.innerHTML=o.t;b.onclick=()=>juzga(o.v===ok,rev);c.appendChild(b)});
+  $('panel').appendChild(c);
+}
+function stepper(h,upd,max){
+  $('panel').querySelectorAll('.st').forEach(b=>b.onclick=()=>{if(bloq)return;const k=+b.dataset.k;h[k]=Math.max(0,Math.min(max,h[k]+ +b.dataset.d));upd(k)});
+}
+function seguir(){const b=document.createElement('button');b.className='b';b.textContent=ronda+1<TOT?'Seguir ➜':'Terminar 🎉';b.onclick=sig;$('msg').appendChild(b)}
+function juzga(ok,rev){
+  if(bloq)return;
+  if(ok){bloq=true;aciertos++;sumar(5);msg((prueba()?'¡Muy bien! 🧪 ':'¡Muy bien! +5 Hojas 🍃 ')+EXPL,1);seguir()}
+  else if(++err<2)msg('💡 Pista: '+(PISTA||'mira otra vez con calma.'));
+  else{bloq=true;msg((rev||'Esta vez no salió.')+' '+EXPL);seguir()}
+}
+$('dots').innerHTML=PASOS.map(()=>'<i></i>').join('')+'<span id="rn"></span>';
+function go(i){
+  ronda=i;err=0;bloq=false;EXPL='';PISTA='';msg('');
+  $('rn').textContent='Paso '+(i+1)+' de '+TOT;
+  document.querySelectorAll('.dots i').forEach((e,k)=>e.className=k<=i?'on':'');
+  montar(i);
+}
+function sig(){ronda+1<TOT?go(ronda+1):fin()}
+function fin(){
+  ins('¡Terminaste!');msg('');
+  $('panel').innerHTML='<div class="fin">'+(aciertos===TOT?'🌟':'👏')+'<br><b>Acertaste '+aciertos+' de '+TOT+'</b><br>'+(prueba()?'🧪 Modo prueba: no se contaron las hojas':'Ganaste '+aciertos*5+' Hojas de la Sabiduría 🍃')+'</div><button class="b" id="otra">Jugar otra vez</button>';
+  $('otra').onclick=()=>{aciertos=0;go(0)};
+}
+const DIAS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const sec=a=>'<div class="sec">'+a.map(x=>'<div class="it"><div class="sl'+(x.c?' '+x.c:'')+'"'+(x.k!==undefined?' data-k="'+x.k+'"':'')+'>'+x.t+'</div>'+(x.d?'<span class="dl">'+x.d+'</span>':'')+'</div>').join('')+'</div>';
+
+go(0);
+</script>
+</body>
+</html>

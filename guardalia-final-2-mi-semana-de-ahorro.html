@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi semana de ahorro</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:10px;background:transparent;font-family:'Segoe UI',system-ui,sans-serif;user-select:none}
+.card{max-width:560px;margin:0 auto;padding:14px;border:2px solid #207168;border-radius:22px;background:linear-gradient(135deg,#fffdf0,#f3faf6);box-shadow:0 8px 24px rgba(32,113,104,.15)}
+.hd{display:flex;align-items:center;gap:10px;background:#207168;color:#fff;border-radius:14px;padding:10px 12px;font-weight:700;font-size:14px;line-height:1.3}
+.hd div{flex:1}
+.spk{flex:none;width:38px;height:38px;border-radius:50%;border:0;background:#d4af37;font-size:18px;cursor:pointer}
+.hoja{background:#fff;color:#207168;border-radius:10px;padding:1px 8px;font-size:11px}
+.dots{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0;font-size:12px;font-weight:800;color:#207168}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid #207168;background:#d9ece7}
+.dots i.on{background:#d4af37}
+.panel{background:#fff;border:2px dashed #207168;border-radius:14px;padding:12px;color:#207168;font-weight:700;text-align:center}
+table{width:100%;border-collapse:collapse;margin:6px 0}
+td{padding:6px;border-bottom:1px dashed #cfe3de;font-size:15px;text-align:left}
+.caja{font-size:22px;line-height:1.4;background:#fffdf0;border:2px solid #d4af37;border-radius:12px;padding:8px;margin-bottom:6px}
+.stp{text-align:right;white-space:nowrap}
+.stp b{display:inline-block;min-width:28px;text-align:center;font-size:18px}
+.st{width:34px;height:34px;border-radius:50%;border:2px solid #d4af37;background:#fffdf0;color:#7a5200;font-size:18px;font-weight:900;cursor:pointer}
+.num{font-weight:900;text-align:center;font-size:18px}
+.pc{font-size:18px;line-height:1.2}
+.ley{margin:4px 0 8px;font-size:12px;color:#7a8a86}
+.preg{margin:10px 0 8px;font-size:15px}
+.ops{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.op{min-width:72px;padding:11px 14px;border:3px solid #d4af37;border-radius:12px;background:#fffdf0;color:#207168;font-size:17px;font-weight:900;font-family:inherit;cursor:pointer}
+.b{display:block;width:100%;margin-top:8px;padding:12px;border:0;border-radius:12px;background:#207168;color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 #16524a}
+.msg{min-height:22px;margin-top:8px;text-align:center;font-weight:800;font-size:13px;color:#b9650a}
+.msg.ok{color:#1c8f5a}
+.fin{font-size:20px;line-height:1.6;padding:8px 0}
+.gw{position:relative;margin:8px 0 0 24px}
+.ax span{position:absolute;left:-24px;width:18px;text-align:right;font-size:10px;line-height:12px;color:#7a8a86}
+.gr{display:flex;align-items:flex-end;justify-content:space-around;height:140px;border-left:3px solid #207168;border-bottom:3px solid #207168;background:repeating-linear-gradient(to top,#e3ece9 0 1px,transparent 1px 14px)}
+.bar{width:36px;background:linear-gradient(#52b86b,#2e9d52);border-radius:5px 5px 0 0}
+.lb{display:flex;justify-content:space-around;margin:2px 0 0 24px;font-size:11px}
+.barra{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:8px 0}
+.cel{width:40px;height:40px;border:2px solid #207168;border-radius:8px;background:#fff;color:#7a8a86;font-weight:800;cursor:pointer}
+.cel.on{background:linear-gradient(#52b86b,#2e9d52);color:#fff}
+.sec{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:6px 0}
+.it{display:flex;flex-direction:column;align-items:center;gap:2px}
+.sl{min-width:40px;height:44px;padding:0 4px;border-radius:10px;border:2px solid #d4af37;background:#fffdf0;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;color:#207168}
+.sl[data-k]{cursor:pointer}
+.sl.hueco{border-style:dashed;border-color:#207168;background:#fff}
+.sl.act{box-shadow:0 0 0 3px rgba(46,204,113,.55)}
+.sl.ok{background:#eafaf1;border-color:#2ecc71}
+.dl{font-size:10px;color:#7a8a86;font-weight:700}
+.tl{font-size:22px;letter-spacing:2px;color:#207168;font-weight:900}
+.tl s{text-decoration-thickness:3px}
+.msg{font-size:14px;line-height:1.4}
+.msg .b{max-width:240px;margin:10px auto 0}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="hd"><button class="spk" id="spk" aria-label="Escuchar">🔊</button><div id="ins"></div><span class="hoja" id="mp" hidden>🧪 Prueba</span></div>
+<div class="dots" id="dots"></div>
+<div class="panel" id="panel"></div>
+<div class="msg" id="msg"></div>
+</div>
+<script>
+let S;
+function nuevo(){
+  let v;do{v=Array.from({length:5},()=>1+r(5))}while(v.filter(x=>x===Math.max(...v)).length>1);
+  const T=v.reduce((p,q)=>p+q,0),f=2*(1+r(3));
+  S={v,T,f,M:T+f};
+}
+const pict=()=>'<table>'+S.v.map((x,k)=>'<tr><td>'+DIAS[k]+'</td><td class="pc">'+'🪙'.repeat(x)+'</td></tr>').join('')+'</table>';
+const PASOS=[
+ ()=>{
+  const h=[0,0,0,0,0];
+  ins('Sami anotó cuánto ahorró cada día. <b>Registra su progreso</b>: pon 1 moneda por cada Lumi.');
+  PISTA='mira el número de cada día y toca + hasta tener esas monedas.';
+  EXPL='Registrar el ahorro cada día te ayuda a ver cómo avanzas.';
+  $('panel').innerHTML='<table>'+S.v.map((x,k)=>'<tr><td>'+DIAS[k]+'</td><td class="num">'+x+'</td><td class="pc" id="p'+k+'"></td><td class="stp"><button class="st" data-k="'+k+'" data-d="-1">−</button> <button class="st" data-k="'+k+'" data-d="1">+</button></td></tr>').join('')+'</table><button class="b" id="ver">Verificar</button>';
+  stepper(h,k=>$('p'+k).textContent='🪙'.repeat(h[k]),8);
+  $('ver').onclick=()=>juzga(h.every((q,k)=>q===S.v[k]),'El ahorro era: '+S.v.join(', ')+'.');
+ },
+ ()=>{
+  const mx=S.v.indexOf(Math.max(...S.v));
+  ins('Mira el pictograma de la semana. ¿En qué día ahorró <b>más</b>?');
+  PISTA='busca la fila con más monedas.';
+  EXPL=DIAS[mx]+' tiene '+S.v[mx]+' monedas, el número más grande.';
+  $('panel').innerHTML=pict()+'<div class="preg">¿Qué día ahorró más?</div>';
+  opciones(mez([mx,...mez([0,1,2,3,4].filter(k=>k!==mx)).slice(0,2)]).map(k=>({v:k,t:DIAS[k]})),mx,'Fue el '+DIAS[mx]+'.');
+ },
+ ()=>{
+  ins('¿Cuántos Lumis ahorró Sami en <b>toda la semana</b>?');
+  PISTA='junta las monedas de los 5 días: '+S.v.slice(0,2).join(' + ')+' + ...';
+  EXPL=S.v.join(' + ')+' = '+S.T+'.';
+  $('panel').innerHTML=pict()+'<div class="preg">¿Cuántos Lumis ahorró en la semana?</div>';
+  opciones(por3(S.T,[S.T+1,S.T-1]),S.T,'Ahorró '+S.T+' Lumis.');
+ },
+ ()=>{
+  ins('Su meta es <b>'+S.M+' Lumis</b>. Ya ahorró '+S.T+'. ¿Cuánto le <b>falta</b>?');
+  PISTA='¿cuánto debes sumar a '+S.T+' para llegar a '+S.M+'?';
+  EXPL=S.M+' − '+S.T+' = '+S.f+'. Le faltan '+S.f+' Lumis.';
+  $('panel').innerHTML=sec([{t:'🪙 '+S.T,d:'ahorró'},{t:'🎯 '+S.M,d:'meta'}])+'<div class="preg">¿Cuántos Lumis le faltan?</div>';
+  opciones(por3(S.f,[S.T,S.f+2]),S.f,'Le faltan '+S.f+' Lumis.');
+ },
+ ()=>{
+  const d=S.f/2;
+  ins('Sami seguirá ahorrando con <b>constancia: 2 Lumis cada día</b>. ¿En cuántos días llega a su meta?');
+  PISTA='cuenta de 2 en 2 hasta '+S.f+'.';
+  EXPL=Array.from({length:d},(_,k)=>2*(k+1)).join(', ')+': faltan '+d+(d===1?' día.':' días.');
+  $('panel').innerHTML=sec([{t:S.T,d:'Hoy'},{t:'+2',c:'ok',d:'cada día'},{t:'🎯 '+S.M,d:'meta'}])+'<div class="preg">¿En cuántos días llega a la meta?</div>';
+  opciones([d,d+1,d+2].map(v=>({v,t:v})),d,'Llega en '+d+(d===1?' día.':' días.'));
+ }
+];
+function montar(i){if(i===0)nuevo();PASOS[i]()}
+const por3=(c,x)=>{const s=new Set([c,...x]);while(s.size<3)s.add(Math.max(1,c+r(7)-3));return mez([...s]).map(v=>({v,t:v}))};
+const $=id=>document.getElementById(id);
+const r=n=>Math.floor(Math.random()*n);
+const mez=a=>a.slice().sort(()=>Math.random()-.5);
+const MAT=[['🍾','botellas'],['🥫','latas'],['📦','cajas'],['📰','periódicos'],['🥤','vasos']];
+const prueba=()=>{try{return localStorage.getItem('modo_prueba')==='1'}catch(e){return false}};
+if(prueba())$('mp').hidden=false;
+const TOT=PASOS.length;let ronda=0,aciertos=0,err=0,bloq=false,EXPL='',PISTA='';
+const msg=(t,ok)=>{$('msg').textContent=t;$('msg').className='msg'+(ok?' ok':'')};
+const ins=t=>{$('ins').innerHTML=t};
+$('spk').onclick=()=>{try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance($('ins').textContent);u.lang='es-PE';speechSynthesis.speak(u)}catch(e){}};
+function sumar(n){
+  if(prueba())return;
+  try{['ranking_exploradores_hojas','hojas_actuales'].forEach(k=>localStorage.setItem(k,(parseInt(localStorage.getItem(k))||0)+n))}catch(e){}
+}
+function datos(n,max){let d;do{d=mez(MAT).slice(0,n).map(x=>({e:x[0],n:x[1],v:1+r(max)}))}while(new Set(d.map(x=>x.v)).size<n);return d}
+function ops(c){const s=new Set([c]);while(s.size<3){const v=c+r(5)-2;if(v>=1)s.add(v)}return mez([...s])}
+const num=c=>ops(c).map(v=>({v,t:v}));
+function opciones(lista,ok,rev){
+  const c=document.createElement('div');c.className='ops';
+  lista.forEach(o=>{const b=document.createElement('button');b.className='op';b.innerHTML=o.t;b.onclick=()=>juzga(o.v===ok,rev);c.appendChild(b)});
+  $('panel').appendChild(c);
+}
+function stepper(h,upd,max){
+  $('panel').querySelectorAll('.st').forEach(b=>b.onclick=()=>{if(bloq)return;const k=+b.dataset.k;h[k]=Math.max(0,Math.min(max,h[k]+ +b.dataset.d));upd(k)});
+}
+function seguir(){const b=document.createElement('button');b.className='b';b.textContent=ronda+1<TOT?'Seguir ➜':'Terminar 🎉';b.onclick=sig;$('msg').appendChild(b)}
+function juzga(ok,rev){
+  if(bloq)return;
+  if(ok){bloq=true;aciertos++;sumar(5);msg((prueba()?'¡Muy bien! 🧪 ':'¡Muy bien! +5 Hojas 🍃 ')+EXPL,1);seguir()}
+  else if(++err<2)msg('💡 Pista: '+(PISTA||'mira otra vez con calma.'));
+  else{bloq=true;msg((rev||'Esta vez no salió.')+' '+EXPL);seguir()}
+}
+$('dots').innerHTML=PASOS.map(()=>'<i></i>').join('')+'<span id="rn"></span>';
+function go(i){
+  ronda=i;err=0;bloq=false;EXPL='';PISTA='';msg('');
+  $('rn').textContent='Paso '+(i+1)+' de '+TOT;
+  document.querySelectorAll('.dots i').forEach((e,k)=>e.className=k<=i?'on':'');
+  montar(i);
+}
+function sig(){ronda+1<TOT?go(ronda+1):fin()}
+function fin(){
+  ins('¡Terminaste!');msg('');
+  $('panel').innerHTML='<div class="fin">'+(aciertos===TOT?'🌟':'👏')+'<br><b>Acertaste '+aciertos+' de '+TOT+'</b><br>'+(prueba()?'🧪 Modo prueba: no se contaron las hojas':'Ganaste '+aciertos*5+' Hojas de la Sabiduría 🍃')+'</div><button class="b" id="otra">Jugar otra vez</button>';
+  $('otra').onclick=()=>{aciertos=0;go(0)};
+}
+const DIAS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const sec=a=>'<div class="sec">'+a.map(x=>'<div class="it"><div class="sl'+(x.c?' '+x.c:'')+'"'+(x.k!==undefined?' data-k="'+x.k+'"':'')+'>'+x.t+'</div>'+(x.d?'<span class="dl">'+x.d+'</span>':'')+'</div>').join('')+'</div>';
+
+go(0);
+</script>
+</body>
+</html>

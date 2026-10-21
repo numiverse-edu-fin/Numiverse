@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan Maestro de Pensora</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:transparent;font-family:'Segoe UI',system-ui,sans-serif;user-select:none}
+body{padding:8px}
+.app{max-width:600px;margin:0 auto;background:#fffdf2;border:3px solid #207168;border-radius:22px;overflow:hidden;box-shadow:0 8px 24px rgba(32,113,104,.18);min-height:470px;display:flex;flex-direction:column}
+header{background:#207168;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
+.ti{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.em{font-size:20px;line-height:1}
+.der{display:flex;align-items:center;gap:8px}
+.hb{background:transparent;border:2px solid rgba(255,255,255,.75);color:#fff;border-radius:999px;padding:3px 11px;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer}
+.pill{background:#fff;color:#207168;border-radius:999px;padding:4px 14px 4px 10px;display:flex;align-items:center;gap:6px;font-weight:900;font-size:14px}
+.barra{height:8px;background:#dfeee7}
+.barra i{display:block;height:100%;width:0;background:#d4af37;transition:width .4s}
+main{flex:1;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.grande{font-size:72px;line-height:1;margin-bottom:6px}
+.grande .em{font-size:inherit}
+h1{margin:6px 0;color:#207168;font-size:28px}
+p.d{margin:8px 0 14px;color:#3d4f4b;font-weight:700;font-size:15px;line-height:1.5;max-width:460px}
+.btn{border:0;border-radius:16px;background:#207168;color:#fff;font-size:17px;font-weight:800;font-family:inherit;padding:14px 34px;cursor:pointer;box-shadow:0 5px 0 #16524a}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #16524a}
+.btn:disabled{background:#b9c7c3;box-shadow:0 5px 0 #98a8a3;cursor:default}
+.btn.sec{background:#fff;color:#207168;border:2px solid #207168;box-shadow:0 4px 0 #cfe0db;font-size:14px;padding:10px 20px}
+.fila-btn{display:flex;flex-direction:column;align-items:center;gap:12px}
+.ronda{width:100%;max-width:540px;text-align:left}
+.meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#207168;margin-bottom:8px}
+.tema{display:inline-block;background:#f2c94c;color:#5a4300;border-radius:999px;padding:2px 12px;font-size:11px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px}
+.q{background:#fff;border:2px solid #207168;border-radius:14px;padding:14px;font-size:16px;font-weight:700;color:#2c3e50;line-height:1.5}
+table.tab{margin:10px auto 0;border-collapse:collapse;font-size:14px;font-weight:700;color:#207168}
+table.tab td,table.tab th{border:2px solid #d4af37;padding:4px 12px;background:#fffcf2}
+table.tab th{background:#fff4cc}
+.resp{display:flex;gap:10px;margin-top:14px;align-items:stretch}
+.resp input{flex:1;min-width:0;font-size:24px;font-weight:900;text-align:center;color:#207168;border:3px solid #207168;border-radius:14px;padding:8px;font-family:inherit;outline:none;background:#fff;user-select:text}
+.resp input:focus{box-shadow:0 0 0 4px rgba(32,113,104,.18)}
+.resp input.okin{background:#d8f3e4;border-color:#1c8f5a}
+.resp .btn{padding:10px 20px;font-size:15px}
+.opcs{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.opcion{text-align:left;font-family:inherit;font-size:15px;font-weight:800;color:#207168;background:#fff;border:3px solid #207168;border-radius:14px;padding:11px 14px;cursor:pointer}
+.opcion.ok{background:#d8f3e4;border-color:#1c8f5a}
+.no{animation:shake .4s}
+.ayuda{animation:pulso .9s infinite;border-color:#b8860b!important;box-shadow:0 0 12px #f2c94c}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pulso{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.fb{min-height:54px;font-size:14px;font-weight:800;color:#b9650a;line-height:1.45;margin:10px 0 6px}
+.fb.bien{color:#1c8f5a}
+#sig{text-align:center}
+.res{display:flex;gap:10px;justify-content:center;margin:10px 0 14px}
+.caja{background:#fff;border:2px solid #207168;border-radius:14px;padding:10px 16px;color:#207168;font-weight:900}
+.caja b{display:block;font-size:26px}
+.caja small{font-size:11px;font-weight:800;color:#5c716d}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="ti" id="ti"></div>
+    <div class="der"><button class="hb" id="pau" hidden>⏸ Pausar</button><div class="pill" id="pill"></div></div>
+  </header>
+  <div class="barra" id="bw" hidden><i id="bi"></i></div>
+  <main id="main"></main>
+</div>
+<script>
+/* ===== DATOS: 30 rondas. Cada ronda tiene un id fijo; las hojas se pagan una sola vez por ronda ===== */
+var HOJAS=5;                                   /* hojas por acierto */
+var CLAVE_HECHAS='pensora_hechas';             /* rondas que ya dieron hojas */
+var CLAVE_ESTADO='pensora_progreso';           /* partida en pausa */
+var RONDAS=[
+ {id:'p01',tema:'Ahorro',t:'num',q:'Sami gana 12 Lumis por semana ayudando en la tienda. Quiere comprar un juego que cuesta 60 Lumis. ¿Cuántas semanas necesita ahorrar sin gastar nada?',a:5,h:'Divide lo que cuesta el juego entre lo que ahorra cada semana.',s:'60 ÷ 12 = 5 semanas'},
+ {id:'p02',tema:'Ahorro',t:'num',q:'Kiro quiere una bicicleta de 140 Lumis y ya tiene 35 ahorrados. Si ahorra 15 Lumis por semana, ¿cuántas semanas le faltan?',a:7,h:'Primero calcula cuánto le falta y luego divide entre lo que ahorra por semana.',s:'140 − 35 = 105 y 105 ÷ 15 = 7 semanas'},
+ {id:'p03',tema:'Presupuesto',t:'num',q:'Numi gana 50 Lumis al mes. Gasta 18 en comida, 12 en transporte y 8 en útiles. ¿Cuántos Lumis le sobran para ahorrar?',a:12,h:'Suma todos los gastos y réstalos de lo que gana.',s:'18 + 12 + 8 = 38 y 50 − 38 = 12'},
+ {id:'p04',tema:'Necesidad o deseo',t:'opc',q:'¿Cuál de estas cosas es una NECESIDAD?',o:['Una consola de videojuegos','Un abrigo cuando hace mucho frío','Un juguete nuevo','Golosinas todos los días'],a:1,h:'Una necesidad es algo que de verdad necesitas para vivir bien o para estudiar.',s:'Un abrigo protege del frío y es necesario; las otras opciones son deseos'},
+ {id:'p05',tema:'Ahorro',t:'num',q:'Cael ahorra 8 Lumis por semana durante 12 semanas y luego gasta 30 en un regalo. ¿Cuántos Lumis le quedan?',a:66,h:'Primero calcula todo lo que ahorró y luego réstale el regalo.',s:'8 × 12 = 96 y 96 − 30 = 66'},
+ {id:'p06',tema:'Compras',t:'num',q:'Una entrada al cine cuesta 14 Lumis. Riku quiere pagar su entrada y la de sus 3 hermanos. Tiene 70 Lumis. ¿Cuántos Lumis le sobran?',a:14,h:'Cuenta cuántas entradas son en total: Riku y sus 3 hermanos.',s:'Son 4 entradas: 4 × 14 = 56 y 70 − 56 = 14'},
+ {id:'p07',tema:'Ahorro',t:'opc',q:'Cuando recibes dinero, ¿qué conviene hacer primero para ahorrar mejor?',o:['Gastar todo y ahorrar lo que sobre','Separar una parte para ahorrar y gastar el resto después','Prestarle todo a un amigo','Esperar a fin de mes para decidir'],a:1,h:'Ahorrar primero es más seguro que esperar a ver cuánto sobra.',s:'Si separas el ahorro primero, no depende de lo que sobre'},
+ {id:'p08',tema:'Presupuesto',t:'num',q:'Sami tiene un presupuesto de 90 Lumis para su fiesta. La torta cuesta 35, los globos 14 y los dulces 28. ¿Cuántos Lumis le quedan para la decoración?',a:13,h:'Suma lo que ya gastó y réstalo del presupuesto.',s:'35 + 14 + 28 = 77 y 90 − 77 = 13'},
+ {id:'p09',tema:'Porcentajes',t:'num',q:'Ahorras el 20% de los 150 Lumis que recibes. ¿Cuántos Lumis ahorras?',a:30,h:'El 20% es la quinta parte: divide entre 5.',s:'150 ÷ 5 = 30'},
+ {id:'p10',tema:'Porcentajes',t:'num',q:'Un helado cuesta 24 Lumis, pero con un cupón pagas 25% menos. ¿Cuántos Lumis pagas?',a:18,h:'El 25% es la cuarta parte: calcula cuánto te descuentan y réstalo.',s:'24 ÷ 4 = 6 de descuento y 24 − 6 = 18'},
+ {id:'p11',tema:'Presupuesto',t:'num',q:'Tienes 200 Lumis y los repartes así: 50% para necesidades, 30% para deseos y 20% para ahorro. ¿Cuántos Lumis van a ahorro?',a:40,h:'El 20% es la quinta parte de 200.',s:'200 ÷ 5 = 40'},
+ {id:'p12',tema:'Presupuesto',t:'num',q:'Mira los gastos de Mateo esta semana. Su presupuesto semanal era de 40 Lumis. ¿Cuántos Lumis le sobraron?',tab:[['Lunes',6],['Martes',9],['Miércoles',4],['Jueves',11],['Viernes',5]],a:5,h:'Suma los cinco días y réstalo del presupuesto.',s:'6 + 9 + 4 + 11 + 5 = 35 y 40 − 35 = 5'},
+ {id:'p13',tema:'Comparar',t:'opc',q:'Plan A: ahorrar 10 Lumis por semana durante 8 semanas. Plan B: ahorrar 7 Lumis por semana durante 12 semanas. ¿Cuál plan junta más dinero?',o:['Plan A','Plan B','Juntan lo mismo'],a:1,h:'Calcula cuánto junta cada plan multiplicando.',s:'A: 10 × 8 = 80. B: 7 × 12 = 84. Gana el plan B'},
+ {id:'p14',tema:'Compras',t:'num',q:'Una mochila cuesta 80 Lumis. Primero le descuentan el 10% y, por pagar en efectivo, le quitan 5 Lumis más. ¿Cuántos Lumis pagas?',a:67,h:'Calcula el 10% de 80 y réstalo; después réstale los 5 Lumis.',s:'10% de 80 = 8; 80 − 8 = 72; 72 − 5 = 67'},
+ {id:'p15',tema:'Compras',t:'num',q:'Numi compra 6 cuadernos de 7 Lumis cada uno y paga con un billete de 100 Lumis. ¿Cuánto vuelto recibe?',a:58,h:'Calcula cuánto cuestan todos los cuadernos y réstalo de 100.',s:'6 × 7 = 42 y 100 − 42 = 58'},
+ {id:'p16',tema:'Ahorro',t:'num',q:'Lía quiere reunir 240 Lumis en 6 meses para un viaje. ¿Cuántos Lumis debe ahorrar cada mes?',a:40,h:'Reparte el total en partes iguales entre los meses.',s:'240 ÷ 6 = 40'},
+ {id:'p17',tema:'Interés',t:'num',q:'Depositas 200 Lumis en un banco que paga 10% de interés al año. ¿Cuántos Lumis de interés ganas después de un año?',a:20,h:'El 10% es la décima parte: divide entre 10.',s:'200 ÷ 10 = 20 Lumis'},
+ {id:'p18',tema:'Interés',t:'num',q:'Depositas 300 Lumis en un banco que paga 5% de interés al año. ¿Cuántos Lumis tendrás en total después de un año?',a:315,h:'El 5% es la mitad del 10%. Calcula el interés y súmalo a lo que depositaste.',s:'10% de 300 = 30, entonces 5% = 15. 300 + 15 = 315'},
+ {id:'p19',tema:'Interés',t:'num',q:'Depositas 400 Lumis y el banco paga 10% de interés simple cada año (siempre sobre los 400 Lumis iniciales). ¿Cuántos Lumis de interés ganas en 3 años?',a:120,h:'Calcula el interés de un año y multiplícalo por 3.',s:'10% de 400 = 40 por año y 40 × 3 = 120'},
+ {id:'p20',tema:'Interés',t:'opc',q:'El Banco A paga 5% de interés al año. El Banco B paga 8 Lumis de interés al año por cada 100 Lumis depositados. ¿Qué banco te conviene si quieres ganar más?',o:['Banco A','Banco B','Los dos pagan lo mismo'],a:1,h:'Convierte el pago del Banco B a porcentaje: ¿cuánto es 8 de cada 100?',s:'8 de cada 100 es 8%, que es más que 5%. Conviene el Banco B'},
+ {id:'p21',tema:'Presupuesto',t:'num',q:'La familia de Riku paga cada mes gastos fijos: arriendo 300, luz 45, agua 25 e internet 30 Lumis. Si ganan 500 Lumis al mes, ¿cuántos Lumis quedan para gastos variables y ahorro?',a:100,h:'Suma los gastos fijos y réstalos de lo que ganan.',s:'300 + 45 + 25 + 30 = 400 y 500 − 400 = 100'},
+ {id:'p22',tema:'Compras',t:'num',q:'Un juguete cuesta 48 Lumis de contado. En la tienda lo ofrecen en 3 cuotas de 18 Lumis. ¿Cuántos Lumis más pagas por comprarlo en cuotas?',a:6,h:'Calcula cuánto pagas en total con las cuotas y compáralo con el precio de contado.',s:'3 × 18 = 54 y 54 − 48 = 6'},
+ {id:'p23',tema:'Comparar',t:'num',q:'La tienda A vende 4 lápices de colores por 20 Lumis. La tienda B vende 6 lápices iguales por 24 Lumis. ¿Cuántos Lumis menos cuesta cada lápiz en la tienda más barata?',a:1,h:'Calcula el precio de un lápiz en cada tienda y resta.',s:'A: 20 ÷ 4 = 5. B: 24 ÷ 6 = 4. La diferencia es 5 − 4 = 1'},
+ {id:'p24',tema:'Deudas',t:'num',q:'Un amigo te presta 90 Lumis. Los devuelves en 5 pagos iguales, pero cada pago incluye 2 Lumis extra de interés. ¿Cuántos Lumis pagas en cada cuota?',a:20,h:'Primero divide el préstamo entre las cuotas y luego suma el interés de cada una.',s:'90 ÷ 5 = 18 y 18 + 2 = 20'},
+ {id:'p25',tema:'Ganancias',t:'num',q:'Sami compra camisetas a 15 Lumis cada una y las vende a 22 Lumis. Vende 9 camisetas, pero tuvo que pagar 25 Lumis por el puesto en la feria. ¿Cuál es su ganancia final?',a:38,h:'Calcula la ganancia por camiseta, multiplícala por las que vendió y réstale el costo del puesto.',s:'22 − 15 = 7 por camiseta; 7 × 9 = 63; 63 − 25 = 38'},
+ {id:'p26',tema:'Interés',t:'num',q:'Depositas 100 Lumis al 10% de interés compuesto: cada año el interés se calcula sobre el total acumulado. ¿Cuántos Lumis tienes después de 2 años?',a:121,h:'Calcula el primer año. El segundo año, el 10% se calcula sobre el nuevo total.',s:'Año 1: 100 + 10 = 110. Año 2: 10% de 110 = 11, entonces 110 + 11 = 121'},
+ {id:'p27',tema:'Porcentajes',t:'num',q:'Tu presupuesto del mes es de 120 Lumis y gastas el 45% en necesidades. ¿Cuántos Lumis te quedan?',a:66,h:'Calcula el 45% sumando el 10% cuatro veces y el 5% una vez; luego réstalo.',s:'10% = 12; 40% = 48; 5% = 6; 45% = 54. Entonces 120 − 54 = 66'},
+ {id:'p28',tema:'Ahorro',t:'num',q:'Una bicicleta cuesta 360 Lumis. Ya tienes 85 ahorrados y tu tío te regalará 50 Lumis. Si ahorras 25 Lumis por semana, ¿cuántas semanas necesitas?',a:9,h:'Resta todo el dinero que ya tendrás y divide lo que falta entre lo que ahorras por semana.',s:'360 − 85 − 50 = 225 y 225 ÷ 25 = 9'},
+ {id:'p29',tema:'Compras',t:'num',q:'En una feria compras 3 entradas de 15 Lumis y 2 refrescos de 7 Lumis. Tienes un cupón de 20% de descuento solo para las entradas. ¿Cuántos Lumis pagas en total?',a:50,h:'Aplica el descuento solo a las entradas y después suma los refrescos.',s:'Entradas: 3 × 15 = 45; 20% de 45 = 9; 45 − 9 = 36. Refrescos: 2 × 7 = 14. Total: 36 + 14 = 50'},
+ {id:'p30',tema:'Reto final',t:'num',q:'Ahorras 15 Lumis por semana durante 8 semanas. El banco te paga 10% de interés sobre lo ahorrado. Después gastas 60 Lumis en un regalo. ¿Cuántos Lumis te quedan?',a:72,h:'Calcula lo ahorrado, súmale el interés y luego réstale el regalo.',s:'15 × 8 = 120; 10% de 120 = 12; 120 + 12 = 132; 132 − 60 = 72'}
+];
+/*FIN_DATOS*/
+
+var $=function(id){return document.getElementById(id)};
+function leer_(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lista(k){try{return JSON.parse(leer_(k))||[]}catch(e){return []}}
+function quitar(k){try{localStorage.removeItem(k)}catch(e){}}
+function modoPrueba(){return leer_('modo_prueba')==='1'}
+function hojasTotal(){return parseInt(leer_('hojas_actuales'))||0}
+function leerEstado(){try{var e=JSON.parse(leer_(CLAVE_ESTADO));return(e&&e.idx>=0&&e.idx<RONDAS.length)?e:null}catch(x){return null}}
+function guardarEstado(){try{localStorage.setItem(CLAVE_ESTADO,JSON.stringify({idx:idx,aciertos:aciertos,ganadas:ganadas}))}catch(e){}}
+var HOJA='<span class="em">🍃</span>';
+var ICONO='<span class="em">🗓️</span>';
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+
+var idx=0,errores=0,bloq=false,aciertos=0,ganadas=0;
+function pintarCab(){
+  $('ti').innerHTML=ICONO+'<span>Plan Maestro de Pensora</span>';
+  $('pill').innerHTML=HOJA+'<span>'+hojasTotal()+'</span>';
+}
+function pagar(id){
+  if(modoPrueba())return 'prueba';
+  var hechas=lista(CLAVE_HECHAS);
+  if(hechas.indexOf(id)>=0)return 'ya';
+  try{
+    ['ranking_exploradores_hojas','hojas_actuales'].forEach(function(k){localStorage.setItem(k,String((parseInt(localStorage.getItem(k))||0)+HOJAS))});
+    hechas.push(id);localStorage.setItem(CLAVE_HECHAS,JSON.stringify(hechas));
+    return 'ok';
+  }catch(e){return 'error'}
+}
+function inicio(){
+  $('bw').hidden=true;$('pau').hidden=true;pintarCab();
+  var hechas=lista(CLAVE_HECHAS).length,est=leerEstado(),todo=hechas>=RONDAS.length;
+  var h='<div class="grande">'+ICONO+'</div><h1>Plan Maestro de Pensora</h1>'+
+    '<p class="d">Resuelve problemas de ahorro, presupuesto, porcentajes e interés. Escribe tu respuesta con números. Puedes usar lápiz y papel.<br>Son <b>'+RONDAS.length+' rondas</b> y cada acierto gana <b>'+HOJAS+' Hojas de la Sabiduría</b> 🍃</p>'+
+    '<p class="d" style="margin-top:-6px">Si te equivocas, recibes una pista y un segundo intento.</p>';
+  if(todo)h+='<p class="d">⭐ Ya completaste todas las rondas. Puedes practicar otra vez, pero ya no ganas más hojas.</p>';
+  else if(hechas)h+='<p class="d">Rondas con hojas ganadas: <b>'+hechas+' de '+RONDAS.length+'</b></p>';
+  h+='<div class="fila-btn">';
+  if(est)h+='<p class="d" style="margin:0">⏸ Partida en pausa: vas por la ronda '+(est.idx+1)+' de '+RONDAS.length+'</p><button class="btn" id="cont">▶ Continuar</button><button class="btn sec" id="nueva">Empezar de nuevo</button>';
+  else h+='<button class="btn" id="go">'+(todo?'¡Practicar de nuevo!':'¡Empezar el plan!')+'</button>';
+  h+='</div>';
+  $('main').innerHTML=h;
+  if($('go'))$('go').onclick=empezar;
+  if($('nueva'))$('nueva').onclick=empezar;
+  if($('cont'))$('cont').onclick=function(){idx=est.idx;aciertos=est.aciertos||0;ganadas=est.ganadas||0;ronda()};
+}
+function empezar(){idx=0;aciertos=0;ganadas=0;ronda()}
+function pausar(){guardarEstado();inicio()}
+function mezclarIdx(n){var a=[];for(var i=0;i<n;i++)a.push(i);for(var k=n-1;k>0;k--){var j=Math.floor(Math.random()*(k+1)),t=a[k];a[k]=a[j];a[j]=t}return a}
+function ronda(){
+  var r=RONDAS[idx];errores=0;bloq=false;pintarCab();guardarEstado();
+  $('bw').hidden=false;$('pau').hidden=false;$('bi').style.width=(idx/RONDAS.length*100)+'%';
+  var tabla='';
+  if(r.tab)tabla='<table class="tab"><tr>'+r.tab.map(function(x){return '<th>'+esc(x[0])+'</th>'}).join('')+'</tr><tr>'+r.tab.map(function(x){return '<td>'+x[1]+' Lumis</td>'}).join('')+'</tr></table>';
+  var resp='';
+  if(r.t==='num')resp='<div class="resp"><input id="in" type="text" inputmode="numeric" autocomplete="off" placeholder="Tu respuesta"><button class="btn" id="chk">Comprobar</button></div>';
+  else resp='<div class="opcs" id="opcs">'+mezclarIdx(r.o.length).map(function(i){return '<button class="opcion" data-i="'+i+'">'+esc(r.o[i])+'</button>'}).join('')+'</div>';
+  $('main').innerHTML='<div class="ronda"><div class="meta"><span>Ronda '+(idx+1)+' de '+RONDAS.length+'</span><span>Aciertos: '+aciertos+'</span></div>'+
+    '<span class="tema">'+esc(r.tema)+'</span><div class="q">'+esc(r.q)+tabla+'</div>'+resp+'<div class="fb" id="fb"></div><div id="sig"></div></div>';
+  if(r.t==='num'){
+    $('chk').onclick=comprobar;
+    $('in').onkeydown=function(e){if(e.key==='Enter')comprobar()};
+    setTimeout(function(){try{$('in').focus()}catch(e){}},50);
+  }else{
+    [].forEach.call(document.querySelectorAll('.opcion'),function(b){b.onclick=function(){elegirOpc(parseInt(b.getAttribute('data-i')),b)}});
+  }
+}
+function comprobar(){
+  if(bloq)return;
+  var v=parseInt(String($('in').value).replace(/[^0-9]/g,''),10);
+  if(isNaN(v)){$('fb').className='fb';$('fb').textContent='Escribe tu respuesta con números.';return}
+  resolver(v===RONDAS[idx].a,null);
+}
+function elegirOpc(i,b){if(bloq)return;resolver(i===RONDAS[idx].a,b)}
+function bloquear(){
+  var i=$('in'),c=$('chk');if(i)i.disabled=true;if(c)c.disabled=true;
+}
+function resolver(ok,b){
+  var r=RONDAS[idx],fb=$('fb');
+  if(ok){
+    bloq=true;fb.className='fb bien';
+    if(b)b.classList.add('ok');else $('in').classList.add('okin');
+    var msg='¡Correcto! '+r.s+'. ';
+    if(errores<=1){
+      aciertos++;
+      var p=pagar(r.id);
+      if(p==='ok'){ganadas+=HOJAS;msg+='🍃 +'+HOJAS+' hojas';}
+      else if(p==='ya')msg+='(Esta ronda ya te dio sus hojas antes)';
+      else if(p==='prueba')msg+='🧪 Modo prueba: no se contaron';
+      else msg+='No se pudieron guardar las hojas';
+    }
+    fb.textContent=msg;pintarCab();bloquear();siguiente();return;
+  }
+  errores++;fb.className='fb';
+  if(b){b.classList.add('no');setTimeout(function(){b.classList.remove('no')},500)}
+  if(errores===1){
+    fb.textContent='Casi... '+r.h;
+    if(r.t==='num'){try{$('in').select()}catch(e){}}
+    return;
+  }
+  bloq=true;bloquear();
+  if(r.t==='opc'){
+    [].forEach.call(document.querySelectorAll('.opcion'),function(x){if(parseInt(x.getAttribute('data-i'))===r.a)x.classList.add('ayuda')});
+    fb.textContent='La respuesta correcta brilla. '+r.s+'.';
+  }else{
+    fb.textContent='La respuesta es '+r.a+'. '+r.s+'.';
+  }
+  siguiente();
+}
+function siguiente(){
+  var ult=idx>=RONDAS.length-1;
+  $('sig').innerHTML='<button class="btn" id="nx">'+(ult?'Ver resultado':'Continuar')+'</button>';
+  $('nx').onclick=function(){if(ult)fin();else{idx++;ronda()}};
+}
+function fin(){
+  quitar(CLAVE_ESTADO);
+  $('bw').hidden=false;$('bi').style.width='100%';$('pau').hidden=true;pintarCab();
+  var perfecto=aciertos===RONDAS.length;
+  $('main').innerHTML='<div class="grande">'+HOJA+'</div><h1>'+(perfecto?'¡Maestro del plan financiero!':'¡Buen trabajo!')+'</h1>'+
+    '<div class="res"><div class="caja"><b>'+aciertos+'/'+RONDAS.length+'</b><small>aciertos</small></div><div class="caja"><b>🍃 '+ganadas+'</b><small>hojas ganadas ahora</small></div></div>'+
+    '<p class="d">'+(perfecto?'Resolviste todos los desafíos de Pensora.':'Puedes volver a jugar para practicar. Las rondas que ya te dieron hojas no las pagan otra vez.')+'</p>'+
+    '<button class="btn" id="otra">Jugar otra vez</button>';
+  $('otra').onclick=inicio;
+}
+$('pau').onclick=pausar;
+window.addEventListener('storage',function(){pintarCab()});
+inicio();
+</script>
+</body>
+</html>

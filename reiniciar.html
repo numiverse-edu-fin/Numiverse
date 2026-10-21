@@ -22,10 +22,12 @@ h1{font-size:16px;margin:0 0 4px}
   <div class="aviso">Solo para ti. Quita esta página del sitio antes de que entren los estudiantes.</div>
   <div class="dato">Lumis guardados: <span id="lumis">0</span></div>
   <div class="dato">Juegos completados: <span id="cant">0</span></div>
+  <div class="dato">🍃 Hojas de Sabiduría: <span id="hojas">0</span> · aciertos de aventura: <span id="acs">0</span></div>
   <div class="lista" id="lista"></div>
 
-  <button class="btn rojo" onclick="reiniciar('todo')">Reiniciar TODO (Lumis y juegos)</button>
+  <button class="btn rojo" onclick="reiniciar('todo')">Reiniciar TODO (Lumis, juegos, hojas y minijuegos)</button>
   <button class="btn dorado" onclick="reiniciar('juegos')">Reiniciar solo los juegos (conserva los Lumis)</button>
+  <button class="btn dorado" onclick="reiniciar('hojas')">Reiniciar solo hojas, aciertos y minijuegos 🍃</button>
   <button class="btn gris" onclick="reiniciar('lumis')">Reiniciar solo los Lumis (conserva los juegos)</button>
   <div id="msg"></div>
 </div>
@@ -33,7 +35,12 @@ h1{font-size:16px;margin:0 0 4px}
 function claves(){
   try{return Object.keys(localStorage).filter(function(k){return k.indexOf('ganado_')===0}).sort()}catch(e){return []}
 }
+function clavesHojas(){
+  try{return Object.keys(localStorage).filter(function(k){return k.indexOf('mj_')===0||k.indexOf('genially_')===0||k==='hojas_actuales'||k==='ranking_exploradores_hojas'})}catch(e){return []}
+}
 function pintar(){
+  var hj=0,ac=0;try{hj=parseInt(localStorage.getItem('hojas_actuales'))||0;ac=JSON.parse(localStorage.getItem('genially_aciertos')||'[]').length}catch(e){}
+  document.getElementById('hojas').innerText=hj;document.getElementById('acs').innerText=ac;
   var l=0;try{l=parseInt(localStorage.getItem('savedLumis'))||0}catch(e){}
   var c=claves();
   document.getElementById('lumis').innerText=l;
@@ -44,6 +51,7 @@ function reiniciar(que){
   try{
     if(que==='todo'||que==='lumis')localStorage.setItem('savedLumis',0);
     if(que==='todo'||que==='juegos')claves().forEach(function(k){localStorage.removeItem(k)});
+    if(que==='todo'||que==='hojas')clavesHojas().forEach(function(k){localStorage.removeItem(k)});
     document.getElementById('msg').innerText='✔ Listo. Recarga las demás páginas con F5.';
   }catch(e){
     document.getElementById('msg').innerText='No se pudo borrar: el navegador bloquea el almacenamiento.';

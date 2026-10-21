@@ -12,6 +12,8 @@ body{padding:8px}
 header{background:#207168;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
 .ti{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
 .em{font-size:20px;line-height:1}
+.der{display:flex;align-items:center;gap:8px}
+.hb{background:transparent;border:2px solid rgba(255,255,255,.75);color:#fff;border-radius:999px;padding:3px 11px;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer}
 .pill{background:#fff;color:#207168;border-radius:999px;padding:4px 14px 4px 10px;display:flex;align-items:center;gap:6px;font-weight:900;font-size:14px}
 .barra{height:8px;background:#dfeee7}
 .barra i{display:block;height:100%;width:0;background:#d4af37;transition:width .4s}
@@ -22,6 +24,7 @@ h1{margin:6px 0;color:#207168;font-size:28px}
 p.d{margin:8px 0 14px;color:#3d4f4b;font-weight:700;font-size:15px;line-height:1.5;max-width:440px}
 .btn{border:0;border-radius:16px;background:#207168;color:#fff;font-size:17px;font-weight:800;font-family:inherit;padding:14px 34px;cursor:pointer;box-shadow:0 5px 0 #16524a}
 .btn:active{transform:translateY(3px);box-shadow:0 2px 0 #16524a}
+.fila-btn{display:flex;flex-direction:column;align-items:center;gap:12px}
 .btn.sec{background:#fff;color:#207168;border:2px solid #207168;box-shadow:0 4px 0 #cfe0db;font-size:14px;padding:10px 20px}
 .ronda{width:100%;max-width:520px}
 .meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#207168;margin-bottom:8px}
@@ -34,7 +37,7 @@ p.d{margin:8px 0 14px;color:#3d4f4b;font-weight:700;font-size:15px;line-height:1
 .ofertas{display:flex;gap:10px;margin:12px 0}
 .of{flex:1;background:#fff;border:3px solid #207168;border-radius:14px;padding:10px 6px;cursor:pointer;font-family:inherit;color:#207168}
 .of .l{font-weight:900;font-size:13px}
-.of .em{font-size:20px;line-height:1.25;min-height:50px;word-break:break-all}
+.of .em2{font-size:20px;line-height:1.25;min-height:50px;word-break:break-all}
 .of .pr{font-weight:900;font-size:16px}
 .ops{display:flex;gap:10px;justify-content:center;margin:12px 0}
 .op{min-width:84px;padding:12px 10px;font-size:22px;font-weight:900;color:#207168;background:#fff;border:3px solid #207168;border-radius:14px;cursor:pointer;font-family:inherit}
@@ -55,7 +58,7 @@ p.d{margin:8px 0 14px;color:#3d4f4b;font-weight:700;font-size:15px;line-height:1
 <div class="app">
   <header>
     <div class="ti" id="ti"></div>
-    <div class="pill" id="pill"></div>
+    <div class="der"><button class="hb" id="pau" hidden>⏸ Pausar</button><div class="pill" id="pill"></div></div>
   </header>
   <div class="barra" id="bw" hidden><i id="bi"></i></div>
   <main id="main"></main>
@@ -63,20 +66,37 @@ p.d{margin:8px 0 14px;color:#3d4f4b;font-weight:700;font-size:15px;line-height:1
 <script>
 /* ===== DATOS (cada ronda tiene un id fijo; las hojas se pagan una sola vez por ronda) ===== */
 var HOJAS=5;                                  /* hojas por acierto */
-var CLAVE_HECHAS='mj_trokalia_hechas';        /* rondas que ya pagaron hojas */
 var RONDAS=[
  {id:'r01',t:'total',items:[['🥖','Pan',4],['🧃','Jugo',3]],o:[6,7,9]},
- {id:'r02',t:'total',items:[['📓','Cuaderno',12],['✏️','Lápiz',5],['🧽','Goma',3]],o:[18,20,23]},
- {id:'r03',t:'cambio',pago:20,items:[['🍎','Manzanas',13]],o:[6,7,33]},
- {id:'r04',t:'cambio',pago:50,items:[['🥛','Leche',21],['🧀','Queso',15]],o:[14,16,86]},
- {id:'r05',t:'mejor',A:{n:3,p:12,e:'🥭',nom:'mangos'},B:{n:5,p:15,e:'🥭',nom:'mangos'}},
- {id:'r06',t:'mejor',A:{n:2,p:10,e:'🧃',nom:'jugos'},B:{n:3,p:12,e:'🧃',nom:'jugos'}},
- {id:'r07',t:'desc',nom:'Mochila',e:'🎒',precio:40,tipo:'mitad',o:[10,20,40]},
- {id:'r08',t:'desc',nom:'Zapatos',e:'👟',precio:80,tipo:'pct',pct:10,o:[8,70,72]},
- {id:'r09',t:'falta',tengo:45,items:[['🧢','Gorra',18],['🧤','Guantes',15],['🧣','Bufanda',14]],o:[2,3,47]},
- {id:'r10',t:'total',items:[['🎨','Pinturas',25],['📐','Reglas',18],['📎','Clips',9]],o:[42,52,53]},
- {id:'r11',t:'mejor',A:{n:6,p:24,e:'🍪',nom:'galletas'},B:{n:4,p:20,e:'🍪',nom:'galletas'}},
- {id:'r12',t:'desc',nom:'Bicicleta',e:'🚲',precio:200,tipo:'pct',pct:25,o:[50,150,175]}
+ {id:'r02',t:'cant',e:'🍎',nom:'manzanas',un:'manzana',precio:3,n:4,o:[7,12,16]},
+ {id:'r03',t:'total',items:[['🥕','Zanahorias',6],['🧅','Cebollas',5]],o:[10,11,13]},
+ {id:'r04',t:'cambio',pago:10,items:[['🍬','Caramelos',7]],o:[3,4,17]},
+ {id:'r05',t:'cant',e:'🍋',nom:'limones',un:'limón',precio:2,n:5,o:[7,10,12]},
+ {id:'r06',t:'total',items:[['📓','Cuaderno',12],['✏️','Lápiz',5],['🧽','Goma',3]],o:[18,20,23]},
+ {id:'r07',t:'cambio',pago:20,items:[['🍎','Manzanas',13]],o:[6,7,33]},
+ {id:'r08',t:'mejor',A:{n:3,p:12,e:'🥭',nom:'mangos'},B:{n:5,p:15,e:'🥭',nom:'mangos'}},
+ {id:'r09',t:'desc',art:'La',nom:'Mochila',e:'🎒',precio:40,tipo:'mitad',o:[10,20,40]},
+ {id:'r10',t:'cambio',pago:50,items:[['🥛','Leche',21],['🧀','Queso',15]],o:[14,16,86]},
+ {id:'r11',t:'cant',e:'🧃',nom:'jugos',un:'jugo',precio:8,n:6,o:[14,48,54]},
+ {id:'r12',t:'mejor',A:{n:2,p:10,e:'🧃',nom:'jugos'},B:{n:3,p:12,e:'🧃',nom:'jugos'}},
+ {id:'r13',t:'falta',tengo:45,items:[['🧢','Gorra',18],['🧤','Guantes',15],['🧣','Bufanda',14]],o:[2,3,47]},
+ {id:'r14',t:'desc',art:'Los',pl:true,nom:'Zapatos',e:'👟',precio:80,tipo:'pct',pct:10,o:[8,70,72]},
+ {id:'r15',t:'total',items:[['🎨','Pinturas',25],['📐','Reglas',18],['📎','Clips',9]],o:[42,52,53]},
+ {id:'r16',t:'ganancia',e:'🍋',nom:'limones',un:'limón',costo:2,venta:5,n:6,o:[3,18,30]},
+ {id:'r17',t:'mejor',A:{n:6,p:24,e:'🍪',nom:'galletas'},B:{n:4,p:20,e:'🍪',nom:'galletas'}},
+ {id:'r18',t:'desc',art:'La',nom:'Bicicleta',e:'🚲',precio:200,tipo:'pct',pct:25,o:[50,150,175]},
+ {id:'r19',t:'cambio',pago:100,items:[['🧸','Oso',45],['🎈','Globos',22]],o:[23,33,167]},
+ {id:'r20',t:'cant',e:'🥚',nom:'huevos',un:'huevo',precio:5,n:12,o:[17,60,65]},
+ {id:'r21',t:'desc',art:'La',nom:'Casaca',e:'🧥',precio:90,tipo:'mitad',o:[40,45,90]},
+ {id:'r22',t:'falta',tengo:50,items:[['🎮','Juego',35],['🎧','Audífonos',28]],o:[13,15,63]},
+ {id:'r23',t:'ganancia',e:'🍉',nom:'sandías',un:'sandía',costo:4,venta:9,n:5,o:[5,25,45]},
+ {id:'r24',t:'mejor',A:{n:4,p:16,e:'🍐',nom:'peras'},B:{n:6,p:18,e:'🍐',nom:'peras'}},
+ {id:'r25',t:'desc',art:'Los',pl:true,nom:'Parlantes',e:'🔊',precio:150,tipo:'pct',pct:10,o:[15,135,140]},
+ {id:'r26',t:'total',items:[['🍚','Arroz',18],['🥛','Leche',12],['🍞','Pan',9],['🧃','Jugo',6]],o:[35,45,46]},
+ {id:'r27',t:'cambio',pago:100,items:[['🎒','Mochila',48],['📓','Cuaderno',17]],o:[25,35,165]},
+ {id:'r28',t:'desc',art:'La',nom:'Maleta',e:'🧳',precio:120,tipo:'pct',pct:25,o:[30,90,95]},
+ {id:'r29',t:'falta',tengo:80,items:[['🛹','Patineta',65],['⛑️','Casco',28],['🦺','Rodilleras',22]],o:[35,45,115]},
+ {id:'r30',t:'ganancia',e:'🎟️',nom:'entradas',un:'entrada',costo:7,venta:12,n:8,o:[5,40,96]}
 ];
 function suma(r){return r.items.reduce(function(s,i){return s+i[2]},0)}
 function descuento(r){return r.tipo==='mitad'?r.precio/2:r.precio*r.pct/100}
@@ -85,13 +105,17 @@ function resp(r){
   if(r.t==='cambio')return r.pago-suma(r);
   if(r.t==='falta')return suma(r)-r.tengo;
   if(r.t==='desc')return r.precio-descuento(r);
+  if(r.t==='cant')return r.precio*r.n;
+  if(r.t==='ganancia')return (r.venta-r.costo)*r.n;
   if(r.t==='mejor')return (r.A.p/r.A.n<r.B.p/r.B.n)?'A':'B';
 }
 function pregunta(r){
   if(r.t==='total')return 'Estás en el mercado de Trokalia y compras esto. ¿Cuántos Lumis cuesta todo junto?';
   if(r.t==='cambio')return 'Pagas con '+r.pago+' Lumis. ¿Cuánto te devuelven de vuelto?';
   if(r.t==='falta')return 'Tienes '+r.tengo+' Lumis y quieres comprar todo esto. ¿Cuántos Lumis te faltan?';
-  if(r.t==='desc')return 'La '+(r.nom==='Mochila'?'mochila':r.nom.toLowerCase())+' cuesta '+r.precio+' Lumis y tiene '+(r.tipo==='mitad'?'la mitad de precio':r.pct+'% de descuento')+'. ¿Cuántos Lumis pagas?';
+  if(r.t==='cant')return 'Cada '+r.un+' cuesta '+r.precio+' Lumis. ¿Cuántos Lumis cuestan '+r.n+' '+r.nom+'?';
+  if(r.t==='ganancia')return 'Cada '+r.un+' te cuesta '+r.costo+' Lumis y se vende a '+r.venta+' Lumis. Vendes '+r.n+' '+r.nom+'. ¿Cuántos Lumis ganas en total?';
+  if(r.t==='desc')return r.art+' '+r.nom.toLowerCase()+(r.pl?' cuestan ':' cuesta ')+r.precio+' Lumis y '+(r.pl?'tienen ':'tiene ')+(r.tipo==='mitad'?'la mitad de precio':r.pct+'% de descuento')+'. ¿Cuántos Lumis pagas?';
   if(r.t==='mejor')return '¿Qué oferta sale más barata por cada '+r.A.nom.replace(/s$/,'')+'?';
 }
 function pista(r,n){
@@ -100,20 +124,26 @@ function pista(r,n){
     if(t==='total')return 'Suma los precios uno por uno, con calma.';
     if(t==='cambio')return 'El vuelto es lo que sobra: lo que pagas menos lo que cuesta.';
     if(t==='falta')return 'Primero suma todo lo que quieres comprar.';
+    if(t==='cant')return 'Todos cuestan lo mismo: multiplica el precio por la cantidad.';
+    if(t==='ganancia')return 'La ganancia es lo que vendes menos lo que te costó.';
     if(t==='desc')return r.tipo==='mitad'?'La mitad es dividir entre 2.':(r.pct===10?'El 10% es la décima parte: divide entre 10.':'El 25% es la cuarta parte: divide entre 4.');
     if(t==='mejor')return 'Fíjate cuánto cuesta cada uno, no solo el total.';
   }
   if(t==='total')return 'Prueba así: suma los dos primeros y luego agrega el siguiente.';
   if(t==='cambio')return 'Cuenta desde lo que cuesta hasta llegar a lo que pagaste.';
   if(t==='falta')return 'Compara el total con lo que tienes: la diferencia es lo que falta.';
+  if(t==='cant')return 'Suma '+r.precio+' una y otra vez, '+r.n+' veces.';
+  if(t==='ganancia')return 'Primero calcula cuánto ganas por cada uno y luego multiplica por cuántos vendes.';
   if(t==='desc')return 'Primero calcula cuánto te descuentan y luego réstalo del precio.';
   return 'Divide el precio entre la cantidad en cada oferta y compara.';
 }
 function explica(r){
   var t=r.t;
   if(t==='total')return r.items.map(function(i){return i[2]}).join(' + ')+' = '+suma(r);
-  if(t==='cambio')return r.pago+' − '+suma(r)+' = '+resp(r);
+  if(t==='cambio')return (r.items.length>1?r.items.map(function(i){return i[2]}).join(' + ')+' = '+suma(r)+'. Luego ':'')+r.pago+' − '+suma(r)+' = '+resp(r);
   if(t==='falta')return r.items.map(function(i){return i[2]}).join(' + ')+' = '+suma(r)+'. Luego '+suma(r)+' − '+r.tengo+' = '+resp(r);
+  if(t==='cant')return r.precio+' × '+r.n+' = '+resp(r);
+  if(t==='ganancia')return r.venta+' − '+r.costo+' = '+(r.venta-r.costo)+' por cada uno. Luego '+(r.venta-r.costo)+' × '+r.n+' = '+resp(r);
   if(t==='desc'){
     if(r.tipo==='mitad')return r.precio+' ÷ 2 = '+resp(r);
     return 'El '+r.pct+'% de '+r.precio+' es '+descuento(r)+'. Entonces '+r.precio+' − '+descuento(r)+' = '+resp(r);
@@ -123,14 +153,29 @@ function explica(r){
 }
 /*FIN_DATOS*/
 
+var CLAVE_HECHAS='mj_trokalia_hechas';        /* rondas que ya pagaron hojas */
+var CLAVE_ESTADO='mj_trokalia_estado';        /* partida en pausa (para continuar) */
+var DOCENTE=new URLSearchParams(location.search).get('docente')==='1';
+
 var $=function(id){return document.getElementById(id)};
 function leer_(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lista(k){try{return JSON.parse(leer_(k))||[]}catch(e){return []}}
+function quitar(k){try{localStorage.removeItem(k)}catch(e){}}
 function modoPrueba(){return leer_('modo_prueba')==='1'}
 function hojasTotal(){return parseInt(leer_('hojas_actuales'))||0}
+function leerEstado(){try{var e=JSON.parse(leer_(CLAVE_ESTADO));return(e&&e.idx>=0&&e.idx<RONDAS.length)?e:null}catch(x){return null}}
+function guardarEstado(){try{localStorage.setItem(CLAVE_ESTADO,JSON.stringify({idx:idx,aciertos:aciertos,ganadas:ganadas}))}catch(e){}}
+
+/* Si el torneo se reinicia (las hojas vuelven a 0), este juego también vuelve a empezar */
+function revisarReinicio(){
+  if(modoPrueba())return false;
+  var rank=parseInt(leer_('ranking_exploradores_hojas'))||0;
+  if(rank===0&&hojasTotal()===0&&lista(CLAVE_HECHAS).length>0){quitar(CLAVE_HECHAS);quitar(CLAVE_ESTADO);return true}
+  return false;
+}
 
 var HOJA='<span class="em">🍃</span>';
-var LLAMA='<span class="em">🛒</span>';
+var CARRITO='<span class="em">🛒</span>';
 
 /* ===== voz ===== */
 var voz=null;
@@ -140,11 +185,17 @@ function elegirVoz(){if(!('speechSynthesis' in window))return;var vs=speechSynth
 if('speechSynthesis' in window){elegirVoz();speechSynthesis.onvoiceschanged=elegirVoz}
 function leer(t){if(!('speechSynthesis' in window))return;speechSynthesis.cancel();
   var u=new SpeechSynthesisUtterance(t.replace(/[^\u0020-\u007E\u00A1-\u00FF]/g,' '));u.lang=voz?voz.lang:'es-MX';if(voz)u.voice=voz;u.rate=.9;speechSynthesis.speak(u)}
+function textoLeer(r){
+  var t=pregunta(r);
+  if(r.t==='total'||r.t==='cambio'||r.t==='falta')t+=' '+r.items.map(function(i){return i[1]+', '+i[2]}).join('. ');
+  if(r.t==='mejor')t+=' Oferta A: '+r.A.n+' por '+r.A.p+' Lumis. Oferta B: '+r.B.n+' por '+r.B.p+' Lumis.';
+  return t;
+}
 
-/* ===== estado ===== */
-var idx=0,errores=0,bloq=false,aciertos=0,ganadas=0,orden=[];
+/* ===== estado de la partida ===== */
+var idx=0,errores=0,bloq=false,aciertos=0,ganadas=0,orden=RONDAS.slice();
 function pintarCab(){
-  $('ti').innerHTML=LLAMA+'<span>Mercado de Trokalia</span>';
+  $('ti').innerHTML=CARRITO+'<span>Mercado de Trokalia</span>';
   $('pill').innerHTML=HOJA+'<span>'+hojasTotal()+'</span>';
 }
 function pagar(id){
@@ -158,37 +209,50 @@ function pagar(id){
   }catch(e){return 'error'}
 }
 function inicio(){
-  $('bw').hidden=true;pintarCab();
-  var hechas=lista(CLAVE_HECHAS).length;
-  var todo=hechas>=RONDAS.length;
-  $('main').innerHTML='<div class="grande">'+LLAMA+'</div><h1>Mercado de Trokalia</h1>'+
-    '<p class="d">Suma compras, calcula el vuelto, compara ofertas y encuentra descuentos.<br>Son <b>'+RONDAS.length+' rondas</b> y cada acierto gana <b>'+HOJAS+' Hojas de la Sabiduría</b> 🍃</p>'+
-    (todo?'<p class="d">⭐ Ya completaste todas las rondas. Puedes practicar otra vez, pero ya no ganas más hojas.</p>':(hechas?'<p class="d">Ya llevas '+hechas+' de '+RONDAS.length+' rondas con hojas ganadas.</p>':''))+
-    '<button class="btn" id="go">'+(todo?'¡Practicar de nuevo!':'¡Empezar a comprar!')+'</button>';
-  $('go').onclick=empezar;
+  revisarReinicio();
+  $('bw').hidden=true;$('pau').hidden=true;pintarCab();
+  var hechas=lista(CLAVE_HECHAS).length,est=leerEstado(),todo=hechas>=RONDAS.length;
+  var h='<div class="grande">'+CARRITO+'</div><h1>Mercado de Trokalia</h1>'+
+    '<p class="d">Suma compras, calcula el vuelto, compara ofertas, encuentra descuentos y calcula ganancias.<br>Son <b>'+RONDAS.length+' rondas</b> y cada acierto gana <b>'+HOJAS+' Hojas de la Sabiduría</b> 🍃</p>';
+  if(todo)h+='<p class="d">⭐ Ya completaste todas las rondas. Puedes practicar otra vez, pero ya no ganas más hojas.</p>';
+  else if(hechas)h+='<p class="d">Rondas con hojas ganadas: <b>'+hechas+' de '+RONDAS.length+'</b></p>';
+  h+='<div class="fila-btn">';
+  if(est)h+='<p class="d" style="margin:0">⏸ Partida en pausa: vas por la ronda '+(est.idx+1)+' de '+RONDAS.length+'</p><button class="btn" id="cont">▶ Continuar</button><button class="btn sec" id="nueva">Empezar de nuevo</button>';
+  else h+='<button class="btn" id="go">'+(todo?'¡Practicar de nuevo!':'¡Empezar a comprar!')+'</button>';
+  if(DOCENTE)h+='<button class="btn sec" id="doc">🧪 Docente: reiniciar este juego</button>';
+  h+='</div>';
+  $('main').innerHTML=h;
+  if($('go'))$('go').onclick=empezar;
+  if($('nueva'))$('nueva').onclick=empezar;
+  if($('cont'))$('cont').onclick=function(){idx=est.idx;aciertos=est.aciertos||0;ganadas=est.ganadas||0;ronda()};
+  if($('doc'))$('doc').onclick=function(){quitar(CLAVE_HECHAS);quitar(CLAVE_ESTADO);inicio()};
 }
-function empezar(){idx=0;aciertos=0;ganadas=0;orden=RONDAS.slice();ronda()}
+function empezar(){idx=0;aciertos=0;ganadas=0;ronda()}
+function pausar(){guardarEstado();if('speechSynthesis' in window)speechSynthesis.cancel();inicio()}
 function ronda(){
-  var r=orden[idx];errores=0;bloq=false;pintarCab();
-  $('bw').hidden=false;$('bi').style.width=(idx/orden.length*100)+'%';
+  var r=orden[idx];errores=0;bloq=false;pintarCab();guardarEstado();
+  $('bw').hidden=false;$('pau').hidden=false;$('bi').style.width=(idx/orden.length*100)+'%';
   var vis='';
   if(r.t==='mejor'){
     var rep=function(o){var s='';for(var i=0;i<o.n;i++)s+=o.e;return s};
     vis='<div class="ofertas">'+
-      '<button class="of" data-v="A"><div class="l">OFERTA A</div><div class="em">'+rep(r.A)+'</div><div class="pr">'+r.A.n+' por '+r.A.p+' Lumis</div></button>'+
-      '<button class="of" data-v="B"><div class="l">OFERTA B</div><div class="em">'+rep(r.B)+'</div><div class="pr">'+r.B.n+' por '+r.B.p+' Lumis</div></button></div>';
+      '<button class="of" data-v="A"><div class="l">OFERTA A</div><div class="em2">'+rep(r.A)+'</div><div class="pr">'+r.A.n+' por '+r.A.p+' Lumis</div></button>'+
+      '<button class="of" data-v="B"><div class="l">OFERTA B</div><div class="em2">'+rep(r.B)+'</div><div class="pr">'+r.B.n+' por '+r.B.p+' Lumis</div></button></div>';
   }else if(r.t==='desc'){
     vis='<div class="items"><div class="chip"><b>'+r.e+'</b>'+r.nom+' · 🪙 '+r.precio+'</div></div>';
+  }else if(r.t==='cant'){
+    var m='';for(var q=0;q<r.n;q++)m+=r.e;
+    vis='<div class="items"><div class="chip"><b>'+r.e+'</b>1 '+r.un+' · 🪙 '+r.precio+'</div></div><div class="items" style="font-size:24px;margin-top:-4px">'+m+'</div>';
+  }else if(r.t==='ganancia'){
+    vis='<div class="items"><div class="chip"><b>🛒</b>Compras a 🪙 '+r.costo+'</div><div class="chip"><b>💰</b>Vendes a 🪙 '+r.venta+'</div><div class="chip"><b>'+r.e+'</b>× '+r.n+'</div></div>';
   }else{
     vis='<div class="items">'+r.items.map(function(i){return '<div class="chip"><b>'+i[0]+'</b>'+i[1]+' · 🪙 '+i[2]+'</div>'}).join('')+'</div>';
   }
   var ops='';
-  if(r.t!=='mejor'){
-    ops='<div class="ops">'+mezclar(r.o.slice()).map(function(n){return '<button class="op" data-v="'+n+'">🪙 '+n+'</button>'}).join('')+'</div>';
-  }
+  if(r.t!=='mejor')ops='<div class="ops">'+mezclar(r.o.slice()).map(function(n){return '<button class="op" data-v="'+n+'">🪙 '+n+'</button>'}).join('')+'</div>';
   $('main').innerHTML='<div class="ronda"><div class="meta"><span>Ronda '+(idx+1)+' de '+orden.length+'</span><span>Aciertos: '+aciertos+'</span></div>'+
     '<div class="preg"><button class="aud" id="aud" aria-label="Escuchar">🔊</button><span>'+pregunta(r)+'</span></div>'+vis+ops+'<div class="fb" id="fb"></div><div id="sig"></div></div>';
-  $('aud').onclick=function(){leer(pregunta(r)+(r.t==='total'||r.t==='cambio'||r.t==='falta'?' '+r.items.map(function(i){return i[1]+' '+i[2]}).join(', '):''))};
+  $('aud').onclick=function(){leer(textoLeer(r))};
   [].forEach.call(document.querySelectorAll('[data-v]'),function(b){b.onclick=function(){elegir(b)}});
 }
 function elegir(b){
@@ -221,7 +285,8 @@ function siguiente(){
   $('nx').onclick=function(){if(ult)fin();else{idx++;ronda()}};
 }
 function fin(){
-  $('bw').hidden=false;$('bi').style.width='100%';pintarCab();
+  quitar(CLAVE_ESTADO);
+  $('bw').hidden=false;$('bi').style.width='100%';$('pau').hidden=true;pintarCab();
   var perfecto=aciertos===orden.length;
   $('main').innerHTML='<div class="grande">'+HOJA+'</div><h1>'+(perfecto?'¡Mercado dominado!':'¡Buen trabajo!')+'</h1>'+
     '<div class="res"><div class="caja"><b>'+aciertos+'/'+orden.length+'</b><small>aciertos</small></div><div class="caja"><b>🍃 '+ganadas+'</b><small>hojas ganadas ahora</small></div></div>'+
@@ -230,7 +295,8 @@ function fin(){
   $('otra').onclick=inicio;
 }
 function mezclar(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
-window.addEventListener('storage',pintarCab);
+$('pau').onclick=pausar;
+window.addEventListener('storage',function(){pintarCab()});
 inicio();
 </script>
 </body>

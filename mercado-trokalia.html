@@ -11,13 +11,13 @@ body{padding:8px}
 .app{max-width:600px;margin:0 auto;background:#fffdf2;border:3px solid #207168;border-radius:22px;overflow:hidden;box-shadow:0 8px 24px rgba(32,113,104,.18);min-height:470px;display:flex;flex-direction:column}
 header{background:#207168;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
 .ti{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
-.ti svg{width:24px;height:24px}
+.em{font-size:20px;line-height:1}
 .pill{background:#fff;color:#207168;border-radius:999px;padding:4px 14px 4px 10px;display:flex;align-items:center;gap:6px;font-weight:900;font-size:14px}
-.pill svg{width:20px;height:20px}
 .barra{height:8px;background:#dfeee7}
 .barra i{display:block;height:100%;width:0;background:#d4af37;transition:width .4s}
 main{flex:1;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.grande{width:84px;height:84px;margin-bottom:6px}
+.grande{font-size:72px;line-height:1;margin-bottom:6px}
+.grande .em{font-size:inherit}
 h1{margin:6px 0;color:#207168;font-size:28px}
 p.d{margin:8px 0 14px;color:#3d4f4b;font-weight:700;font-size:15px;line-height:1.5;max-width:440px}
 .btn{border:0;border-radius:16px;background:#207168;color:#fff;font-size:17px;font-weight:800;font-family:inherit;padding:14px 34px;cursor:pointer;box-shadow:0 5px 0 #16524a}
@@ -129,8 +129,8 @@ function lista(k){try{return JSON.parse(leer_(k))||[]}catch(e){return []}}
 function modoPrueba(){return leer_('modo_prueba')==='1'}
 function hojasTotal(){return parseInt(leer_('hojas_actuales'))||0}
 
-var HOJA='<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18.5" fill="#1f6d2a" stroke="#e8c25a" stroke-width="2.2"/><path d="M20 7C31 13 31 26 20 33C9 26 9 13 20 7Z" fill="#dff2c4"/><path d="M20 11V31M20 17L15 14M20 22L14.5 19M20 17L25 14M20 22L25.5 19" stroke="#3f8f3a" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>';
-var LLAMA='<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18.5" fill="#8c2018" stroke="#e8c25a" stroke-width="2.2"/><circle cx="20" cy="20" r="15.3" fill="none" stroke="rgba(255,255,255,.35)" stroke-width=".8"/><path d="M20 6C22 12 29 15 28 24C27 30 23 33 20 33C16 33 12 30 12 24C12 19 15 17 16 13C18 15 18 17 19 17C21 13 20 10 20 6Z" fill="#ffab2e"/><path d="M20 18C22 22 25 23 24 28C23 31 21 32 20 32C18 32 16 31 16 28C16 25 19 24 20 18Z" fill="#ffe28a"/></svg>';
+var HOJA='<span class="em">🍃</span>';
+var LLAMA='<span class="em">🛒</span>';
 
 /* ===== voz ===== */
 var voz=null;
@@ -162,7 +162,7 @@ function inicio(){
   var hechas=lista(CLAVE_HECHAS).length;
   var todo=hechas>=RONDAS.length;
   $('main').innerHTML='<div class="grande">'+LLAMA+'</div><h1>Mercado de Trokalia</h1>'+
-    '<p class="d">Suma compras, calcula el vuelto, compara ofertas y encuentra descuentos.<br>Son <b>'+RONDAS.length+' rondas</b> y cada acierto gana <b>'+HOJAS+' Hojas de la Sabiduría</b></p>'+
+    '<p class="d">Suma compras, calcula el vuelto, compara ofertas y encuentra descuentos.<br>Son <b>'+RONDAS.length+' rondas</b> y cada acierto gana <b>'+HOJAS+' Hojas de la Sabiduría</b> 🍃</p>'+
     (todo?'<p class="d">⭐ Ya completaste todas las rondas. Puedes practicar otra vez, pero ya no ganas más hojas.</p>':(hechas?'<p class="d">Ya llevas '+hechas+' de '+RONDAS.length+' rondas con hojas ganadas.</p>':''))+
     '<button class="btn" id="go">'+(todo?'¡Practicar de nuevo!':'¡Empezar a comprar!')+'</button>';
   $('go').onclick=empezar;

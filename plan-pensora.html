@@ -109,17 +109,33 @@ function lista(k){try{return JSON.parse(leer_(k))||[]}catch(e){return []}}
 function quitar(k){try{localStorage.removeItem(k)}catch(e){}}
 function modoPrueba(){return leer_('modo_prueba')==='1'}
 function hojasTotal(){return parseInt(leer_('hojas_actuales'))||0}
-function leerEstado(){try{var e=JSON.parse(leer_(CLAVE_ESTADO));return(e&&e.idx>=0&&e.idx<RONDAS.length)?e:null}catch(x){return null}}
-function guardarEstado(){try{localStorage.setItem(CLAVE_ESTADO,JSON.stringify({idx:idx,aciertos:aciertos,ganadas:ganadas}))}catch(e){}}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 var HOJA='<span class="em">🍃</span>';
 var ICONO='<span class="em">🗓️</span>';
-function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 
-var idx=0,errores=0,bloq=false,aciertos=0,ganadas=0;
+/* ===== progreso guardado (una sola partida: no se puede empezar de nuevo) ===== */
+function leerEstado(){
+  try{
+    var e=JSON.parse(leer_(CLAVE_ESTADO));if(!e)return null;
+    if(e.fin)return e;
+    return(e.idx>=0&&e.idx<RONDAS.length)?e:null;
+  }catch(x){return null}
+}
+function guardar(o){try{localStorage.setItem(CLAVE_ESTADO,JSON.stringify(o))}catch(e){}}
+/* "estoy en esta ronda" (para continuar exactamente aquí) */
+function guardarAqui(){guardar({idx:idx,aciertos:aciertos,ganadas:ganadas,err:errores})}
+/* "ya respondí esta ronda": la próxima vez se continúa en la siguiente (o termina) */
+function guardarAvance(){
+  if(idx+1>=RONDAS.length)guardar({fin:true,idx:RONDAS.length-1,aciertos:aciertos,ganadas:ganadas});
+  else guardar({idx:idx+1,aciertos:aciertos,ganadas:ganadas,err:0});
+}
+
+var idx=0,errores=0,errPend=0,bloq=false,aciertos=0,ganadas=0;
 function pintarCab(){
   $('ti').innerHTML=ICONO+'<span>Plan Maestro de Pensora</span>';
   $('pill').innerHTML=HOJA+'<span>'+hojasTotal()+'</span>';
 }
+/* Suma las hojas al ranking (y al contador) una sola vez por ronda */
 function pagar(id){
   if(modoPrueba())return 'prueba';
   var hechas=lista(CLAVE_HECHAS);
@@ -130,28 +146,27 @@ function pagar(id){
     return 'ok';
   }catch(e){return 'error'}
 }
+
 function inicio(){
   $('bw').hidden=true;$('pau').hidden=true;pintarCab();
-  var hechas=lista(CLAVE_HECHAS).length,est=leerEstado(),todo=hechas>=RONDAS.length;
+  var est=leerEstado();
+  if(est&&est.fin){resultado(est.aciertos||0,est.ganadas||0);return}
   var h='<div class="grande">'+ICONO+'</div><h1>Plan Maestro de Pensora</h1>'+
     '<p class="d">Resuelve problemas de ahorro, presupuesto, porcentajes e interés. Escribe tu respuesta con números. Puedes usar lápiz y papel.<br>Son <b>'+RONDAS.length+' rondas</b> y cada acierto gana <b>'+HOJAS+' Hojas de la Sabiduría</b> 🍃</p>'+
-    '<p class="d" style="margin-top:-6px">Si te equivocas, recibes una pista y un segundo intento.</p>';
-  if(todo)h+='<p class="d">⭐ Ya completaste todas las rondas. Puedes practicar otra vez, pero ya no ganas más hojas.</p>';
-  else if(hechas)h+='<p class="d">Rondas con hojas ganadas: <b>'+hechas+' de '+RONDAS.length+'</b></p>';
-  h+='<div class="fila-btn">';
-  if(est)h+='<p class="d" style="margin:0">⏸ Partida en pausa: vas por la ronda '+(est.idx+1)+' de '+RONDAS.length+'</p><button class="btn" id="cont">▶ Continuar</button><button class="btn sec" id="nueva">Empezar de nuevo</button>';
-  else h+='<button class="btn" id="go">'+(todo?'¡Practicar de nuevo!':'¡Empezar el plan!')+'</button>';
+    '<p class="d" style="margin-top:-6px">Si te equivocas, recibes una pista y un segundo intento. Cada ronda se juega una sola vez.</p>'+
+    '<div class="fila-btn">';
+  if(est)h+='<p class="d" style="margin:0">⏸ Partida en pausa: vas por la ronda '+(est.idx+1)+' de '+RONDAS.length+'</p><button class="btn" id="cont">▶ Continuar</button>';
+  else h+='<button class="btn" id="go">¡Empezar el plan!</button>';
   h+='</div>';
   $('main').innerHTML=h;
-  if($('go'))$('go').onclick=empezar;
-  if($('nueva'))$('nueva').onclick=empezar;
-  if($('cont'))$('cont').onclick=function(){idx=est.idx;aciertos=est.aciertos||0;ganadas=est.ganadas||0;ronda()};
+  if($('go'))$('go').onclick=function(){idx=0;aciertos=0;ganadas=0;errPend=0;ronda()};
+  if($('cont'))$('cont').onclick=function(){idx=est.idx;aciertos=est.aciertos||0;ganadas=est.ganadas||0;errPend=est.err||0;ronda()};
 }
-function empezar(){idx=0;aciertos=0;ganadas=0;ronda()}
-function pausar(){guardarEstado();inicio()}
+function pausar(){inicio()}   /* el avance ya está guardado: solo se vuelve al inicio */
+
 function mezclarIdx(n){var a=[];for(var i=0;i<n;i++)a.push(i);for(var k=n-1;k>0;k--){var j=Math.floor(Math.random()*(k+1)),t=a[k];a[k]=a[j];a[j]=t}return a}
 function ronda(){
-  var r=RONDAS[idx];errores=0;bloq=false;pintarCab();guardarEstado();
+  var r=RONDAS[idx];errores=errPend;errPend=0;bloq=false;pintarCab();guardarAqui();
   $('bw').hidden=false;$('pau').hidden=false;$('bi').style.width=(idx/RONDAS.length*100)+'%';
   var tabla='';
   if(r.tab)tabla='<table class="tab"><tr>'+r.tab.map(function(x){return '<th>'+esc(x[0])+'</th>'}).join('')+'</tr><tr>'+r.tab.map(function(x){return '<td>'+x[1]+' Lumis</td>'}).join('')+'</tr></table>';
@@ -159,7 +174,7 @@ function ronda(){
   if(r.t==='num')resp='<div class="resp"><input id="in" type="text" inputmode="numeric" autocomplete="off" placeholder="Tu respuesta"><button class="btn" id="chk">Comprobar</button></div>';
   else resp='<div class="opcs" id="opcs">'+mezclarIdx(r.o.length).map(function(i){return '<button class="opcion" data-i="'+i+'">'+esc(r.o[i])+'</button>'}).join('')+'</div>';
   $('main').innerHTML='<div class="ronda"><div class="meta"><span>Ronda '+(idx+1)+' de '+RONDAS.length+'</span><span>Aciertos: '+aciertos+'</span></div>'+
-    '<span class="tema">'+esc(r.tema)+'</span><div class="q">'+esc(r.q)+tabla+'</div>'+resp+'<div class="fb" id="fb"></div><div id="sig"></div></div>';
+    '<span class="tema">'+esc(r.tema)+'</span><div class="q">'+esc(r.q)+tabla+'</div>'+resp+'<div class="fb" id="fb">'+(errores?'Casi... '+esc(r.h):'')+'</div><div id="sig"></div></div>';
   if(r.t==='num'){
     $('chk').onclick=comprobar;
     $('in').onkeydown=function(e){if(e.key==='Enter')comprobar()};
@@ -175,9 +190,7 @@ function comprobar(){
   resolver(v===RONDAS[idx].a,null);
 }
 function elegirOpc(i,b){if(bloq)return;resolver(i===RONDAS[idx].a,b)}
-function bloquear(){
-  var i=$('in'),c=$('chk');if(i)i.disabled=true;if(c)c.disabled=true;
-}
+function bloquear(){var i=$('in'),c=$('chk');if(i)i.disabled=true;if(c)c.disabled=true}
 function resolver(ok,b){
   var r=RONDAS[idx],fb=$('fb');
   if(ok){
@@ -185,19 +198,20 @@ function resolver(ok,b){
     if(b)b.classList.add('ok');else $('in').classList.add('okin');
     var msg='¡Correcto! '+r.s+'. ';
     if(errores<=1){
-      aciertos++;
+      aciertos++;                                   /* acierto: a la primera o a la segunda */
       var p=pagar(r.id);
-      if(p==='ok'){ganadas+=HOJAS;msg+='🍃 +'+HOJAS+' hojas';}
+      if(p==='ok'){ganadas+=HOJAS;msg+='🍃 +'+HOJAS+' hojas para el ranking';}
       else if(p==='ya')msg+='(Esta ronda ya te dio sus hojas antes)';
       else if(p==='prueba')msg+='🧪 Modo prueba: no se contaron';
       else msg+='No se pudieron guardar las hojas';
     }
-    fb.textContent=msg;pintarCab();bloquear();siguiente();return;
+    fb.textContent=msg;pintarCab();bloquear();guardarAvance();siguiente();return;
   }
   errores++;fb.className='fb';
   if(b){b.classList.add('no');setTimeout(function(){b.classList.remove('no')},500)}
   if(errores===1){
     fb.textContent='Casi... '+r.h;
+    guardarAqui();                                   /* recuerda el primer error aunque recargue la página */
     if(r.t==='num'){try{$('in').select()}catch(e){}}
     return;
   }
@@ -208,22 +222,19 @@ function resolver(ok,b){
   }else{
     fb.textContent='La respuesta es '+r.a+'. '+r.s+'.';
   }
-  siguiente();
+  guardarAvance();siguiente();
 }
 function siguiente(){
   var ult=idx>=RONDAS.length-1;
   $('sig').innerHTML='<button class="btn" id="nx">'+(ult?'Ver resultado':'Continuar')+'</button>';
-  $('nx').onclick=function(){if(ult)fin();else{idx++;ronda()}};
+  $('nx').onclick=function(){if(ult)resultado(aciertos,ganadas);else{idx++;errPend=0;ronda()}};
 }
-function fin(){
-  quitar(CLAVE_ESTADO);
+function resultado(ac,ga){
   $('bw').hidden=false;$('bi').style.width='100%';$('pau').hidden=true;pintarCab();
-  var perfecto=aciertos===RONDAS.length;
-  $('main').innerHTML='<div class="grande">'+HOJA+'</div><h1>'+(perfecto?'¡Maestro del plan financiero!':'¡Buen trabajo!')+'</h1>'+
-    '<div class="res"><div class="caja"><b>'+aciertos+'/'+RONDAS.length+'</b><small>aciertos</small></div><div class="caja"><b>🍃 '+ganadas+'</b><small>hojas ganadas ahora</small></div></div>'+
-    '<p class="d">'+(perfecto?'Resolviste todos los desafíos de Pensora.':'Puedes volver a jugar para practicar. Las rondas que ya te dieron hojas no las pagan otra vez.')+'</p>'+
-    '<button class="btn" id="otra">Jugar otra vez</button>';
-  $('otra').onclick=inicio;
+  var perfecto=ac===RONDAS.length;
+  $('main').innerHTML='<div class="grande">'+HOJA+'</div><h1>'+(perfecto?'¡Maestro del plan financiero!':'¡Plan completado!')+'</h1>'+
+    '<div class="res"><div class="caja"><b>'+ac+'/'+RONDAS.length+'</b><small>aciertos</small></div><div class="caja"><b>🍃 '+ga+'</b><small>hojas ganadas</small></div></div>'+
+    '<p class="d">'+(perfecto?'Resolviste todos los desafíos de Pensora.':'Terminaste todas las rondas.')+' Tus hojas ya se sumaron al ranking.</p>';
 }
 $('pau').onclick=pausar;
 window.addEventListener('storage',function(){pintarCab()});

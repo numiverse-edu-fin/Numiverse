@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Archivo de Ordenia</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:transparent;font-family:'Segoe UI',system-ui,sans-serif;user-select:none}
+body{padding:8px}
+.app{max-width:600px;margin:0 auto;background:#fffdf2;border:3px solid #207168;border-radius:22px;overflow:hidden;box-shadow:0 8px 24px rgba(32,113,104,.18);min-height:470px;display:flex;flex-direction:column}
+header{background:#207168;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
+.ti{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.em{font-size:20px;line-height:1}
+.der{display:flex;align-items:center;gap:8px}
+.hb{background:transparent;border:2px solid rgba(255,255,255,.75);color:#fff;border-radius:999px;padding:3px 11px;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer}
+.pill{background:#fff;color:#207168;border-radius:999px;padding:4px 14px 4px 10px;display:flex;align-items:center;gap:6px;font-weight:900;font-size:14px}
+.barra{height:8px;background:#dfeee7}
+.barra i{display:block;height:100%;width:0;background:#d4af37;transition:width .4s}
+main{flex:1;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.grande{font-size:72px;line-height:1;margin-bottom:6px}
+.grande .em{font-size:inherit}
+h1{margin:6px 0;color:#207168;font-size:28px}
+p.d{margin:8px 0 14px;color:#3d4f4b;font-weight:700;font-size:15px;line-height:1.5;max-width:470px}
+.btn{border:0;border-radius:16px;background:#207168;color:#fff;font-size:17px;font-weight:800;font-family:inherit;padding:14px 34px;cursor:pointer;box-shadow:0 5px 0 #16524a}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #16524a}
+.btn:disabled{background:#b9c7c3;box-shadow:0 5px 0 #98a8a3;cursor:default}
+.btn.sec{background:#fff;color:#207168;border:2px solid #207168;box-shadow:0 4px 0 #cfe0db;font-size:14px;padding:10px 18px}
+.fila-btn{display:flex;flex-direction:column;align-items:center;gap:12px}
+.ronda{width:100%;max-width:540px;text-align:left}
+.meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#207168;margin-bottom:8px}
+.tema{display:inline-block;background:#f2c94c;color:#5a4300;border-radius:999px;padding:2px 12px;font-size:11px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px}
+.q{background:#fff;border:2px solid #207168;border-radius:14px;padding:14px;font-size:16px;font-weight:700;color:#2c3e50;line-height:1.5}
+.resp{display:flex;gap:10px;margin-top:14px;align-items:stretch}
+.resp input{flex:1;min-width:0;font-size:24px;font-weight:900;text-align:center;color:#207168;border:3px solid #207168;border-radius:14px;padding:8px;font-family:inherit;outline:none;background:#fff;user-select:text}
+.resp input:focus{box-shadow:0 0 0 4px rgba(32,113,104,.18)}
+.resp input.okin{background:#d8f3e4;border-color:#1c8f5a}
+.resp .btn{padding:10px 20px;font-size:15px}
+.slots{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.slot{display:flex;align-items:center;gap:8px;min-height:42px;border:3px dashed #d4af37;border-radius:12px;background:#fff;padding:4px 10px;font-weight:800;font-size:14px;color:#207168}
+.slot .n{flex:0 0 26px;height:26px;border-radius:50%;background:#207168;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+.slot.vacio{color:#b3c2bf}.slot.vacio .n{background:#cfd8d5}
+.slot.lleno{border-style:solid;border-color:#207168;cursor:pointer}
+.slot.bien{background:#d8f3e4;border-color:#1c8f5a}
+.bandeja{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center}
+.ficha{font-family:inherit;font-size:14px;font-weight:800;color:#5a4300;background:linear-gradient(145deg,#f7e1a6,#e8c45e);border:2px solid #d4af37;border-radius:12px;padding:9px 12px;cursor:pointer;box-shadow:0 3px 0 #b8902a}
+.ficha:disabled{opacity:.28;cursor:default;box-shadow:none}
+.acc{display:flex;gap:10px;justify-content:center;margin-top:12px}
+.acc .btn{padding:10px 22px;font-size:15px}
+.cl-fila{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:2px solid #d4af37;border-radius:12px;padding:8px 10px;margin-top:8px}
+.cl-fila .tx{flex:1;font-weight:800;font-size:14px;color:#2c3e50;text-align:left}
+.bts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.cb{font-family:inherit;font-size:12px;font-weight:900;border:2px solid #207168;color:#207168;background:#fff;border-radius:10px;padding:6px 10px;cursor:pointer}
+.cb.sel{background:#207168;color:#fff}
+.cb.ayuda{animation:pulso .9s infinite;border-color:#b8860b;box-shadow:0 0 10px #f2c94c}
+@keyframes pulso{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.fb{min-height:54px;font-size:14px;font-weight:800;color:#b9650a;line-height:1.45;margin:10px 0 6px}
+.fb.bien{color:#1c8f5a}
+#sig{text-align:center}
+.res{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 14px}
+.caja{background:#fff;border:2px solid #207168;border-radius:14px;padding:10px 16px;color:#207168;font-weight:900}
+.caja b{display:block;font-size:26px}
+.caja small{font-size:11px;font-weight:800;color:#5c716d}
+.rango{display:inline-block;background:#f2c94c;color:#5a4300;border-radius:999px;padding:5px 16px;font-weight:900;font-size:14px;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="ti" id="ti"></div>
+    <div class="der"><button class="hb" id="pau" hidden>⏸ Pausar</button><div class="pill" id="pill"></div></div>
+  </header>
+  <div class="barra" id="bw" hidden><i id="bi"></i></div>
+  <main id="main"></main>
+</div>
+<script>
+/* ===== DATOS: 36 rondas. Cada ronda tiene un id fijo; las hojas se pagan una sola vez por ronda =====
+   t:'seq'  -> ordenar fichas. "items" está escrito en el ORDEN CORRECTO (en pantalla se mezclan).
+   t:'cl'   -> clasificar. "cats" son las categorías; cada item es [texto, número de categoría].
+   t:'num'  -> respuesta escrita con números. */
+var HOJAS=5;                                   /* hojas por acierto */
+var CLAVE_HECHAS='ordenia_hechas';             /* rondas que ya dieron hojas */
+var CLAVE_ESTADO='ordenia_progreso';           /* partida en pausa / terminada */
+var RONDAS=[
+ {id:'o01',tema:'Ordenar precios',t:'seq',q:'Ordena de MENOR a MAYOR precio. Toca las fichas en el orden correcto.',items:['Chicle · 2 Lumis','Jugo · 5 Lumis','Cuaderno · 12 Lumis','Mochila · 40 Lumis'],h:'Empieza por el número más pequeño.',s:'2 < 5 < 12 < 40'},
+ {id:'o02',tema:'Ordenar precios',t:'seq',q:'Ahora ordena de MAYOR a MENOR precio.',items:['Bicicleta · 150 Lumis','Patineta · 90 Lumis','Balón · 35 Lumis','Gorra · 18 Lumis'],h:'Empieza por el número más grande.',s:'150 > 90 > 35 > 18'},
+ {id:'o03',tema:'Necesidad o deseo',t:'cl',q:'Clasifica cada cosa: ¿es una necesidad o un deseo?',cats:['Necesidad','Deseo'],items:[['Comida',0],['Útiles escolares',0],['Videojuego nuevo',1],['Golosinas todos los días',1],['Ropa para el frío',0],['Juguete de moda',1]],h:'Una necesidad es algo que de verdad necesitas para vivir bien o estudiar.'},
+ {id:'o04',tema:'Libro de cuentas',t:'num',q:'Tu libro de cuentas empieza con 40 Lumis. Recibes 25 y luego gastas 18. ¿Cuántos Lumis tienes al final?',a:47,h:'Suma lo que entra y resta lo que sale.',s:'40 + 25 = 65 y 65 − 18 = 47'},
+ {id:'o05',tema:'Pasos del dinero',t:'seq',q:'Ordena los pasos para ahorrar para una meta.',items:['Elegir la meta y su precio','Calcular cuánto ahorrar cada semana','Apartar el ahorro apenas recibes dinero','Revisar el avance y celebrar al llegar'],h:'Primero sabes qué quieres; al final compruebas cómo te fue.',s:'Meta → cuánto ahorrar → apartar el ahorro → revisar'},
+ {id:'o06',tema:'Ingreso o gasto',t:'cl',q:'Clasifica: ¿entra dinero (ingreso) o sale dinero (gasto)?',cats:['Ingreso','Gasto'],items:[['Mesada',0],['Pagar la entrada del cine',1],['Vender limonada',0],['Comprar un cuaderno',1],['Regalo de cumpleaños en dinero',0],['Pagar el pasaje',1]],h:'Ingreso es lo que recibes; gasto es lo que pagas.'},
+ {id:'o07',tema:'Ordenar cuentas',t:'seq',q:'Calcula cada resultado y ordénalos de MENOR a MAYOR.',items:['3 × 4','2 × 9','5 × 5','7 × 6'],h:'Resuelve cada multiplicación antes de ordenar.',s:'12 < 18 < 25 < 42'},
+ {id:'o08',tema:'Libro de cuentas',t:'num',q:'Empiezas con 100 Lumis. Gastas 35, ganas 20 y gastas 15. ¿Cuántos Lumis tienes al final?',a:70,h:'Ve restando y sumando en el orden en que pasó.',s:'100 − 35 = 65; 65 + 20 = 85; 85 − 15 = 70'},
+ {id:'o09',tema:'Ordenar ahorros',t:'seq',q:'Ordena a los amigos de quien ahorró MENOS a quien ahorró MÁS.',items:['Cael · 29 Lumis','Kiro · 38 Lumis','Sami · 45 Lumis','Numi · 52 Lumis'],h:'Compara primero las decenas.',s:'29 < 38 < 45 < 52'},
+ {id:'o10',tema:'Gasto fijo o variable',t:'cl',q:'Clasifica estos gastos de una familia: ¿fijo (siempre igual) o variable (cambia)?',cats:['Fijo','Variable'],items:[['Arriendo',0],['Salida a comer',1],['Internet',0],['Cine',1],['Agua',0],['Ropa nueva',1]],h:'Un gasto fijo se paga igual cada mes; uno variable depende de lo que decidas gastar.'},
+ {id:'o11',tema:'Ordenar cuentas',t:'seq',q:'Calcula cada resultado y ordénalos de MAYOR a MENOR.',items:['4 × 15','5 × 11','3 × 18','6 × 8'],h:'Resuelve cada multiplicación y compara los resultados.',s:'60 > 55 > 54 > 48'},
+ {id:'o12',tema:'Libro de cuentas',t:'num',q:'Tu libro de cuentas empieza con 250 Lumis. Pagas 80 de arriendo y 45 de comida, y recibes 120. ¿Cuántos Lumis tienes al final?',a:245,h:'Suma lo que recibes y resta cada pago.',s:'250 − 80 − 45 = 125 y 125 + 120 = 245'},
+ {id:'o13',tema:'Pasos del dinero',t:'seq',q:'Ordena los pasos para hacer un presupuesto.',items:['Anotar cuánto dinero recibes','Anotar tus gastos fijos','Reservar una parte para ahorro','Repartir lo que queda en gastos variables'],h:'Primero sabes cuánto tienes; lo último que repartes es lo que sobra.',s:'Ingresos → gastos fijos → ahorro → gastos variables'},
+ {id:'o14',tema:'Decisiones',t:'cl',q:'Clasifica: ¿es un gasto inteligente o un gasto impulsivo?',cats:['Inteligente','Impulsivo'],items:[['Comprar siguiendo una lista de lo necesario',0],['Comprar algo solo porque otro lo tiene',1],['Comparar precios antes de comprar',0],['Comprar dulces en la caja por antojo',1],['Esperar la oferta de un cuaderno que necesitas',0]],h:'Inteligente es pensar antes de comprar; impulsivo es comprar sin pensar.'},
+ {id:'o15',tema:'Ordenar porcentajes',t:'seq',q:'Calcula cuánto ahorras en cada caso y ordénalos de MENOR a MAYOR.',items:['5% de 200','20% de 100','10% de 300','25% de 200'],h:'5% es la veinteava parte, 10% la décima, 20% la quinta y 25% la cuarta.',s:'10 < 20 < 30 < 50'},
+ {id:'o16',tema:'Libro de cuentas',t:'num',q:'Mateo gastó esta semana 6 Lumis el lunes, 9 el martes, 4 el miércoles y 11 el jueves. Su presupuesto semanal era 40 Lumis. ¿Cuántos Lumis le sobran?',a:10,h:'Suma los cuatro gastos y réstalos del presupuesto.',s:'6 + 9 + 4 + 11 = 30 y 40 − 30 = 10'},
+ {id:'o17',tema:'Ordenar ahorros',t:'seq',q:'Calcula cuánto junta cada plan y ordénalos de MAYOR a MENOR.',items:['20 por semana, 5 semanas','11 por semana, 9 semanas','8 por semana, 12 semanas','15 por semana, 6 semanas'],h:'Multiplica lo que ahorra por semana por el número de semanas.',s:'100 > 99 > 96 > 90'},
+ {id:'o18',tema:'Necesidad o deseo',t:'cl',q:'Clasifica con cuidado: ¿necesidad o deseo?',cats:['Necesidad','Deseo'],items:[['Medicinas',0],['Zapatillas de edición limitada',1],['Útiles para la tarea',0],['Una suscripción de películas',1],['Transporte a la escuela',0]],h:'Pregúntate: ¿puedo vivir y estudiar bien sin esto?'},
+ {id:'o19',tema:'Libro de cuentas',t:'num',q:'Saldo inicial: 60 Lumis. Mesada: +30. Compra: −24. Venta de un libro: +18. Regalo a un amigo: −10. ¿Cuál es el saldo final?',a:74,h:'Los + suman y los − restan, uno por uno.',s:'60 + 30 = 90; 90 − 24 = 66; 66 + 18 = 84; 84 − 10 = 74'},
+ {id:'o20',tema:'Pasos del dinero',t:'seq',q:'Ordena los pasos para comprar con cabeza.',items:['Decidir si de verdad lo necesitas','Comparar precios en varios lugares','Revisar que te alcance el dinero','Pagar y guardar el comprobante'],h:'Antes de pagar, piensa, compara y comprueba.',s:'Necesitarlo → comparar → ver si alcanza → pagar'},
+ {id:'o21',tema:'Ingreso, gasto o ahorro',t:'cl',q:'Clasifica: ¿ingreso, gasto o ahorro?',cats:['Ingreso','Gasto','Ahorro'],items:[['Cobrar por cuidar un perro',0],['Pagar el almuerzo',1],['Guardar 10 Lumis en la alcancía',2],['Vender un libro usado',0],['Comprar un helado',1],['Depositar dinero en el banco',2]],h:'Ahorro es dinero que guardas para después; no se gasta ahora.'},
+ {id:'o22',tema:'Ordenar ofertas',t:'seq',q:'Calcula el precio de UNA unidad y ordena las ofertas de la MÁS BARATA a la MÁS CARA.',items:['2 por 6 Lumis','3 por 12 Lumis','4 por 20 Lumis','5 por 30 Lumis'],h:'Divide el precio entre la cantidad en cada oferta.',s:'3 < 4 < 5 < 6 por unidad'},
+ {id:'o23',tema:'Presupuesto',t:'num',q:'Repartes 150 Lumis así: 50% para necesidades, 30% para deseos y 20% para ahorro. ¿Cuántos Lumis más van a necesidades que a deseos?',a:30,h:'Calcula cada parte y réstalas. También puedes restar los porcentajes primero.',s:'50% de 150 = 75 y 30% de 150 = 45; 75 − 45 = 30'},
+ {id:'o24',tema:'Ordenar intereses',t:'seq',q:'Calcula el interés que gana cada depósito en un año y ordénalos de MAYOR a MENOR.',items:['200 Lumis al 10%','300 Lumis al 5%','500 Lumis al 2%','100 Lumis al 8%'],h:'Calcula el porcentaje de cada cantidad.',s:'20 > 15 > 10 > 8'},
+ {id:'o25',tema:'Suma o resta',t:'cl',q:'Clasifica: ¿esto suma a tu dinero o lo resta?',cats:['Suma','Resta'],items:[['Una alcancía con ahorros',0],['Una deuda con un amigo',1],['Un depósito que gana interés',0],['Una cuota pendiente de pago',1],['Un puesto que vende limonada',0],['Una multa por devolver tarde un libro',1]],h:'Piensa si te da dinero o te lo quita.'},
+ {id:'o26',tema:'Ganancias',t:'num',q:'Ordenia compra 20 cuadernos a 6 Lumis cada uno. Vende 15 de ellos a 10 Lumis cada uno. ¿Cuántos Lumis ganó en total (lo que cobró menos lo que gastó)?',a:30,h:'Calcula lo que cobró, lo que gastó y réstalos.',s:'Cobró 15 × 10 = 150; gastó 20 × 6 = 120; 150 − 120 = 30'},
+ {id:'o27',tema:'Pasos del dinero',t:'seq',q:'Ordena los pasos para pagar una deuda.',items:['Anotar cuánto debes y a quién','Acordar cuántas cuotas y de cuánto','Apartar el dinero de la cuota cada semana','Pagar a tiempo y tachar la deuda'],h:'Primero sabes cuánto debes; lo último es pagar.',s:'Anotar → acordar cuotas → apartar dinero → pagar'},
+ {id:'o28',tema:'Presupuesto',t:'num',q:'Cael tiene 200 Lumis. Gasta el 30% en útiles y después ahorra la mitad de lo que le queda. ¿Cuántos Lumis ahorra?',a:70,h:'Calcula el 30%, réstalo y toma la mitad de lo que queda.',s:'30% de 200 = 60; quedan 140; la mitad es 70'},
+ {id:'o29',tema:'Ordenar saldos',t:'seq',q:'Calcula cada saldo final y ordénalos de MENOR a MAYOR.',items:['B: 80 − 35','D: 100 − 20 − 25','A: 50 + 20 − 10','C: 30 + 30 + 15'],h:'Resuelve cada cuenta antes de ordenar.',s:'B 45 < D 55 < A 60 < C 75'},
+ {id:'o30',tema:'Gasto fijo o variable',t:'cl',q:'Clasifica: ¿gasto fijo o gasto variable?',cats:['Fijo','Variable'],items:[['Cuota del colegio',0],['Helado del domingo',1],['Plan del celular',0],['Entrada a un concierto',1],['Mensualidad de música',0],['Regalo de cumpleaños',1]],h:'Los gastos fijos se repiten igual cada mes.'},
+ {id:'o31',tema:'Libro de cuentas',t:'num',q:'Un mes empiezas con 300 Lumis. Ingresos: 120 y 80. Gastos: 150, 90 y 40. ¿Cuántos Lumis tienes al final del mes?',a:220,h:'Suma todos los ingresos, suma todos los gastos y réstalos del saldo.',s:'Ingresos: 120 + 80 = 200. Gastos: 150 + 90 + 40 = 280. 300 + 200 − 280 = 220'},
+ {id:'o32',tema:'Ordenar ganancias',t:'seq',q:'Calcula la ganancia total de cada negocio y ordénalos de MAYOR a MENOR.',items:['5 productos, ganancia de 9 cada uno','6 productos, ganancia de 7 cada uno','8 productos, ganancia de 4 cada uno','10 productos, ganancia de 3 cada uno'],h:'Multiplica la cantidad por la ganancia de cada uno.',s:'45 > 42 > 32 > 30'},
+ {id:'o33',tema:'Prioridades',t:'cl',q:'¿En qué orden se usa el dinero? Primero se ahorra, luego se pagan las necesidades y al final los deseos.',cats:['1º Ahorro','2º Necesidad','3º Deseo'],items:[['Separar 20% para ahorrar',0],['Pagar el transporte a la escuela',1],['Comprar un desayuno saludable',1],['Entradas a un parque de diversiones',2],['Pagar los útiles para la tarea',1],['Comprar stickers coleccionables',2]],h:'El ahorro va primero, después lo necesario y al final lo que solo quieres.'},
+ {id:'o34',tema:'Cuotas',t:'num',q:'Una bicicleta cuesta 180 Lumis de contado. En la tienda la ofrecen en 6 cuotas de 33 Lumis. ¿Cuántos Lumis más pagas por comprarla en cuotas?',a:18,h:'Calcula cuánto pagas en total con las cuotas y réstale el precio de contado.',s:'6 × 33 = 198 y 198 − 180 = 18'},
+ {id:'o35',tema:'Pasos del dinero',t:'seq',q:'Ordena los pasos para invertir con cabeza.',items:['Tener un fondo de emergencia','Elegir una meta y un plazo','Comparar lo que paga cada banco','Depositar una parte de tu ahorro','Revisar cada año cuánto creció'],h:'Primero te proteges, luego eliges, comparas, depositas y revisas.',s:'Emergencia → meta → comparar → depositar → revisar'},
+ {id:'o36',tema:'Reto final',t:'num',q:'Ahorras 20 Lumis por semana durante 10 semanas. El banco te paga 5% de interés sobre lo ahorrado. Después compras algo de 150 Lumis. ¿Cuántos Lumis te quedan?',a:60,h:'Calcula lo ahorrado, súmale el interés y luego réstale la compra.',s:'20 × 10 = 200; 5% de 200 = 10; 200 + 10 = 210; 210 − 150 = 60'}
+];
+/*FIN_DATOS*/
+
+var $=function(id){return document.getElementById(id)};
+function leer_(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lista(k){try{return JSON.parse(leer_(k))||[]}catch(e){return []}}
+function quitar(k){try{localStorage.removeItem(k)}catch(e){}}
+function modoPrueba(){return leer_('modo_prueba')==='1'}
+function hojasTotal(){return parseInt(leer_('hojas_actuales'))||0}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+var HOJA='<span class="em">🍃</span>';
+var ICONO='<span class="em">🗂️</span>';
+var ELOGIOS=['¡Todo en su lugar!','¡Orden perfecto!','¡Ordenia aplaude!','¡Cuentas claras!','¡Bien archivado!','¡Así se ordena!'];
+
+/* ===== progreso guardado (una sola partida: no se puede empezar de nuevo) ===== */
+function leerEstado(){
+  try{
+    var e=JSON.parse(leer_(CLAVE_ESTADO));if(!e)return null;
+    if(e.fin)return e;
+    return(e.idx>=0&&e.idx<RONDAS.length)?e:null;
+  }catch(x){return null}
+}
+function guardar(o){try{localStorage.setItem(CLAVE_ESTADO,JSON.stringify(o))}catch(e){}}
+function guardarAqui(){guardar({idx:idx,aciertos:aciertos,ganadas:ganadas,err:errores,racha:racha,mejor:mejor})}
+function guardarAvance(){
+  if(idx+1>=RONDAS.length)guardar({fin:true,idx:RONDAS.length-1,aciertos:aciertos,ganadas:ganadas,racha:racha,mejor:mejor});
+  else guardar({idx:idx+1,aciertos:aciertos,ganadas:ganadas,err:0,racha:racha,mejor:mejor});
+}
+
+var idx=0,errores=0,errPend=0,bloq=false,aciertos=0,ganadas=0,racha=0,mejor=0;
+var muestra=[],sel=[],asg=[];
+function pintarCab(){
+  $('ti').innerHTML=ICONO+'<span>Archivo de Ordenia</span>';
+  $('pill').innerHTML=HOJA+'<span>'+hojasTotal()+'</span>';
+}
+/* Suma las hojas al ranking (y al contador) una sola vez por ronda */
+function pagar(id){
+  if(modoPrueba())return 'prueba';
+  var hechas=lista(CLAVE_HECHAS);
+  if(hechas.indexOf(id)>=0)return 'ya';
+  try{
+    ['ranking_exploradores_hojas','hojas_actuales'].forEach(function(k){localStorage.setItem(k,String((parseInt(localStorage.getItem(k))||0)+HOJAS))});
+    hechas.push(id);localStorage.setItem(CLAVE_HECHAS,JSON.stringify(hechas));
+    return 'ok';
+  }catch(e){return 'error'}
+}
+
+function inicio(){
+  $('bw').hidden=true;$('pau').hidden=true;pintarCab();
+  var est=leerEstado();
+  if(est&&est.fin){resultado(est.aciertos||0,est.ganadas||0,est.mejor||0);return}
+  var h='<div class="grande">'+ICONO+'</div><h1>Archivo de Ordenia</h1>'+
+    '<p class="d">Ordena precios, clasifica gastos, arma tu libro de cuentas y completa los pasos del dinero. ¡En Ordenia todo debe estar en su lugar!<br>Son <b>'+RONDAS.length+' rondas</b> y cada acierto gana <b>'+HOJAS+' Hojas de la Sabiduría</b> 🍃</p>'+
+    '<p class="d" style="margin-top:-6px">Si te equivocas, recibes una pista y un segundo intento. Cada ronda se juega una sola vez. ¡Consigue la mayor 🔥 racha!</p>'+
+    '<div class="fila-btn">';
+  if(est)h+='<p class="d" style="margin:0">⏸ Partida en pausa: vas por la ronda '+(est.idx+1)+' de '+RONDAS.length+'</p><button class="btn" id="cont">▶ Continuar</button>';
+  else h+='<button class="btn" id="go">¡Entrar al archivo!</button>';
+  h+='</div>';
+  $('main').innerHTML=h;
+  if($('go'))$('go').onclick=function(){idx=0;aciertos=0;ganadas=0;racha=0;mejor=0;errPend=0;ronda()};
+  if($('cont'))$('cont').onclick=function(){idx=est.idx;aciertos=est.aciertos||0;ganadas=est.ganadas||0;racha=est.racha||0;mejor=est.mejor||0;errPend=est.err||0;ronda()};
+}
+function pausar(){inicio()}   /* el avance ya está guardado: solo se vuelve al inicio */
+
+function permutar(n){
+  var a=[],i,k,j,t,igual;
+  for(i=0;i<n;i++)a.push(i);
+  do{
+    for(k=n-1;k>0;k--){j=Math.floor(Math.random()*(k+1));t=a[k];a[k]=a[j];a[j]=t}
+    igual=a.every(function(v,p){return v===p});
+  }while(igual&&n>1);
+  return a;
+}
+
+/* ===== ronda ===== */
+function ronda(){
+  var r=RONDAS[idx];errores=errPend;errPend=0;bloq=false;sel=[];asg=[];pintarCab();guardarAqui();
+  $('bw').hidden=false;$('pau').hidden=false;$('bi').style.width=(idx/RONDAS.length*100)+'%';
+  var cuerpo='';
+  if(r.t==='num'){
+    cuerpo='<div class="resp"><input id="in" type="text" inputmode="numeric" autocomplete="off" placeholder="Tu respuesta"><button class="btn" id="chk">Comprobar</button></div>';
+  }else if(r.t==='seq'){
+    muestra=permutar(r.items.length);
+    cuerpo='<div class="slots" id="slots"></div><div class="bandeja" id="bandeja"></div><div class="acc"><button class="btn sec" id="borrar">Borrar</button><button class="btn" id="chk" disabled>Comprobar</button></div>';
+  }else{
+    cuerpo='<div id="clas"></div><div class="acc"><button class="btn" id="chk" disabled>Comprobar</button></div>';
+  }
+  $('main').innerHTML='<div class="ronda"><div class="meta"><span>Ronda '+(idx+1)+' de '+RONDAS.length+'</span><span>Aciertos: '+aciertos+' · 🔥 racha '+racha+'</span></div>'+
+    '<span class="tema">'+esc(r.tema)+'</span><div class="q">'+esc(r.q)+'</div>'+cuerpo+'<div class="fb" id="fb">'+(errores?'Casi... '+esc(r.h):'')+'</div><div id="sig"></div></div>';
+  if(r.t==='num'){
+    $('chk').onclick=comprobar;
+    $('in').onkeydown=function(e){if(e.key==='Enter')comprobar()};
+    setTimeout(function(){try{$('in').focus()}catch(e){}},50);
+  }else if(r.t==='seq'){
+    $('chk').onclick=comprobarSeq;$('borrar').onclick=function(){if(!bloq){sel=[];pintarSeq()}};
+    pintarSeq();
+  }else{
+    $('chk').onclick=comprobarCl;pintarCl();
+  }
+}
+/* un solo oyente de clics para fichas, casillas y botones de categoría */
+function clic(e){
+  var t=e.target&&e.target.closest?e.target.closest('[data-act]'):null;if(!t)return;
+  var a=t.getAttribute('data-act');
+  if(a==='ficha')colocar(parseInt(t.getAttribute('data-id'),10));
+  else if(a==='slot')quitarSlot(parseInt(t.getAttribute('data-k'),10));
+  else if(a==='asg')asignar(parseInt(t.getAttribute('data-i'),10),parseInt(t.getAttribute('data-c'),10));
+}
+
+/* --- ordenar fichas --- */
+function pintarSeq(){
+  var r=RONDAS[idx],n=r.items.length,sl='',k,b='';
+  for(k=0;k<n;k++){
+    if(sel[k]===undefined)sl+='<div class="slot vacio"><span class="n">'+(k+1)+'</span>…</div>';
+    else sl+='<div class="slot lleno'+(bloq&&sel[k]===k?' bien':'')+'" data-act="slot" data-k="'+k+'"><span class="n">'+(k+1)+'</span>'+esc(r.items[sel[k]])+'</div>';
+  }
+  $('slots').innerHTML=sl;
+  muestra.forEach(function(id){b+='<button class="ficha" data-act="ficha" data-id="'+id+'"'+((sel.indexOf(id)>=0||bloq)?' disabled':'')+'>'+esc(r.items[id])+'</button>'});
+  $('bandeja').innerHTML=b;
+  $('chk').disabled=bloq||sel.length!==n;
+}
+function colocar(id){
+  var r=RONDAS[idx];if(bloq||r.t!=='seq'||sel.indexOf(id)>=0||sel.length>=r.items.length)return;
+  sel.push(id);pintarSeq();
+}
+function quitarSlot(k){if(bloq||sel[k]===undefined)return;sel.splice(k,1);pintarSeq()}
+function comprobarSeq(){
+  var r=RONDAS[idx],n=r.items.length;if(bloq||sel.length!==n)return;
+  var bien=0;sel.forEach(function(v,k){if(v===k)bien++});
+  resolver(bien===n,bien+' de '+n+' fichas están en su lugar.');
+}
+
+/* --- clasificar --- */
+function pintarCl(){
+  var r=RONDAS[idx],h='';
+  r.items.forEach(function(it,i){
+    h+='<div class="cl-fila"><span class="tx">'+esc(it[0])+'</span><span class="bts">'+r.cats.map(function(c,k){
+      return '<button class="cb'+(asg[i]===k?' sel':'')+(bloq&&it[1]===k?' ayuda':'')+'" data-act="asg" data-i="'+i+'" data-c="'+k+'">'+esc(c)+'</button>'}).join('')+'</span></div>';
+  });
+  $('clas').innerHTML=h;
+  var completo=r.items.every(function(_,i){return asg[i]!==undefined});
+  $('chk').disabled=bloq||!completo;
+}
+function asignar(i,c){var r=RONDAS[idx];if(bloq||r.t!=='cl')return;asg[i]=c;pintarCl()}
+function comprobarCl(){
+  var r=RONDAS[idx];if(bloq)return;
+  if(!r.items.every(function(_,i){return asg[i]!==undefined}))return;
+  var bien=0;r.items.forEach(function(it,i){if(asg[i]===it[1])bien++});
+  resolver(bien===r.items.length,bien+' de '+r.items.length+' están bien clasificados.');
+}
+function solucion(r){
+  if(r.t==='cl')return r.cats.map(function(c,k){
+    return c+': '+r.items.filter(function(it){return it[1]===k}).map(function(it){return it[0]}).join(', ');
+  }).join('. ');
+  return r.s;
+}
+
+/* --- respuesta escrita --- */
+function comprobar(){
+  if(bloq)return;
+  var v=parseInt(String($('in').value).replace(/[^0-9]/g,''),10);
+  if(isNaN(v)){$('fb').className='fb';$('fb').textContent='Escribe tu respuesta con números.';return}
+  resolver(v===RONDAS[idx].a,'');
+}
+
+/* --- resultado de la ronda (igual para los tres tipos) --- */
+function resolver(ok,extra){
+  var r=RONDAS[idx],fb=$('fb');
+  if(ok){
+    bloq=true;fb.className='fb bien';
+    if(r.t==='num')$('in').classList.add('okin');
+    var msg='¡Correcto! '+ELOGIOS[Math.floor(Math.random()*ELOGIOS.length)]+' ';
+    if(r.s)msg+=r.s+'. ';
+    if(errores<=1){
+      aciertos++;racha++;if(racha>mejor)mejor=racha;
+      var p=pagar(r.id);
+      if(p==='ok'){ganadas+=HOJAS;msg+='🍃 +'+HOJAS+' hojas para el ranking';}
+      else if(p==='ya')msg+='(Esta ronda ya te dio sus hojas antes)';
+      else if(p==='prueba')msg+='🧪 Modo prueba: no se contaron';
+      else msg+='No se pudieron guardar las hojas';
+    }
+    fb.textContent=msg;pintarCab();terminarRonda();return;
+  }
+  errores++;fb.className='fb';
+  if(errores===1){
+    fb.textContent='Casi... '+(extra?extra+' ':'')+r.h;
+    guardarAqui();                                   /* recuerda el primer error aunque recargue la página */
+    if(r.t==='num'){try{$('in').select()}catch(e){}}
+    return;
+  }
+  bloq=true;racha=0;
+  if(r.t==='seq'){sel=r.items.map(function(_,k){return k})}
+  if(r.t==='cl'){asg=r.items.map(function(it){return it[1]})}
+  fb.textContent='Así queda bien: '+solucion(r)+'.';
+  if(r.t==='num')fb.textContent='La respuesta es '+r.a+'. '+r.s+'.';
+  terminarRonda();
+}
+function terminarRonda(){
+  var r=RONDAS[idx];
+  if(r.t==='num'){var i=$('in'),c=$('chk');if(i)i.disabled=true;if(c)c.disabled=true}
+  else if(r.t==='seq')pintarSeq();
+  else pintarCl();
+  guardarAvance();siguiente();
+}
+function siguiente(){
+  var ult=idx>=RONDAS.length-1;
+  $('sig').innerHTML='<button class="btn" id="nx">'+(ult?'Ver resultado':'Continuar')+'</button>';
+  $('nx').onclick=function(){if(ult)resultado(aciertos,ganadas,mejor);else{idx++;errPend=0;ronda()}};
+}
+function rango(ac){
+  var p=ac/RONDAS.length;
+  if(p>=0.9)return 'Gran Ordenador de Ordenia';
+  if(p>=0.7)return 'Guardián del Orden';
+  if(p>=0.5)return 'Aprendiz del Orden';
+  return 'Explorador del Orden';
+}
+function resultado(ac,ga,me){
+  $('bw').hidden=false;$('bi').style.width='100%';$('pau').hidden=true;pintarCab();
+  $('main').innerHTML='<div class="grande">'+HOJA+'</div><span class="rango">'+rango(ac)+'</span><h1>¡Archivo completado!</h1>'+
+    '<div class="res"><div class="caja"><b>'+ac+'/'+RONDAS.length+'</b><small>aciertos</small></div><div class="caja"><b>🍃 '+ga+'</b><small>hojas ganadas</small></div><div class="caja"><b>🔥 '+me+'</b><small>mejor racha</small></div></div>'+
+    '<p class="d">Terminaste todas las rondas. Tus hojas ya se sumaron al ranking.</p>';
+}
+$('main').addEventListener('click',clic);
+$('pau').onclick=pausar;
+window.addEventListener('storage',function(){pintarCab()});
+inicio();
+</script>
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jardín de Jadelia</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:transparent;font-family:'Segoe UI',system-ui,sans-serif;user-select:none}
+body{padding:8px}
+.app{max-width:600px;margin:0 auto;background:#fffdf2;border:3px solid #207168;border-radius:22px;overflow:hidden;box-shadow:0 8px 24px rgba(32,113,104,.18);min-height:470px;display:flex;flex-direction:column}
+header{background:#207168;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
+.ti{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.em{font-size:20px;line-height:1}
+.der{display:flex;align-items:center;gap:8px}
+.hb{background:transparent;border:2px solid rgba(255,255,255,.75);color:#fff;border-radius:999px;padding:3px 11px;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer}
+.pill{background:#fff;color:#207168;border-radius:999px;padding:4px 14px 4px 10px;display:flex;align-items:center;gap:6px;font-weight:900;font-size:14px}
+.barra{height:8px;background:#dfeee7}
+.barra i{display:block;height:100%;width:0;background:#d4af37;transition:width .4s}
+main{flex:1;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.grande{font-size:72px;line-height:1;margin-bottom:6px}
+.grande .em{font-size:inherit}
+h1{margin:6px 0;color:#207168;font-size:28px}
+p.d{margin:8px 0 14px;color:#3d4f4b;font-weight:700;font-size:15px;line-height:1.5;max-width:470px}
+.btn{border:0;border-radius:16px;background:#207168;color:#fff;font-size:17px;font-weight:800;font-family:inherit;padding:14px 34px;cursor:pointer;box-shadow:0 5px 0 #16524a}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #16524a}
+.btn:disabled{background:#b9c7c3;box-shadow:0 5px 0 #98a8a3;cursor:default}
+.btn.sec{background:#fff;color:#207168;border:2px solid #207168;box-shadow:0 4px 0 #cfe0db;font-size:14px;padding:10px 18px}
+.fila-btn{display:flex;flex-direction:column;align-items:center;gap:12px}
+.ronda{width:100%;max-width:540px;text-align:left}
+.meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#207168;margin-bottom:8px}
+.tema{display:inline-block;background:#f2c94c;color:#5a4300;border-radius:999px;padding:2px 12px;font-size:11px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px}
+.q{background:#fff;border:2px solid #207168;border-radius:14px;padding:14px;font-size:16px;font-weight:700;color:#2c3e50;line-height:1.5}
+.resp{display:flex;gap:10px;margin-top:14px;align-items:stretch}
+.resp input{flex:1;min-width:0;font-size:24px;font-weight:900;text-align:center;color:#207168;border:3px solid #207168;border-radius:14px;padding:8px;font-family:inherit;outline:none;background:#fff;user-select:text}
+.resp input:focus{box-shadow:0 0 0 4px rgba(32,113,104,.18)}
+.resp input.okin{background:#d8f3e4;border-color:#1c8f5a}
+.resp .btn{padding:10px 20px;font-size:15px}
+.opcs{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.opcion{text-align:left;font-family:inherit;font-size:15px;font-weight:800;color:#207168;background:#fff;border:3px solid #207168;border-radius:14px;padding:11px 14px;cursor:pointer}
+.opcion.ok{background:#d8f3e4;border-color:#1c8f5a}
+.opcion.no{animation:shake .4s}
+.opcion.ayuda,.cb.ayuda{animation:pulso .9s infinite;border-color:#b8860b;box-shadow:0 0 12px #f2c94c}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pulso{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.acc{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.acc .btn{padding:10px 22px;font-size:15px}
+.cl-fila{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:2px solid #d4af37;border-radius:12px;padding:8px 10px;margin-top:8px}
+.cl-fila .tx{flex:1;font-weight:800;font-size:14px;color:#2c3e50;text-align:left}
+.bts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.cb{font-family:inherit;font-size:12px;font-weight:900;border:2px solid #207168;color:#207168;background:#fff;border-radius:10px;padding:6px 10px;cursor:pointer}
+.cb.sel{background:#207168;color:#fff}
+/* simulador de años */
+.t-info{font-size:13px;font-weight:800;color:#5c716d;text-align:center;margin-top:10px}
+.t-meta{text-align:center;font-weight:900;color:#207168;margin:6px 0;font-size:16px}
+.t-cuadro{display:flex;justify-content:center;align-items:center;gap:14px;background:#fff;border:3px solid #207168;border-radius:16px;padding:10px;flex-wrap:wrap}
+.t-anio,.t-valor{font-size:15px;font-weight:800;color:#207168}
+.t-anio b{font-size:28px}.t-valor b{font-size:30px}
+.t-plant{font-size:36px;line-height:1}
+.t-bar{height:12px;background:#dfeee7;border-radius:999px;margin:10px 0;overflow:hidden}
+.t-bar i{display:block;height:100%;background:linear-gradient(90deg,#8fe36b,#2ecc71);transition:width .3s}
+.t-hist{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:28px}
+.t-hist span{background:#fff4cc;border:2px solid #d4af37;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:800;color:#5a4300}
+/* reparto */
+.rp-obj{text-align:center;font-weight:900;color:#207168;margin-top:10px;font-size:15px}
+.rp-card{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:3px solid #207168;border-radius:14px;padding:10px 12px;margin-top:8px;font-weight:800;color:#207168}
+.rp-card b{font-size:22px}
+.rp-card small{display:block;font-size:11px;color:#5c716d;font-weight:700}
+.rp-gan{text-align:center;margin-top:10px;font-weight:900;color:#207168;font-size:16px;background:#f3faf6;border:2px dashed #207168;border-radius:12px;padding:8px}
+.fb{min-height:54px;font-size:14px;font-weight:800;color:#b9650a;line-height:1.45;margin:10px 0 6px}
+.fb.bien{color:#1c8f5a}
+#sig{text-align:center}
+.res{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 14px}
+.caja{background:#fff;border:2px solid #207168;border-radius:14px;padding:10px 16px;color:#207168;font-weight:900}
+.caja b{display:block;font-size:26px}
+.caja small{font-size:11px;font-weight:800;color:#5c716d}
+.rango{display:inline-block;background:#f2c94c;color:#5a4300;border-radius:999px;padding:5px 16px;font-weight:900;font-size:14px;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="ti" id="ti"></div>
+    <div class="der"><button class="hb" id="pau" hidden>⏸ Pausar</button><div class="pill" id="pill"></div></div>
+  </header>
+  <div class="barra" id="bw" hidden><i id="bi"></i></div>
+  <main id="main"></main>
+</div>
+<script>
+/* ===== DATOS: 40 rondas. Cada ronda tiene un id fijo; las hojas se pagan una sola vez por ronda =====
+   t:'num'     -> respuesta escrita con números.
+   t:'opc'     -> elegir una opción (o = opciones, a = número de la correcta).
+   t:'cl'      -> clasificar (cats = categorías; items = [texto, categoría]).
+   t:'tiempo'  -> simulador: avanza años y cosecha justo cuando se llega a la meta.
+   t:'rep'     -> repartir el dinero entre dos inversiones para lograr una ganancia exacta. */
+var HOJAS=5;                                   /* hojas por acierto */
+var CLAVE_HECHAS='jadelia_hechas';             /* rondas que ya dieron hojas */
+var CLAVE_ESTADO='jadelia_progreso';           /* partida en pausa / terminada */
+var RONDAS=[
+ {id:'j01',tema:'Ganar o perder',t:'opc',q:'Invertiste 80 Lumis y hoy tu inversión vale 92 Lumis. ¿Qué pasó?',o:['Ganaste 12 Lumis','Perdiste 12 Lumis','Ganaste 92 Lumis','No ganaste ni perdiste'],a:0,h:'Compara lo que invertiste con lo que vale hoy.',s:'92 − 80 = 12: ganaste 12 Lumis'},
+ {id:'j02',tema:'Inversión o gasto',t:'cl',q:'Clasifica: ¿es una inversión (puede hacerte ganar más dinero) o un gasto?',cats:['Inversión','Gasto'],items:[['Depositar en un banco que paga interés',0],['Comprar una consola solo para jugar',1],['Comprar semillas para vender verduras',0],['Comprar dulces',1],['Pagar un curso para aprender a programar',0],['Comprar un juguete de moda',1]],h:'Una inversión busca darte más dinero o más capacidad en el futuro.'},
+ {id:'j03',tema:'El tiempo hace crecer',t:'tiempo',q:'Haz crecer tu semilla. Avanza los años y cosecha apenas llegues a la meta. El interés simple siempre se calcula sobre el capital inicial.',cap:100,tasa:10,tipo:'simple',meta:130,h:'Cada año suma 10 Lumis. Avanza año por año y mira el total.'},
+ {id:'j04',tema:'Ganancias',t:'num',q:'Compras 12 semillas a 5 Lumis cada una. Con las verduras que crecen ganas 96 Lumis vendiéndolas. ¿Cuántos Lumis ganaste de más?',a:36,h:'Calcula primero cuánto gastaste en semillas.',s:'12 × 5 = 60 y 96 − 60 = 36'},
+ {id:'j05',tema:'Ganar o perder',t:'opc',q:'Invertiste 150 Lumis y hoy tu inversión vale 135 Lumis. ¿Qué pasó?',o:['Ganaste 15 Lumis','Perdiste 15 Lumis','Perdiste 135 Lumis','Ganaste 285 Lumis'],a:1,h:'Compara lo que invertiste con lo que vale hoy.',s:'150 − 135 = 15: perdiste 15 Lumis'},
+ {id:'j06',tema:'Plazo',t:'opc',q:'Si dejas tu dinero invertido más tiempo en un banco que paga interés, normalmente...',o:['Ganas más interés en total','Ganas menos interés en total','No cambia nada','El banco te cobra el dinero'],a:0,h:'El interés se paga por cada año que el dinero está invertido.',s:'Más tiempo invertido significa más años de interés'},
+ {id:'j07',tema:'El tiempo hace crecer',t:'tiempo',q:'Haz crecer tu semilla. Avanza los años y cosecha apenas llegues a la meta (interés simple).',cap:300,tasa:10,tipo:'simple',meta:390,h:'Cada año ganas el 10% de 300.'},
+ {id:'j08',tema:'Pérdidas',t:'num',q:'Invertiste 250 Lumis y hoy tu inversión vale 205 Lumis. ¿Cuántos Lumis perdiste?',a:45,h:'Resta lo que vale hoy a lo que invertiste.',s:'250 − 205 = 45'},
+ {id:'j09',tema:'Ganar o perder',t:'cl',q:'Clasifica cada caso: ¿hubo ganancia o pérdida?',cats:['Ganancia','Pérdida'],items:[['Compré a 50 y vendí a 70',0],['Compré a 80 y vendí a 65',1],['Invertí 100 y hoy valen 112',0],['Invertí 200 y hoy valen 180',1],['Compré a 30 y vendí a 45',0]],h:'Si vendes o vale más de lo que pagaste, hay ganancia.'},
+ {id:'j10',tema:'Repartir semillas',t:'rep',q:'Reparte tus Lumis entre las dos inversiones. Usa los botones hasta ganar EXACTAMENTE lo que pide el objetivo en un año.',total:100,paso:10,A:{n:'Banco seguro',e:'🏦',tasa:5},B:{n:'Huerto',e:'🌳',tasa:10},obj:8,h:'Cada Lumis en el huerto gana más que en el banco. Cambia el reparto de 10 en 10 y observa la ganancia.'},
+ {id:'j11',tema:'Comparar',t:'opc',q:'¿Cuál de estas inversiones paga MÁS interés por cada Lumis invertido?',o:['3 Lumis por cada 100 invertidos','5 Lumis por cada 50 invertidos','2 Lumis por cada 100 invertidos'],a:1,h:'Convierte todo a "por cada 100": 5 por cada 50 es lo mismo que 10 por cada 100.',s:'3%, 10% y 2%: gana más la de 5 por cada 50'},
+ {id:'j12',tema:'Porcentajes',t:'num',q:'Inviertes 200 Lumis y recibes 24 Lumis de ganancia. ¿Qué porcentaje ganaste? Escribe solo el número.',a:12,h:'Calcula cuánto es 24 por cada 100 Lumis.',s:'24 ÷ 200 = 0,12, o sea 12%'},
+ {id:'j13',tema:'El tiempo hace crecer',t:'tiempo',q:'Haz crecer tu semilla. Avanza los años y cosecha apenas llegues a la meta (interés simple).',cap:200,tasa:5,tipo:'simple',meta:240,h:'El 5% de 200 es 10: cada año suma 10 Lumis.'},
+ {id:'j14',tema:'Riesgo',t:'opc',q:'El Banco paga 4% seguro. El Huerto puede ganar 12% o perder 6%. Si NO puedes permitirte perder dinero, ¿cuál eliges?',o:['El Banco seguro','El Huerto','Los dos son igual de seguros','Ninguno, guardo todo bajo el colchón'],a:0,h:'Pregúntate cuál no puede hacerte perder Lumis.',s:'El Banco es seguro: no puedes perder dinero'},
+ {id:'j15',tema:'Riesgo',t:'cl',q:'Clasifica: ¿riesgo bajo o riesgo alto?',cats:['Riesgo bajo','Riesgo alto'],items:[['Cuenta de ahorros del banco',0],['Prestar dinero a un desconocido',1],['Depósito a plazo fijo',0],['Apostar en un juego de azar',1],['Poner todo en una idea nueva sin probarla',1],['Guardar dinero en la alcancía',0]],h:'Riesgo alto significa que podrías perder mucho dinero.'},
+ {id:'j16',tema:'Interés simple',t:'num',q:'Depositas 500 Lumis al 4% de interés simple anual. ¿Cuántos Lumis de interés ganas en 3 años?',a:60,h:'Calcula el interés de un año y multiplícalo por 3.',s:'4% de 500 = 20 por año y 20 × 3 = 60'},
+ {id:'j17',tema:'Repartir semillas',t:'rep',q:'Reparte tus Lumis entre las dos inversiones y gana EXACTAMENTE lo que pide el objetivo en un año.',total:200,paso:10,A:{n:'Banco seguro',e:'🏦',tasa:4},B:{n:'Huerto',e:'🌳',tasa:10},obj:14,h:'Prueba repartos y observa cuánto cambia la ganancia cada vez que mueves 10 Lumis.'},
+ {id:'j18',tema:'Diversificar',t:'opc',q:'¿Qué significa diversificar tus inversiones?',o:['Repartir tu dinero en varias inversiones distintas','Poner todo en la inversión más popular','Sacar todo el dinero','Invertir solo con un amigo'],a:0,h:'Diversificar es no poner todos los huevos en la misma canasta.',s:'Si una inversión va mal, las otras te protegen'},
+ {id:'j19',tema:'El tiempo hace crecer',t:'tiempo',q:'Haz crecer tu semilla. Avanza los años y cosecha apenas llegues a la meta (interés simple).',cap:500,tasa:8,tipo:'simple',meta:660,h:'El 8% de 500 es 40 Lumis cada año.'},
+ {id:'j20',tema:'Negocios',t:'num',q:'Un puesto de limonada necesita una inversión inicial de 80 Lumis. Cada semana gana 20 Lumis limpios. ¿En cuántas semanas recuperas lo que invertiste?',a:4,h:'Divide lo invertido entre lo que ganas por semana.',s:'80 ÷ 20 = 4 semanas'},
+ {id:'j21',tema:'Riesgo y ganancia',t:'opc',q:'Mientras MÁS ganancia promete una inversión, normalmente...',o:['Más riesgo tiene','Menos riesgo tiene','Es siempre segura','El riesgo no importa'],a:0,h:'Nadie regala ganancias grandes sin riesgo.',s:'Más ganancia posible suele significar más riesgo'},
+ {id:'j22',tema:'Plazo',t:'cl',q:'Clasifica cada meta: ¿corto plazo o largo plazo?',cats:['Corto plazo','Largo plazo'],items:[['Ahorrar para una excursión del próximo mes',0],['Ahorrar para la universidad',1],['Comprar un regalo para la semana que viene',0],['Reunir dinero para una casa',1],['Juntar para un helado el domingo',0],['Ahorrar para un viaje dentro de 10 años',1]],h:'Corto plazo es en pocos meses; largo plazo es en muchos años.'},
+ {id:'j23',tema:'Repartir semillas',t:'rep',q:'Reparte tus Lumis entre las dos inversiones y gana EXACTAMENTE lo que pide el objetivo en un año.',total:100,paso:10,A:{n:'Banco seguro',e:'🏦',tasa:2},B:{n:'Huerto',e:'🌳',tasa:12},obj:5,h:'El huerto rinde mucho más. Si el objetivo es bajo, pon más dinero en el banco.'},
+ {id:'j24',tema:'Varias inversiones',t:'num',q:'Repartes 300 Lumis: 100 en el banco al 5% y el resto en el huerto al 10%. ¿Cuántos Lumis ganas en total en un año?',a:25,h:'Calcula la ganancia de cada parte y súmalas. Al huerto van 200 Lumis.',s:'Banco: 5% de 100 = 5. Huerto: 10% de 200 = 20. 5 + 20 = 25'},
+ {id:'j25',tema:'El tiempo hace crecer',t:'tiempo',q:'Haz crecer tu semilla. Avanza los años y cosecha apenas llegues a la meta (interés simple).',cap:250,tasa:12,tipo:'simple',meta:370,h:'El 12% de 250 es 30 Lumis cada año.'},
+ {id:'j26',tema:'Comparar planes',t:'opc',q:'Plan X: 200 Lumis al 5% de interés simple durante 3 años. Plan Y: 150 Lumis al 8% de interés simple durante 3 años. ¿Cuál deja MÁS interés?',o:['Plan X','Plan Y','Dejan lo mismo'],a:1,h:'Calcula el interés de cada plan: capital × porcentaje × años.',s:'X: 10 × 3 = 30. Y: 12 × 3 = 36. Gana el plan Y'},
+ {id:'j27',tema:'Simple o compuesto',t:'cl',q:'Clasifica: ¿es interés simple o interés compuesto?',cats:['Simple','Compuesto'],items:[['Cada año ganas lo mismo, sobre lo que depositaste al inicio',0],['Cada año ganas sobre el total acumulado, intereses incluidos',1],['100 al 10%: año 1 ganas 10 y año 2 ganas 10',0],['100 al 10%: año 1 ganas 10 y año 2 ganas 11',1],['El interés crece porque se suma al capital',1]],h:'En el compuesto, los intereses también ganan interés.'},
+ {id:'j28',tema:'Interés compuesto',t:'num',q:'Tienes 1000 Lumis al 10% de interés compuesto (cada año sobre el total acumulado). ¿Cuántos Lumis tendrás después de 2 años?',a:1210,h:'Calcula el primer año. El segundo año, el 10% se calcula sobre el nuevo total.',s:'Año 1: 1000 + 100 = 1100. Año 2: 10% de 1100 = 110 y 1100 + 110 = 1210'},
+ {id:'j29',tema:'Interés compuesto',t:'tiempo',q:'Haz crecer tu semilla con interés COMPUESTO: cada año el interés se calcula sobre el total acumulado. Cosecha apenas llegues a la meta.',cap:1000,tasa:10,tipo:'comp',meta:1300,h:'Mira cómo el aumento de cada año es un poco mayor que el anterior.'},
+ {id:'j30',tema:'Cuidado con las estafas',t:'opc',q:'Alguien te promete duplicar tu dinero en una semana, sin ningún riesgo. ¿Qué haces?',o:['Desconfío y le pregunto a un adulto de confianza','Le doy todo mi dinero','Le presto aún más','Escondo el dinero y no digo nada'],a:0,h:'Si una promesa suena demasiado buena, probablemente sea una estafa.',s:'Ninguna inversión duplica tu dinero en una semana sin riesgo'},
+ {id:'j31',tema:'Repartir semillas',t:'rep',q:'Reparte tus Lumis entre las dos inversiones y gana EXACTAMENTE lo que pide el objetivo en un año.',total:300,paso:10,A:{n:'Banco seguro',e:'🏦',tasa:5},B:{n:'Huerto',e:'🌳',tasa:10},obj:20,h:'Con todo el dinero en el huerto ganarías 30. Cada 10 que muevas al banco gana 0,5 menos.'},
+ {id:'j32',tema:'Negocios',t:'num',q:'Un árbol frutal cuesta 60 Lumis y da frutos por 18 Lumis cada año. ¿Cuántos Lumis habrás ganado de más después de 5 años, restando el costo del árbol?',a:30,h:'Calcula todo lo que dan los frutos en 5 años y réstale el costo.',s:'18 × 5 = 90 y 90 − 60 = 30'},
+ {id:'j33',tema:'Interés compuesto',t:'tiempo',q:'Haz crecer tu semilla con interés COMPUESTO. Cosecha apenas llegues a la meta.',cap:125,tasa:20,tipo:'comp',meta:200,h:'Cada año ganas el 20% del total que tienes ese año.'},
+ {id:'j34',tema:'Antes de invertir',t:'opc',q:'¿Qué conviene tener antes de empezar a invertir?',o:['Un ahorro para emergencias','Una deuda grande','Ninguna meta','Un préstamo para invertirlo todo'],a:0,h:'Las emergencias pasan. No deberías perder tus inversiones para pagarlas.',s:'Un fondo de emergencia te protege de vender tus inversiones a la fuerza'},
+ {id:'j35',tema:'Repartir semillas',t:'rep',q:'Reparte tus Lumis entre las dos inversiones y gana EXACTAMENTE lo que pide el objetivo en un año.',total:200,paso:10,A:{n:'Banco seguro',e:'🏦',tasa:3},B:{n:'Huerto',e:'🌳',tasa:8},obj:10,h:'Si todo va al huerto ganas 16; si todo va al banco, 6. Busca el punto intermedio.'},
+ {id:'j36',tema:'Ahorro e interés',t:'num',q:'Ahorras 50 Lumis cada mes durante 12 meses y lo depositas todo en un banco que, al final del año, paga 5% de interés sobre lo ahorrado. ¿Cuántos Lumis tendrás en total?',a:630,h:'Calcula lo ahorrado en el año, luego el 5% de eso y súmalos.',s:'50 × 12 = 600; 5% de 600 = 30; 600 + 30 = 630'},
+ {id:'j37',tema:'Interés compuesto',t:'tiempo',q:'Haz crecer tu semilla con interés COMPUESTO. Cosecha apenas llegues a la meta.',cap:625,tasa:20,tipo:'comp',meta:1000,h:'Cada año el total se multiplica por 1,2.'},
+ {id:'j38',tema:'Riesgo',t:'num',q:'Inviertes 400 Lumis. El primer año ganas 10% y el segundo año pierdes 10% del total que tienes. ¿Cuántos Lumis tienes al final?',a:396,h:'El segundo año el 10% se calcula sobre el nuevo total, no sobre 400.',s:'Año 1: 400 + 40 = 440. Año 2: 10% de 440 = 44 y 440 − 44 = 396'},
+ {id:'j39',tema:'Repartir semillas',t:'rep',q:'Reparte tus Lumis entre las dos inversiones y gana EXACTAMENTE lo que pide el objetivo en un año.',total:400,paso:10,A:{n:'Banco seguro',e:'🏦',tasa:5},B:{n:'Huerto',e:'🌳',tasa:15},obj:30,h:'Con todo en el huerto ganarías 60. Cada 10 que pases al banco bajan la ganancia en 1.'},
+ {id:'j40',tema:'Reto final',t:'num',q:'Tienes 500 Lumis: inviertes 300 al 8% y 200 al 5% (interés simple) durante 2 años. Después sacas todo y compras algo de 100 Lumis. ¿Cuántos Lumis te quedan?',a:468,h:'Calcula el interés de cada parte en 2 años, súmalo al capital y luego réstale la compra.',s:'300 × 8% × 2 = 48; 200 × 5% × 2 = 20; 500 + 48 + 20 = 568; 568 − 100 = 468'}
+];
+/*FIN_DATOS*/
+
+var $=function(id){return document.getElementById(id)};
+function leer_(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lista(k){try{return JSON.parse(leer_(k))||[]}catch(e){return []}}
+function quitar(k){try{localStorage.removeItem(k)}catch(e){}}
+function modoPrueba(){return leer_('modo_prueba')==='1'}
+function hojasTotal(){return parseInt(leer_('hojas_actuales'))||0}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function fmt(v){return String(Number(v.toFixed(2))).replace('.',',')}
+var HOJA='<span class="em">🍃</span>';
+var ICONO='<span class="em">🌳</span>';
+var ELOGIOS=['¡Tu jardín crece!','¡Buena inversión!','¡Cosecha perfecta!','¡Jadelia florece!','¡Semilla bien plantada!','¡Inversor con visión!'];
+
+/* ===== cálculos de los simuladores ===== */
+function vt(r,n){var v=(r.tipo==='simple')?r.cap+r.cap*r.tasa/100*n:r.cap*Math.pow(1+r.tasa/100,n);return Math.round(v*100)/100}
+function necesita(r){for(var n=1;n<=12;n++){if(vt(r,n)>=r.meta)return n}return 12}
+function solTiempo(r){var n=necesita(r),a=[];for(var i=1;i<=n;i++)a.push('Año '+i+': '+fmt(vt(r,i)));return a.join(' · ')+'. La meta de '+r.meta+' se alcanza en el año '+n}
+function ganRep(r,x){return Math.round(((x*r.A.tasa)+((r.total-x)*r.B.tasa))/100*100)/100}
+function solRepX(r){for(var x=0;x<=r.total;x+=r.paso){if(Math.round(ganRep(r,x)*100)===r.obj*100)return x}return -1}
+function solRep(r){var x=solRepX(r),y=r.total-x;return r.A.n+': '+x+' Lumis ('+r.A.tasa+'% = '+fmt(x*r.A.tasa/100)+') y '+r.B.n+': '+y+' Lumis ('+r.B.tasa+'% = '+fmt(y*r.B.tasa/100)+'). Juntos ganan '+r.obj}
+
+/* ===== progreso guardado (una sola partida: no se puede empezar de nuevo) ===== */
+function leerEstado(){
+  try{
+    var e=JSON.parse(leer_(CLAVE_ESTADO));if(!e)return null;
+    if(e.fin)return e;
+    return(e.idx>=0&&e.idx<RONDAS.length)?e:null;
+  }catch(x){return null}
+}
+function guardar(o){try{localStorage.setItem(CLAVE_ESTADO,JSON.stringify(o))}catch(e){}}
+function guardarAqui(){guardar({idx:idx,aciertos:aciertos,ganadas:ganadas,err:errores,racha:racha,mejor:mejor})}
+function guardarAvance(){
+  if(idx+1>=RONDAS.length)guardar({fin:true,idx:RONDAS.length-1,aciertos:aciertos,ganadas:ganadas,racha:racha,mejor:mejor});
+  else guardar({idx:idx+1,aciertos:aciertos,ganadas:ganadas,err:0,racha:racha,mejor:mejor});
+}
+
+var idx=0,errores=0,errPend=0,bloq=false,aciertos=0,ganadas=0,racha=0,mejor=0;
+var asg=[],anio=0,rx=0,ordenOpc=[];
+function pintarCab(){
+  $('ti').innerHTML=ICONO+'<span>Jardín de Jadelia</span>';
+  $('pill').innerHTML=HOJA+'<span>'+hojasTotal()+'</span>';
+}
+/* Suma las hojas al ranking (y al contador) una sola vez por ronda */
+function pagar(id){
+  if(modoPrueba())return 'prueba';
+  var hechas=lista(CLAVE_HECHAS);
+  if(hechas.indexOf(id)>=0)return 'ya';
+  try{
+    ['ranking_exploradores_hojas','hojas_actuales'].forEach(function(k){localStorage.setItem(k,String((parseInt(localStorage.getItem(k))||0)+HOJAS))});
+    hechas.push(id);localStorage.setItem(CLAVE_HECHAS,JSON.stringify(hechas));
+    return 'ok';
+  }catch(e){return 'error'}
+}
+
+function inicio(){
+  $('bw').hidden=true;$('pau').hidden=true;pintarCab();
+  var est=leerEstado();
+  if(est&&est.fin){resultado(est.aciertos||0,est.ganadas||0,est.mejor||0);return}
+  var h='<div class="grande">'+ICONO+'</div><h1>Jardín de Jadelia</h1>'+
+    '<p class="d">Planta tus Lumis y aprende a invertir: haz crecer semillas con el tiempo, reparte tu dinero entre inversiones, compara riesgos y calcula ganancias.<br>Son <b>'+RONDAS.length+' rondas</b> y cada acierto gana <b>'+HOJAS+' Hojas de la Sabiduría</b> 🍃</p>'+
+    '<p class="d" style="margin-top:-6px">Si te equivocas, recibes una pista y un segundo intento. Cada ronda se juega una sola vez. ¡Consigue la mayor 🔥 racha!</p>'+
+    '<div class="fila-btn">';
+  if(est)h+='<p class="d" style="margin:0">⏸ Partida en pausa: vas por la ronda '+(est.idx+1)+' de '+RONDAS.length+'</p><button class="btn" id="cont">▶ Continuar</button>';
+  else h+='<button class="btn" id="go">¡Entrar al jardín!</button>';
+  h+='</div>';
+  $('main').innerHTML=h;
+  if($('go'))$('go').onclick=function(){idx=0;aciertos=0;ganadas=0;racha=0;mejor=0;errPend=0;ronda()};
+  if($('cont'))$('cont').onclick=function(){idx=est.idx;aciertos=est.aciertos||0;ganadas=est.ganadas||0;racha=est.racha||0;mejor=est.mejor||0;errPend=est.err||0;ronda()};
+}
+function pausar(){inicio()}   /* el avance ya está guardado: solo se vuelve al inicio */
+
+function permutar(n){var a=[],i,k,j,t;for(i=0;i<n;i++)a.push(i);for(k=n-1;k>0;k--){j=Math.floor(Math.random()*(k+1));t=a[k];a[k]=a[j];a[j]=t}return a}
+
+/* ===== ronda ===== */
+function ronda(){
+  var r=RONDAS[idx];errores=errPend;errPend=0;bloq=false;asg=[];anio=0;rx=0;pintarCab();guardarAqui();
+  $('bw').hidden=false;$('pau').hidden=false;$('bi').style.width=(idx/RONDAS.length*100)+'%';
+  var cuerpo='';
+  if(r.t==='num'){
+    cuerpo='<div class="resp"><input id="in" type="text" inputmode="numeric" autocomplete="off" placeholder="Tu respuesta"><button class="btn" id="chk">Comprobar</button></div>';
+  }else if(r.t==='opc'){
+    ordenOpc=permutar(r.o.length);
+    cuerpo='<div class="opcs" id="opcs"></div>';
+  }else if(r.t==='cl'){
+    cuerpo='<div id="clas"></div><div class="acc"><button class="btn" id="chk" disabled>Comprobar</button></div>';
+  }else if(r.t==='tiempo'){
+    cuerpo='<div id="pt"></div><div class="acc"><button class="btn" id="chk" disabled>🌳 ¡Cosechar ahora!</button></div>';
+  }else{
+    cuerpo='<div id="pr"></div><div class="acc"><button class="btn" id="chk">Comprobar</button></div>';
+  }
+  $('main').innerHTML='<div class="ronda"><div class="meta"><span>Ronda '+(idx+1)+' de '+RONDAS.length+'</span><span>Aciertos: '+aciertos+' · 🔥 racha '+racha+'</span></div>'+
+    '<span class="tema">'+esc(r.tema)+'</span><div class="q">'+esc(r.q)+'</div>'+cuerpo+'<div class="fb" id="fb">'+(errores?'Casi... '+esc(r.h):'')+'</div><div id="sig"></div></div>';
+  if(r.t==='num'){
+    $('chk').onclick=comprobar;
+    $('in').onkeydown=function(e){if(e.key==='Enter')comprobar()};
+    setTimeout(function(){try{$('in').focus()}catch(e){}},50);
+  }else if(r.t==='opc'){pintarOpc()}
+  else if(r.t==='cl'){$('chk').onclick=comprobarCl;pintarCl()}
+  else if(r.t==='tiempo'){$('chk').onclick=comprobarT;pintarT()}
+  else{$('chk').onclick=comprobarRep;pintarRep()}
+}
+/* un solo oyente de clics para opciones, categorías y botones de los simuladores */
+function clic(e){
+  var t=e.target&&e.target.closest?e.target.closest('[data-act]'):null;if(!t)return;
+  var a=t.getAttribute('data-act'),n=parseInt(t.getAttribute('data-i'),10);
+  if(a==='opc')elegirOpc(n,t);
+  else if(a==='asg')asignar(n,parseInt(t.getAttribute('data-c'),10));
+  else if(a==='mas')cambiarAnio(1);
+  else if(a==='menos')cambiarAnio(-1);
+  else if(a==='rp')ajustarRep(parseInt(t.getAttribute('data-d'),10));
+}
+
+/* --- elegir opción --- */
+function pintarOpc(){
+  var r=RONDAS[idx],h='';
+  ordenOpc.forEach(function(i){h+='<button class="opcion'+(bloq&&i===r.a?' ok':'')+'" data-act="opc" data-i="'+i+'">'+esc(r.o[i])+'</button>'});
+  $('opcs').innerHTML=h;
+}
+function elegirOpc(i,b){
+  var r=RONDAS[idx];if(bloq||r.t!=='opc')return;
+  if(b&&b.classList&&i!==r.a)b.classList.add('no');
+  resolver(i===r.a,'');
+}
+
+/* --- clasificar --- */
+function pintarCl(){
+  var r=RONDAS[idx],h='';
+  r.items.forEach(function(it,i){
+    h+='<div class="cl-fila"><span class="tx">'+esc(it[0])+'</span><span class="bts">'+r.cats.map(function(c,k){
+      return '<button class="cb'+(asg[i]===k?' sel':'')+(bloq&&it[1]===k?' ayuda':'')+'" data-act="asg" data-i="'+i+'" data-c="'+k+'">'+esc(c)+'</button>'}).join('')+'</span></div>';
+  });
+  $('clas').innerHTML=h;
+  $('chk').disabled=bloq||!r.items.every(function(_,i){return asg[i]!==undefined});
+}
+function asignar(i,c){var r=RONDAS[idx];if(bloq||r.t!=='cl')return;asg[i]=c;pintarCl()}
+function comprobarCl(){
+  var r=RONDAS[idx];if(bloq)return;
+  if(!r.items.every(function(_,i){return asg[i]!==undefined}))return;
+  var bien=0;r.items.forEach(function(it,i){if(asg[i]===it[1])bien++});
+  resolver(bien===r.items.length,bien+' de '+r.items.length+' están bien clasificados.');
+}
+
+/* --- simulador de años --- */
+function plantita(r,v){
+  if(v>=r.meta)return '🌳';
+  return v>=r.cap+(r.meta-r.cap)/2?'🌿':'🌱';
+}
+function pintarT(){
+  var r=RONDAS[idx],v=vt(r,anio),h='',i,pct=Math.min(100,Math.round(v/r.meta*100));
+  for(i=1;i<=anio;i++)h+='<span>Año '+i+': '+fmt(vt(r,i))+'</span>';
+  $('pt').innerHTML='<div class="t-info">Capital: <b>'+r.cap+'</b> Lumis · Interés: <b>'+r.tasa+'% '+(r.tipo==='simple'?'simple':'compuesto')+'</b> al año</div>'+
+    '<div class="t-meta">🎯 Meta: '+r.meta+' Lumis</div>'+
+    '<div class="t-cuadro"><span class="t-plant">'+plantita(r,v)+'</span><span class="t-anio">Año <b>'+anio+'</b></span><span class="t-valor"><b>'+fmt(v)+'</b> Lumis</span></div>'+
+    '<div class="t-bar"><i style="width:'+pct+'%"></i></div><div class="t-hist">'+h+'</div>'+
+    '<div class="acc"><button class="btn sec" data-act="menos"'+((bloq||anio<=0)?' disabled':'')+'>− 1 año</button><button class="btn sec" data-act="mas"'+((bloq||anio>=8)?' disabled':'')+'>+ 1 año</button></div>';
+  $('chk').disabled=bloq||anio===0;
+}
+function cambiarAnio(d){
+  var r=RONDAS[idx];if(bloq||r.t!=='tiempo')return;
+  var n=anio+d;if(n<0||n>8)return;anio=n;pintarT();
+}
+function comprobarT(){
+  var r=RONDAS[idx];if(bloq||r.t!=='tiempo'||anio===0)return;
+  var need=necesita(r);
+  var extra=anio<need?'Todavía no llegaste a la meta.':(anio>need?'Pasaste de largo: la meta se alcanzó antes.':'');
+  resolver(anio===need,extra);
+}
+
+/* --- reparto entre dos inversiones --- */
+function pintarRep(){
+  var r=RONDAS[idx],g=ganRep(r,rx),y=r.total-rx;
+  $('pr').innerHTML='<div class="rp-obj">🎯 Objetivo: ganar exactamente <b>'+r.obj+'</b> Lumis en un año · Total: '+r.total+' Lumis</div>'+
+    '<div class="rp-card"><span>'+r.A.e+' '+esc(r.A.n)+'<small>Gana '+r.A.tasa+'% al año</small></span><b>'+rx+' Lumis</b></div>'+
+    '<div class="rp-card"><span>'+r.B.e+' '+esc(r.B.n)+'<small>Gana '+r.B.tasa+'% al año (más riesgo)</small></span><b>'+y+' Lumis</b></div>'+
+    '<div class="acc"><button class="btn sec" data-act="rp" data-d="-1"'+((bloq||rx<=0)?' disabled':'')+'>− '+r.paso+' al banco</button><button class="btn sec" data-act="rp" data-d="1"'+((bloq||rx>=r.total)?' disabled':'')+'>+ '+r.paso+' al banco</button></div>'+
+    '<div class="rp-gan">Ganancia en un año: <b>'+fmt(g)+'</b> Lumis</div>';
+  $('chk').disabled=bloq;
+}
+function ajustarRep(d){
+  var r=RONDAS[idx];if(bloq||r.t!=='rep')return;
+  var n=rx+d*r.paso;if(n<0||n>r.total)return;rx=n;pintarRep();
+}
+function comprobarRep(){
+  var r=RONDAS[idx];if(bloq||r.t!=='rep')return;
+  var g=ganRep(r,rx);
+  resolver(Math.round(g*100)===r.obj*100,'Con este reparto ganas '+fmt(g)+' Lumis en un año.');
+}
+
+/* --- respuesta escrita --- */
+function comprobar(){
+  if(bloq)return;
+  var v=parseInt(String($('in').value).replace(/[^0-9]/g,''),10);
+  if(isNaN(v)){$('fb').className='fb';$('fb').textContent='Escribe tu respuesta con números.';return}
+  resolver(v===RONDAS[idx].a,'');
+}
+
+/* --- resultado de la ronda (igual para todos los tipos) --- */
+function textoSolucion(r){
+  if(r.t==='cl')return r.cats.map(function(c,k){return c+': '+r.items.filter(function(it){return it[1]===k}).map(function(it){return it[0]}).join(', ')}).join('. ');
+  if(r.t==='tiempo')return solTiempo(r);
+  if(r.t==='rep')return solRep(r);
+  return r.s;
+}
+function resolver(ok,extra){
+  var r=RONDAS[idx],fb=$('fb');
+  if(ok){
+    bloq=true;fb.className='fb bien';
+    if(r.t==='num')$('in').classList.add('okin');
+    var msg='¡Correcto! '+ELOGIOS[Math.floor(Math.random()*ELOGIOS.length)]+' ';
+    if(r.t==='num'||r.t==='opc')msg+=r.s+'. ';
+    if(errores<=1){
+      aciertos++;racha++;if(racha>mejor)mejor=racha;
+      var p=pagar(r.id);
+      if(p==='ok'){ganadas+=HOJAS;msg+='🍃 +'+HOJAS+' hojas para el ranking';}
+      else if(p==='ya')msg+='(Esta ronda ya te dio sus hojas antes)';
+      else if(p==='prueba')msg+='🧪 Modo prueba: no se contaron';
+      else msg+='No se pudieron guardar las hojas';
+    }
+    fb.textContent=msg;pintarCab();terminarRonda();return;
+  }
+  errores++;fb.className='fb';
+  if(errores===1){
+    fb.textContent='Casi... '+(extra?extra+' ':'')+r.h;
+    guardarAqui();                                   /* recuerda el primer error aunque recargue la página */
+    if(r.t==='num'){try{$('in').select()}catch(e){}}
+    return;
+  }
+  bloq=true;racha=0;
+  if(r.t==='cl')asg=r.items.map(function(it){return it[1]});
+  if(r.t==='tiempo')anio=necesita(r);
+  if(r.t==='rep')rx=solRepX(r);
+  fb.textContent=(r.t==='num'?'La respuesta es '+r.a+'. ':'Así queda bien: ')+textoSolucion(r)+'.';
+  terminarRonda();
+}
+function terminarRonda(){
+  var r=RONDAS[idx];
+  if(r.t==='num'){var i=$('in'),c=$('chk');if(i)i.disabled=true;if(c)c.disabled=true}
+  else if(r.t==='opc')pintarOpc();
+  else if(r.t==='cl')pintarCl();
+  else if(r.t==='tiempo'){pintarT()}
+  else pintarRep();
+  guardarAvance();siguiente();
+}
+function siguiente(){
+  var ult=idx>=RONDAS.length-1;
+  $('sig').innerHTML='<button class="btn" id="nx">'+(ult?'Ver resultado':'Continuar')+'</button>';
+  $('nx').onclick=function(){if(ult)resultado(aciertos,ganadas,mejor);else{idx++;errPend=0;ronda()}};
+}
+function rango(ac){
+  var p=ac/RONDAS.length;
+  if(p>=0.9)return 'Gran Inversor de Jadelia';
+  if(p>=0.7)return 'Experto del Huerto';
+  if(p>=0.5)return 'Jardinero Inversor';
+  return 'Semilla Curiosa';
+}
+function resultado(ac,ga,me){
+  $('bw').hidden=false;$('bi').style.width='100%';$('pau').hidden=true;pintarCab();
+  $('main').innerHTML='<div class="grande">'+ICONO+'</div><span class="rango">'+rango(ac)+'</span><h1>¡Jardín completado!</h1>'+
+    '<div class="res"><div class="caja"><b>'+ac+'/'+RONDAS.length+'</b><small>aciertos</small></div><div class="caja"><b>🍃 '+ga+'</b><small>hojas ganadas</small></div><div class="caja"><b>🔥 '+me+'</b><small>mejor racha</small></div></div>'+
+    '<p class="d">Terminaste todas las rondas. Tus hojas ya se sumaron al ranking.</p>';
+}
+$('main').addEventListener('click',clic);
+$('pau').onclick=pausar;
+window.addEventListener('storage',function(){pintarCab()});
+inicio();
+</script>
+</body>
+</html>

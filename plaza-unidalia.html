@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plaza de Unidalia</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:transparent;font-family:'Segoe UI',system-ui,sans-serif;user-select:none}
+body{padding:8px}
+.app{max-width:600px;margin:0 auto;background:#fffdf2;border:3px solid #207168;border-radius:22px;overflow:hidden;box-shadow:0 8px 24px rgba(32,113,104,.18);min-height:470px;display:flex;flex-direction:column}
+header{background:#207168;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
+.ti{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.em{font-size:20px;line-height:1}
+.der{display:flex;align-items:center;gap:8px}
+.hb{background:transparent;border:2px solid rgba(255,255,255,.75);color:#fff;border-radius:999px;padding:3px 11px;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer}
+.pill{background:#fff;color:#207168;border-radius:999px;padding:4px 14px 4px 10px;display:flex;align-items:center;gap:6px;font-weight:900;font-size:14px}
+.barra{height:8px;background:#dfeee7}
+.barra i{display:block;height:100%;width:0;background:#d4af37;transition:width .4s}
+main{flex:1;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.grande{font-size:72px;line-height:1;margin-bottom:6px}
+.grande .em{font-size:inherit}
+h1{margin:6px 0;color:#207168;font-size:28px}
+p.d{margin:8px 0 14px;color:#3d4f4b;font-weight:700;font-size:15px;line-height:1.5;max-width:470px}
+.btn{border:0;border-radius:16px;background:#207168;color:#fff;font-size:17px;font-weight:800;font-family:inherit;padding:14px 34px;cursor:pointer;box-shadow:0 5px 0 #16524a}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #16524a}
+.btn:disabled{background:#b9c7c3;box-shadow:0 5px 0 #98a8a3;cursor:default}
+.btn.sec{background:#fff;color:#207168;border:2px solid #207168;box-shadow:0 4px 0 #cfe0db;font-size:14px;padding:10px 18px}
+.btn.sec:disabled{background:#f1f4f3;color:#a9b8b4;border-color:#c9d3d0;box-shadow:none}
+.fila-btn{display:flex;flex-direction:column;align-items:center;gap:12px}
+.ronda{width:100%;max-width:540px;text-align:left}
+.meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#207168;margin-bottom:4px}
+.fondo{font-size:12px;font-weight:800;color:#8a5a00;background:#fff4cc;border:2px solid #e8c45e;border-radius:999px;padding:2px 12px;margin-bottom:8px;display:inline-block}
+.tema{display:inline-block;background:#f2c94c;color:#5a4300;border-radius:999px;padding:2px 12px;font-size:11px;font-weight:900;letter-spacing:.4px;text-transform:uppercase;margin:0 0 8px 6px}
+.q{background:#fff;border:2px solid #207168;border-radius:14px;padding:14px;font-size:16px;font-weight:700;color:#2c3e50;line-height:1.5}
+.resp{display:flex;gap:10px;margin-top:14px;align-items:stretch}
+.resp input{flex:1;min-width:0;font-size:24px;font-weight:900;text-align:center;color:#207168;border:3px solid #207168;border-radius:14px;padding:8px;font-family:inherit;outline:none;background:#fff;user-select:text}
+.resp input:focus{box-shadow:0 0 0 4px rgba(32,113,104,.18)}
+.resp input.okin{background:#d8f3e4;border-color:#1c8f5a}
+.resp .btn{padding:10px 20px;font-size:15px}
+.opcs{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.opcion{text-align:left;font-family:inherit;font-size:15px;font-weight:800;color:#207168;background:#fff;border:3px solid #207168;border-radius:14px;padding:11px 14px;cursor:pointer}
+.opcion.ok{background:#d8f3e4;border-color:#1c8f5a}
+.opcion.no{animation:shake .4s}
+.opcion.ayuda,.cb.ayuda{animation:pulso .9s infinite;border-color:#b8860b;box-shadow:0 0 12px #f2c94c}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pulso{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.acc{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.acc .btn{padding:10px 22px;font-size:15px}
+.cl-fila{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:2px solid #d4af37;border-radius:12px;padding:8px 10px;margin-top:8px}
+.cl-fila .tx{flex:1;font-weight:800;font-size:14px;color:#2c3e50;text-align:left}
+.bts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.cb{font-family:inherit;font-size:12px;font-weight:900;border:2px solid #207168;color:#207168;background:#fff;border-radius:10px;padding:6px 10px;cursor:pointer}
+.cb.sel{background:#207168;color:#fff}
+/* colecta y presupuesto */
+.s-meta{text-align:center;font-weight:900;color:#207168;margin:10px 0 6px;font-size:16px}
+.s-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.vc{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;font-family:inherit;background:#fff;border:3px solid #d4af37;border-radius:12px;padding:8px 10px;cursor:pointer;color:#2c3e50;font-weight:800;font-size:13px}
+.vc b{color:#207168;font-size:14px}
+.vc.sel{background:#d8f3e4;border-color:#1c8f5a}
+.vc.sel::after{content:'✔';align-self:flex-end;color:#1c8f5a;font-weight:900;margin-top:-18px}
+.s-tot{text-align:center;margin-top:10px;font-weight:900;color:#207168;font-size:16px;background:#f3faf6;border:2px dashed #207168;border-radius:12px;padding:8px}
+.s-tot.pasado{color:#c0392b;border-color:#c0392b;background:#fdecea}
+/* pandero */
+.pp-top{text-align:center;font-weight:900;color:#207168;margin-top:10px;font-size:15px}
+.pp-cobra{text-align:center;font-weight:800;color:#8a5a00;background:#fff4cc;border:2px solid #e8c45e;border-radius:12px;padding:6px;margin:6px 0;font-size:14px;min-height:34px}
+.pp-fila{display:grid;grid-template-columns:1.3fr .9fr 1fr 1.1fr;gap:4px;align-items:center;background:#fff;border:2px solid #d9e4e1;border-radius:10px;padding:5px 8px;margin-top:4px;font-size:12px;font-weight:800;color:#2c3e50;text-align:left}
+.pp-fila.hoy{border-color:#d4af37;background:#fffcf2}
+.pp-fila.cab{background:#207168;color:#fff;border-color:#207168}
+.fb{min-height:54px;font-size:14px;font-weight:800;color:#b9650a;line-height:1.45;margin:10px 0 6px}
+.fb.bien{color:#1c8f5a}
+#sig{text-align:center}
+.res{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 14px}
+.caja{background:#fff;border:2px solid #207168;border-radius:14px;padding:10px 16px;color:#207168;font-weight:900}
+.caja b{display:block;font-size:26px}
+.caja small{font-size:11px;font-weight:800;color:#5c716d}
+.rango{display:inline-block;background:#f2c94c;color:#5a4300;border-radius:999px;padding:5px 16px;font-weight:900;font-size:14px;margin-bottom:6px}
+.obras{font-size:30px;letter-spacing:4px;margin:4px 0 10px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="ti" id="ti"></div>
+    <div class="der"><button class="hb" id="pau" hidden>⏸ Pausar</button><div class="pill" id="pill"></div></div>
+  </header>
+  <div class="barra" id="bw" hidden><i id="bi"></i></div>
+  <main id="main"></main>
+</div>
+<script>
+/* ===== DATOS: 40 rondas. Cada ronda tiene un id fijo; las hojas se pagan una sola vez por ronda =====
+   t:'num'     -> respuesta escrita con números.
+   t:'opc'     -> elegir una opción (o = opciones, a = número de la correcta).
+   t:'cl'      -> clasificar (cats = categorías; items = [texto, categoría]).
+   t:'suma'    -> colecta: tocar vecinos cuyos aportes sumen EXACTAMENTE la meta. items = [nombre, aporte].
+   t:'presu'   -> presupuesto del barrio: elegir proyectos con más puntos sin pasar el presupuesto B. items = [nombre, costo, puntos].
+   t:'pandero' -> simulador de pandero (ahorro entre vecinos) + respuesta escrita. kind decide qué se pregunta. */
+var HOJAS=5;                                   /* hojas por acierto */
+var FONDO_POR_ACIERTO=10;                      /* solo decorativo: cada acierto aporta al fondo común de Unidalia */
+var CLAVE_HECHAS='unidalia_hechas';            /* rondas que ya dieron hojas */
+var CLAVE_ESTADO='unidalia_progreso';          /* partida en pausa / terminada */
+var Q_PRESU='El barrio tiene un presupuesto y debe elegir en qué invertir. Elige los proyectos que den MÁS puntos de beneficio ⭐ sin pasarte del presupuesto.';
+var Q_SUMA='Los vecinos quieren juntar exactamente la meta de la colecta. Toca a los vecinos cuyos aportes sumen la meta justa.';
+var RONDAS=[
+ {id:'u01',tema:'Fondo común',t:'opc',q:'¿Qué es un fondo común?',o:['Dinero que aportan varias personas para un objetivo compartido','Dinero que cada uno guarda en secreto','Un préstamo que pide una sola persona','Una deuda que nadie quiere pagar'],a:0,h:'Piensa en la palabra "común": de todos.',s:'Es dinero que juntan varias personas para algo que beneficia al grupo'},
+ {id:'u02',tema:'Repartir cuentas',t:'num',q:'Una pizza cuesta 60 Lumis y la pagan 5 amigos en partes iguales. ¿Cuántos Lumis paga cada uno?',a:12,h:'Reparte el precio entre los amigos.',s:'60 ÷ 5 = 12'},
+ {id:'u03',tema:'De todos o personal',t:'cl',q:'Clasifica: ¿es un bien de todos (lo usa la comunidad) o un bien personal?',cats:['Bien de todos','Bien personal'],items:[['Parque del barrio',0],['Tu mochila',1],['Biblioteca pública',0],['Tus zapatillas',1],['Alumbrado de la calle',0],['Tu alcancía',1]],h:'Un bien de todos lo puede usar toda la comunidad.'},
+ {id:'u04',tema:'Colecta del barrio',t:'suma',q:Q_SUMA,meta:50,items:[['Rosa',20],['Luis',15],['Ana',30],['Pedro',10],['Marta',25]],h:'Busca dos o tres aportes que juntos den la meta.'},
+ {id:'u05',tema:'Colecta',t:'num',q:'Una colecta tiene una meta de 300 Lumis y ya reunieron 185. ¿Cuántos Lumis faltan?',a:115,h:'Resta lo que ya reunieron a la meta.',s:'300 − 185 = 115'},
+ {id:'u06',tema:'Pandero',t:'pandero',kind:'pozo',n:5,a_:10,names:['Ana','Beto','Carla','Diego','Elena'],q:'Un pandero es un ahorro entre vecinos: todos aportan cada mes y cada mes le toca cobrar todo el pozo a uno distinto. Aquí 5 vecinos aportan 10 Lumis por mes. Usa el simulador. ¿Cuántos Lumis recibe el vecino que cobra en un mes?',a:50,h:'El pozo es todo lo que juntan los vecinos en un mes.',s:'5 vecinos × 10 Lumis = 50 Lumis'},
+ {id:'u07',tema:'Fondo común',t:'opc',q:'El barrio junta dinero para arreglar la plaza, que todos pueden usar. ¿Por qué conviene que todos aporten un poco?',o:['Porque entre todos se logra lo que una sola persona no podría pagar','Porque así la plaza deja de servir','Porque solo importa quién da más','Porque el dinero se multiplica si nadie aporta'],a:0,h:'Piensa qué pasa si cada vecino aporta un poco, frente a que uno pague todo.',s:'Los aportes pequeños de muchos suman lo suficiente'},
+ {id:'u08',tema:'Presupuesto del barrio',t:'presu',q:Q_PRESU,B:50,items:[['Plantar árboles',20,3],['Cancha de fútbol',30,5],['Libros para la biblioteca',10,2],['Lámparas para la calle',20,2]],h:'No siempre conviene lo más barato: busca la combinación con más puntos que quepa en el presupuesto.'},
+ {id:'u09',tema:'Dinero de la comunidad',t:'cl',q:'Clasifica: ¿entra dinero a la caja de la comunidad o sale dinero?',cats:['Entra dinero','Sale dinero'],items:[['Venta de comida en la feria',0],['Pagar los materiales para pintar un mural',1],['Colecta entre los vecinos',0],['Pagar el alquiler del equipo de sonido',1],['Donación de una tienda del barrio',0],['Comprar semillas para el huerto',1]],h:'Entra dinero cuando la comunidad recibe; sale cuando paga.'},
+ {id:'u10',tema:'Trueque',t:'num',q:'En la feria de trueque, 1 libro vale 3 lápices y 1 lápiz vale 2 caramelos. ¿Cuántos caramelos valen 2 libros?',a:12,h:'Convierte primero los libros a lápices y luego los lápices a caramelos.',s:'2 libros = 6 lápices y 6 × 2 = 12 caramelos'},
+ {id:'u11',tema:'Colecta del barrio',t:'suma',q:Q_SUMA,meta:80,items:[['Tía Lola',18],['Don José',22],['Carla',35],['Beto',12],['Nelly',45],['Raúl',30]],h:'Mira primero los aportes más grandes y completa con los pequeños.'},
+ {id:'u12',tema:'Confianza',t:'opc',q:'Una vecina cuida el dinero de una colecta. ¿Qué debe hacer para que todos confíen en ella?',o:['Mostrar a todos cuánto entró y en qué se gastó','Guardar el dinero y no decir nada','Gastarlo en lo que ella quiera','Dar cuentas solo a sus amigos'],a:0,h:'La confianza se construye con cuentas claras.',s:'Las cuentas claras y a la vista de todos generan confianza'},
+ {id:'u13',tema:'Pandero',t:'pandero',kind:'pagado',n:6,a_:20,m:4,names:['Sami','Kiro','Numi','Cael','Lía','Riku'],q:'En un pandero de 6 vecinos, cada uno aporta 20 Lumis por mes. Avanza el simulador hasta el mes 4. ¿Cuántos Lumis ha pagado cada vecino en total hasta ese mes?',a:80,h:'Todos pagan cada mes, incluso el que cobra.',s:'4 meses × 20 Lumis = 80 Lumis'},
+ {id:'u14',tema:'Repartir cuentas',t:'num',q:'El huerto comunitario cuesta 240 Lumis y lo pagan 12 vecinos en partes iguales. ¿Cuántos Lumis paga cada vecino?',a:20,h:'Divide el costo entre los vecinos.',s:'240 ÷ 12 = 20'},
+ {id:'u15',tema:'Presupuesto del barrio',t:'presu',q:Q_PRESU,B:60,items:[['Comedor popular',40,6],['Biblioteca',30,4],['Parque',20,3],['Botiquín',10,3],['Wifi gratuito',30,3]],h:'Prueba varias combinaciones: a veces tres proyectos pequeños rinden más que uno grande.'},
+ {id:'u16',tema:'Aportes',t:'cl',q:'Clasifica: ¿es un aporte voluntario o un pago obligatorio?',cats:['Aporte voluntario','Pago obligatorio'],items:[['Donar ropa a quien la necesita',0],['Pagar los impuestos',1],['Dar a una colecta para un vecino',0],['Pagar el recibo de la luz',1],['Regalar útiles a otro niño',0],['Pagar una multa de tránsito',1]],h:'Voluntario es lo que decides dar; obligatorio es lo que debes pagar.'},
+ {id:'u17',tema:'Solidaridad',t:'opc',q:'Un vecino perdió su puesto en un incendio y la comunidad organiza una colecta voluntaria. ¿Cuál es una buena forma de participar?',o:['Aportar lo que puedas y animar a otros a ayudar','Burlarte de la situación','Esperar a que otros hagan todo','Pedir que te paguen por ayudar'],a:0,h:'Voluntaria significa que cada uno da lo que puede.',s:'En una colecta voluntaria cada uno aporta según sus posibilidades'},
+ {id:'u18',tema:'Colecta del barrio',t:'suma',q:Q_SUMA,meta:100,items:[['Sami',24],['Kiro',36],['Numi',15],['Cael',40],['Lía',28],['Riku',12]],h:'Prueba con los aportes más grandes y ve ajustando.'},
+ {id:'u19',tema:'Cooperativa',t:'num',q:'Una cooperativa vende en total 400 Lumis y paga gastos por 80 Lumis. La ganancia que queda se reparte por igual entre 8 socios. ¿Cuántos Lumis recibe cada socio?',a:40,h:'Primero resta los gastos y luego reparte lo que queda.',s:'400 − 80 = 320 y 320 ÷ 8 = 40'},
+ {id:'u20',tema:'Pandero',t:'pandero',kind:'neto',n:6,a_:15,k:2,names:['Ana','Beto','Carla','Diego','Elena','Fabio'],q:'Pandero de 6 vecinos que aportan 15 Lumis por mes. Beto cobra en el mes 2. Al terminar el mes 2, ¿cuántos Lumis recibió Beto de MÁS de lo que ha pagado hasta ese momento?',a:60,h:'Calcula cuánto recibió (todo el pozo) y cuánto pagó en 2 meses; luego réstalos.',s:'Recibió 6 × 15 = 90 y pagó 2 × 15 = 30; 90 − 30 = 60'},
+ {id:'u21',tema:'Presupuesto del barrio',t:'presu',q:Q_PRESU,B:80,items:[['Techo para el mercado',50,7],['Juegos para niños',30,4],['Huerto comunitario',40,5],['Cámaras de seguridad',20,2],['Bancas para la plaza',20,3]],h:'Calcula cuántos puntos da cada combinación que cabe en 80.'},
+ {id:'u22',tema:'Impuestos',t:'opc',q:'¿Para qué sirven los impuestos que pagan las personas?',o:['Para pagar cosas de todos, como escuelas, parques y hospitales públicos','Para que cada persona recupere exactamente lo que pagó','Para comprar regalos a quienes gobiernan','Para nada en especial'],a:0,h:'Piensa en lo que usan todos los vecinos y no es de una sola persona.',s:'Los impuestos financian servicios y obras que usamos entre todos'},
+ {id:'u23',tema:'Reparto justo',t:'num',q:'Tres amigos pagan una pizza de 60 Lumis según las porciones que comió cada uno: Sami 1, Kiro 3 y Numi 2. ¿Cuántos Lumis paga Kiro?',a:30,h:'Cuenta cuántas porciones son en total y cuánto vale cada una.',s:'Son 6 porciones: 60 ÷ 6 = 10 cada una. Kiro comió 3: 3 × 10 = 30'},
+ {id:'u24',tema:'Actitud solidaria',t:'cl',q:'Clasifica cada acción: ¿ayuda a la comunidad o la perjudica?',cats:['Ayuda a la comunidad','Perjudica a la comunidad'],items:[['Compartir tu almuerzo con quien no trajo',0],['Esconder lo que sobró para ti solo',1],['Ayudar a limpiar la plaza',0],['Ensuciar la plaza pensando que alguien la limpiará',1],['Prestar tus libros al grupo',0],['Gastar en tus cosas el dinero de la colecta',1]],h:'Pregúntate si beneficia a todos o solo a ti.'},
+ {id:'u25',tema:'Colecta del barrio',t:'suma',q:Q_SUMA,meta:120,items:[['Ana',45],['Beto',32],['Carla',18],['Diego',27],['Elena',55],['Fabio',20]],h:'Con 45 y 55 ya llevas 100: ¿qué falta?'},
+ {id:'u26',tema:'Cooperativa',t:'opc',q:'Los agricultores de un pueblo forman una cooperativa para vender juntos su cosecha. ¿Cuál es una ventaja?',o:['Pueden conseguir mejores precios y gastar menos al vender en grupo','Ya no necesitan trabajar','Todos ganan lo mismo sin importar cuánto aportaron','No hace falta llevar cuentas'],a:0,h:'Piensa qué se logra al vender mucho en vez de poco.',s:'Vender y comprar en grupo permite mejores precios'},
+ {id:'u27',tema:'Pandero',t:'pandero',kind:'ultimo',n:5,a_:25,names:['Ana','Beto','Carla','Diego','Elena'],q:'Pandero de 5 vecinos que aportan 25 Lumis por mes. Elena cobra en el último mes (mes 5). Antes de cobrar, durante los meses 1 al 4, ¿cuántos Lumis había pagado sin recibir nada?',a:100,h:'Elena paga cada mes aunque todavía no le toque cobrar.',s:'4 meses × 25 Lumis = 100 Lumis'},
+ {id:'u28',tema:'Presupuesto del barrio',t:'num',q:'Para arreglar la plaza se necesitan 500 Lumis. La municipalidad pone el 40% y los vecinos el resto. ¿Cuántos Lumis ponen los vecinos?',a:300,h:'Si la municipalidad pone el 40%, los vecinos ponen el 60%.',s:'40% de 500 = 200 y 500 − 200 = 300'},
+ {id:'u29',tema:'Presupuesto del barrio',t:'presu',q:Q_PRESU,B:100,items:[['Posta médica',60,9],['Escuela de música',40,5],['Paneles solares',50,6],['Limpieza del río',30,4],['Mural de la plaza',20,2],['Taller de computación',40,5]],h:'Hay dos combinaciones muy buenas: compáralas con cuidado.'},
+ {id:'u30',tema:'Comparar barrios',t:'opc',q:'Barrio A: 20 vecinos aportan 5 Lumis cada uno. Barrio B: 12 vecinos aportan 9 Lumis cada uno. ¿Qué barrio reúne MÁS dinero?',o:['Barrio A','Barrio B','Reúnen lo mismo'],a:1,h:'Multiplica vecinos por aporte en cada barrio.',s:'A: 20 × 5 = 100. B: 12 × 9 = 108. Gana el barrio B'},
+ {id:'u31',tema:'Colecta del barrio',t:'suma',q:Q_SUMA,meta:150,items:[['Rosa',60],['Luis',38],['Ana',25],['Pedro',47],['Marta',31],['Don Raúl',52]],h:'Los aportes grandes no siempre son los que necesitas.'},
+ {id:'u32',tema:'Colecta',t:'num',q:'En una colecta, 18 vecinos aportan 10 Lumis cada uno y otros 12 vecinos aportan 5 Lumis cada uno. ¿Cuántos Lumis reúnen en total?',a:240,h:'Calcula lo que aporta cada grupo y súmalo.',s:'18 × 10 = 180 y 12 × 5 = 60; 180 + 60 = 240'},
+ {id:'u33',tema:'Trueque o compra',t:'cl',q:'Clasifica: ¿es un trueque (cambio una cosa por otra) o una compra con dinero?',cats:['Trueque','Compra'],items:[['Cambio mis lápices por tus stickers',0],['Pago 5 Lumis por un cuaderno',1],['Te ayudo con la tarea y me regalas un jugo',0],['Doy un libro y recibo un balón',0],['Compro pan con dinero',1],['Vendo mi bicicleta por dinero',1]],h:'En el trueque no se usa dinero.'},
+ {id:'u34',tema:'Presupuesto del barrio',t:'presu',q:Q_PRESU,B:120,items:[['Centro de reciclaje',70,8],['Área de juegos',50,6],['Biblioteca móvil',30,4],['Cancha techada',80,9],['Banco de semillas',20,3],['Alumbrado',40,4]],h:'Mira cuántos puntos da cada Lumis invertido, pero comprueba cuánto sobra.'},
+ {id:'u35',tema:'Reparto justo',t:'opc',q:'Una fiesta cuesta 90 Lumis y la pagan 6 vecinos en partes iguales. Ana puso 20 Lumis. ¿Qué pasó?',o:['Ana puso de MÁS de lo que le tocaba','Ana puso de MENOS de lo que le tocaba','Ana puso exactamente lo que le tocaba'],a:0,h:'Calcula primero cuánto le toca pagar a cada vecino.',s:'90 ÷ 6 = 15 por vecino. Ana puso 20, que son 5 Lumis de más'},
+ {id:'u36',tema:'Pandero',t:'pandero',kind:'total',n:6,a_:30,names:['Sami','Kiro','Numi','Cael','Lía','Riku'],q:'Pandero de 6 vecinos que aportan 30 Lumis por mes durante 6 meses. Al terminar todo el pandero, cada vecino pagó y también cobró una vez. ¿Cuántos Lumis recibió de MÁS de lo que pagó? (Si recibió lo mismo, escribe 0.)',a:0,h:'Cada vecino paga 6 veces y cobra una sola vez el pozo completo.',s:'Pagó 6 × 30 = 180 y recibió 6 × 30 = 180; la diferencia es 0. El pandero no da intereses: es un ahorro entre vecinos'},
+ {id:'u37',tema:'Cooperativa',t:'num',q:'Una cooperativa vende 150 kg de verduras a 3 Lumis el kilo. Lo que cobran se reparte por igual entre 5 socios. ¿Cuántos Lumis recibe cada socio?',a:90,h:'Calcula cuánto cobran en total y luego reparte.',s:'150 × 3 = 450 y 450 ÷ 5 = 90'},
+ {id:'u38',tema:'Colecta del barrio',t:'suma',q:Q_SUMA,meta:200,items:[['Sami',75],['Kiro',48],['Numi',62],['Cael',33],['Lía',30],['Riku',51],['Tía Nelly',40]],h:'Hay una sola combinación que suma 200. Prueba con 4 aportes.'},
+ {id:'u39',tema:'Presupuesto del barrio',t:'presu',q:Q_PRESU,B:150,items:[['Comedor',60,8],['Escuela nueva',90,11],['Parque',50,6],['Posta',70,10],['Mercado',80,9],['Pozo de agua',40,5],['Taller',30,4]],h:'Compara las combinaciones que usan casi todo el presupuesto.'},
+ {id:'u40',tema:'Reto final',t:'num',q:'El barrio quiere comprar un tobogán de 460 Lumis. Los 15 vecinos aportan 12 Lumis cada uno y una tienda dona el 25% de lo que todavía falta. ¿Cuántos Lumis tendrá que reunir aún la comunidad?',a:210,h:'Primero calcula lo que falta después de los aportes; luego la tienda dona una cuarta parte de eso.',s:'15 × 12 = 180; 460 − 180 = 280; 25% de 280 = 70; 280 − 70 = 210'}
+];
+var OBRAS=[{f:50,e:'🌳',n:'el parque'},{f:100,e:'📚',n:'la biblioteca'},{f:150,e:'🏥',n:'la posta médica'},{f:200,e:'⚽',n:'la cancha'},{f:250,e:'🏫',n:'la escuela'},{f:300,e:'🎪',n:'la plaza de ferias'},{f:350,e:'💡',n:'el alumbrado'},{f:400,e:'🏘️',n:'¡Unidalia completa!'}];
+/*FIN_DATOS*/
+
+var $=function(id){return document.getElementById(id)};
+function leer_(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lista(k){try{return JSON.parse(leer_(k))||[]}catch(e){return []}}
+function quitar(k){try{localStorage.removeItem(k)}catch(e){}}
+function modoPrueba(){return leer_('modo_prueba')==='1'}
+function hojasTotal(){return parseInt(leer_('hojas_actuales'))||0}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+var HOJA='<span class="em">🍃</span>';
+var ICONO='<span class="em">🏘️</span>';
+var ELOGIOS=['¡Unidalia lo celebra!','¡Buen trabajo en equipo!','¡Cuentas claras!','¡Qué gran vecino!','¡Juntos llegamos más lejos!','¡Comunidad fuerte!'];
+
+/* ===== fondo común y obras (decorativo: se calcula con los aciertos) ===== */
+function fondo(ac){return ac*FONDO_POR_ACIERTO}
+function obrasDe(ac){return OBRAS.filter(function(o){return fondo(ac)>=o.f})}
+function obraNueva(antes,despues){
+  for(var i=0;i<OBRAS.length;i++){if(fondo(antes)<OBRAS[i].f&&fondo(despues)>=OBRAS[i].f)return OBRAS[i]}
+  return null;
+}
+function lineaFondo(ac){return '🏘️ Fondo común: '+fondo(ac)+' Lumis'+(obrasDe(ac).length?' · '+obrasDe(ac).map(function(o){return o.e}).join(' '):'')}
+
+/* ===== cálculos de los acertijos ===== */
+function cuenta(m){var c=0;while(m){c+=m&1;m>>=1}return c}
+function sumaMask(r){var s=0;r.items.forEach(function(it,i){if(selv[i])s+=it[1]});return s}
+function solSumaMask(r){
+  var n=r.items.length,best=-1,bc=99,m,i,s;
+  for(m=1;m<(1<<n);m++){s=0;for(i=0;i<n;i++)if(m&(1<<i))s+=r.items[i][1];if(s===r.meta&&cuenta(m)<bc){best=m;bc=cuenta(m)}}
+  return best;
+}
+function presuTot(r,mask){var c=0,p=0;r.items.forEach(function(it,i){if(mask(i)){c+=it[1];p+=it[2]}});return{c:c,p:p}}
+function optPresu(r){
+  var n=r.items.length,best=-1,bp=-1,bc=1e9,m,t;
+  for(m=0;m<(1<<n);m++){t=presuTot(r,function(i){return m&(1<<i)});if(t.c<=r.B&&(t.p>bp||(t.p===bp&&t.c<bc))){best=m;bp=t.p;bc=t.c}}
+  return{m:best,p:bp,c:bc};
+}
+function nombresMask(r,m){return r.items.filter(function(_,i){return m&(1<<i)}).map(function(it){return it[0]})}
+
+/* ===== progreso guardado (una sola partida: no se puede empezar de nuevo) ===== */
+function leerEstado(){
+  try{
+    var e=JSON.parse(leer_(CLAVE_ESTADO));if(!e)return null;
+    if(e.fin)return e;
+    return(e.idx>=0&&e.idx<RONDAS.length)?e:null;
+  }catch(x){return null}
+}
+function guardar(o){try{localStorage.setItem(CLAVE_ESTADO,JSON.stringify(o))}catch(e){}}
+function guardarAqui(){guardar({idx:idx,aciertos:aciertos,ganadas:ganadas,err:errores,racha:racha,mejor:mejor})}
+function guardarAvance(){
+  if(idx+1>=RONDAS.length)guardar({fin:true,idx:RONDAS.length-1,aciertos:aciertos,ganadas:ganadas,racha:racha,mejor:mejor});
+  else guardar({idx:idx+1,aciertos:aciertos,ganadas:ganadas,err:0,racha:racha,mejor:mejor});
+}
+
+var idx=0,errores=0,errPend=0,bloq=false,aciertos=0,ganadas=0,racha=0,mejor=0;
+var asg=[],selv=[],mesp=0,ordenOpc=[];
+function pintarCab(){
+  $('ti').innerHTML=ICONO+'<span>Plaza de Unidalia</span>';
+  $('pill').innerHTML=HOJA+'<span>'+hojasTotal()+'</span>';
+}
+/* Suma las hojas al ranking (y al contador) una sola vez por ronda */
+function pagar(id){
+  if(modoPrueba())return 'prueba';
+  var hechas=lista(CLAVE_HECHAS);
+  if(hechas.indexOf(id)>=0)return 'ya';
+  try{
+    ['ranking_exploradores_hojas','hojas_actuales'].forEach(function(k){localStorage.setItem(k,String((parseInt(localStorage.getItem(k))||0)+HOJAS))});
+    hechas.push(id);localStorage.setItem(CLAVE_HECHAS,JSON.stringify(hechas));
+    return 'ok';
+  }catch(e){return 'error'}
+}
+
+function inicio(){
+  $('bw').hidden=true;$('pau').hidden=true;pintarCab();
+  var est=leerEstado();
+  if(est&&est.fin){resultado(est.aciertos||0,est.ganadas||0,est.mejor||0);return}
+  var h='<div class="grande">'+ICONO+'</div><h1>Plaza de Unidalia</h1>'+
+    '<p class="d">En Unidalia, la comunidad se une: haz colectas, reparte el presupuesto del barrio, participa en un pandero y aprende a cuidar el dinero de todos.<br>Son <b>'+RONDAS.length+' rondas</b> y cada acierto gana <b>'+HOJAS+' Hojas de la Sabiduría</b> 🍃</p>'+
+    '<p class="d" style="margin-top:-6px">Cada acierto también suma al <b>fondo común</b> y construye obras para el barrio. Si te equivocas, recibes una pista y un segundo intento. Cada ronda se juega una sola vez.</p>'+
+    '<div class="fila-btn">';
+  if(est)h+='<p class="d" style="margin:0">⏸ Partida en pausa: vas por la ronda '+(est.idx+1)+' de '+RONDAS.length+'</p><button class="btn" id="cont">▶ Continuar</button>';
+  else h+='<button class="btn" id="go">¡Entrar a la plaza!</button>';
+  h+='</div>';
+  $('main').innerHTML=h;
+  if($('go'))$('go').onclick=function(){idx=0;aciertos=0;ganadas=0;racha=0;mejor=0;errPend=0;ronda()};
+  if($('cont'))$('cont').onclick=function(){idx=est.idx;aciertos=est.aciertos||0;ganadas=est.ganadas||0;racha=est.racha||0;mejor=est.mejor||0;errPend=est.err||0;ronda()};
+}
+function pausar(){inicio()}   /* el avance ya está guardado: solo se vuelve al inicio */
+
+function permutar(n){var a=[],i,k,j,t;for(i=0;i<n;i++)a.push(i);for(k=n-1;k>0;k--){j=Math.floor(Math.random()*(k+1));t=a[k];a[k]=a[j];a[j]=t}return a}
+
+/* ===== ronda ===== */
+function ronda(){
+  var r=RONDAS[idx];errores=errPend;errPend=0;bloq=false;asg=[];selv=[];mesp=0;pintarCab();guardarAqui();
+  $('bw').hidden=false;$('pau').hidden=false;$('bi').style.width=(idx/RONDAS.length*100)+'%';
+  var cuerpo='';
+  if(r.t==='num'){
+    cuerpo='<div class="resp"><input id="in" type="text" inputmode="numeric" autocomplete="off" placeholder="Tu respuesta"><button class="btn" id="chk">Comprobar</button></div>';
+  }else if(r.t==='opc'){
+    ordenOpc=permutar(r.o.length);cuerpo='<div class="opcs" id="opcs"></div>';
+  }else if(r.t==='cl'){
+    cuerpo='<div id="clas"></div><div class="acc"><button class="btn" id="chk" disabled>Comprobar</button></div>';
+  }else if(r.t==='suma'||r.t==='presu'){
+    cuerpo='<div id="sel"></div><div class="acc"><button class="btn" id="chk" disabled>Comprobar</button></div>';
+  }else{
+    cuerpo='<div id="pp"></div><div class="resp"><input id="in" type="text" inputmode="numeric" autocomplete="off" placeholder="Tu respuesta"><button class="btn" id="chk">Comprobar</button></div>';
+  }
+  $('main').innerHTML='<div class="ronda"><div class="meta"><span>Ronda '+(idx+1)+' de '+RONDAS.length+'</span><span>Aciertos: '+aciertos+' · 🔥 racha '+racha+'</span></div>'+
+    '<div class="fondo" id="fondo">'+lineaFondo(aciertos)+'</div><span class="tema">'+esc(r.tema)+'</span><div class="q">'+esc(r.q)+'</div>'+cuerpo+'<div class="fb" id="fb">'+(errores?'Casi... '+esc(r.h):'')+'</div><div id="sig"></div></div>';
+  if(r.t==='num'||r.t==='pandero'){
+    $('chk').onclick=comprobar;
+    $('in').onkeydown=function(e){if(e.key==='Enter')comprobar()};
+    setTimeout(function(){try{$('in').focus()}catch(e){}},50);
+    if(r.t==='pandero')pintarPandero();
+  }else if(r.t==='opc'){pintarOpc()}
+  else if(r.t==='cl'){$('chk').onclick=comprobarCl;pintarCl()}
+  else{$('chk').onclick=comprobarSel;pintarSel()}
+}
+/* un solo oyente de clics para opciones, categorías, tarjetas y simulador */
+function clic(e){
+  var t=e.target&&e.target.closest?e.target.closest('[data-act]'):null;if(!t)return;
+  var a=t.getAttribute('data-act'),n=parseInt(t.getAttribute('data-i'),10);
+  if(a==='opc')elegirOpc(n,t);
+  else if(a==='asg')asignar(n,parseInt(t.getAttribute('data-c'),10));
+  else if(a==='tarj')alternar(n);
+  else if(a==='mes')cambiarMes(parseInt(t.getAttribute('data-d'),10));
+}
+
+/* --- elegir opción --- */
+function pintarOpc(){
+  var r=RONDAS[idx],h='';
+  ordenOpc.forEach(function(i){h+='<button class="opcion'+(bloq&&i===r.a?' ok':'')+'" data-act="opc" data-i="'+i+'">'+esc(r.o[i])+'</button>'});
+  $('opcs').innerHTML=h;
+}
+function elegirOpc(i,b){
+  var r=RONDAS[idx];if(bloq||r.t!=='opc')return;
+  if(b&&b.classList&&i!==r.a)b.classList.add('no');
+  resolver(i===r.a,'');
+}
+
+/* --- clasificar --- */
+function pintarCl(){
+  var r=RONDAS[idx],h='';
+  r.items.forEach(function(it,i){
+    h+='<div class="cl-fila"><span class="tx">'+esc(it[0])+'</span><span class="bts">'+r.cats.map(function(c,k){
+      return '<button class="cb'+(asg[i]===k?' sel':'')+(bloq&&it[1]===k?' ayuda':'')+'" data-act="asg" data-i="'+i+'" data-c="'+k+'">'+esc(c)+'</button>'}).join('')+'</span></div>';
+  });
+  $('clas').innerHTML=h;
+  $('chk').disabled=bloq||!r.items.every(function(_,i){return asg[i]!==undefined});
+}
+function asignar(i,c){var r=RONDAS[idx];if(bloq||r.t!=='cl')return;asg[i]=c;pintarCl()}
+function comprobarCl(){
+  var r=RONDAS[idx];if(bloq)return;
+  if(!r.items.every(function(_,i){return asg[i]!==undefined}))return;
+  var bien=0;r.items.forEach(function(it,i){if(asg[i]===it[1])bien++});
+  resolver(bien===r.items.length,bien+' de '+r.items.length+' están bien clasificados.');
+}
+
+/* --- tarjetas: colecta (suma exacta) y presupuesto (más puntos sin pasarse) --- */
+function pintarSel(){
+  var r=RONDAS[idx],h='',tot,i;
+  if(r.t==='suma'){
+    tot=sumaMask(r);
+    h+='<div class="s-meta">🎯 Meta de la colecta: <b>'+r.meta+'</b> Lumis</div><div class="s-grid">';
+    r.items.forEach(function(it,i){h+='<button class="vc'+(selv[i]?' sel':'')+'" data-act="tarj" data-i="'+i+'"><span>'+esc(it[0])+'</span><b>🪙 '+it[1]+'</b></button>'});
+    h+='</div><div class="s-tot">Llevan juntos: <b>'+tot+'</b> de <b>'+r.meta+'</b> Lumis</div>';
+  }else{
+    var t=presuTot(r,function(i){return selv[i]});
+    h+='<div class="s-meta">💰 Presupuesto: <b>'+r.B+'</b> Lumis</div><div class="s-grid">';
+    r.items.forEach(function(it,i){h+='<button class="vc'+(selv[i]?' sel':'')+'" data-act="tarj" data-i="'+i+'"><span>'+esc(it[0])+'</span><b>🪙 '+it[1]+' · ⭐ '+it[2]+'</b></button>'});
+    h+='</div><div class="s-tot'+(t.c>r.B?' pasado':'')+'">Gastado: <b>'+t.c+'</b> de <b>'+r.B+'</b> · Puntos: <b>⭐ '+t.p+'</b></div>';
+  }
+  $('sel').innerHTML=h;
+  $('chk').disabled=bloq||!selv.some(function(v){return v});
+}
+function alternar(i){
+  var r=RONDAS[idx];if(bloq||(r.t!=='suma'&&r.t!=='presu')||i<0||i>=r.items.length)return;
+  selv[i]=!selv[i];pintarSel();
+}
+function comprobarSel(){
+  var r=RONDAS[idx];if(bloq||!selv.some(function(v){return v}))return;
+  if(r.t==='suma'){
+    var s=sumaMask(r);
+    resolver(s===r.meta,'Llevan juntos '+s+' Lumis y la meta es '+r.meta+'.');
+  }else{
+    var t=presuTot(r,function(i){return selv[i]}),o=optPresu(r);
+    if(t.c>r.B)resolver(false,'Te pasaste del presupuesto ('+t.c+' de '+r.B+').');
+    else resolver(t.p===o.p,'Con estos proyectos juntas '+t.p+' puntos.');
+  }
+}
+
+/* --- simulador de pandero --- */
+function pintarPandero(){
+  var r=RONDAS[idx],n=r.n,a=r.a_,h='',i;
+  h+='<div class="pp-top">Mes <b>'+mesp+'</b> de '+n+' · Cada vecino aporta <b>'+a+'</b> Lumis por mes</div>';
+  h+='<div class="pp-cobra">'+(mesp===0?'Toca "Mes siguiente" para empezar el pandero':'🎁 Este mes cobra <b>'+esc(r.names[mesp-1])+'</b> · Pozo: <b>'+(n*a)+'</b> Lumis')+'</div>';
+  h+='<div class="pp-fila cab"><span>Vecino</span><span>Turno</span><span>Pagó</span><span>Recibió</span></div>';
+  for(i=0;i<n;i++){
+    h+='<div class="pp-fila'+(mesp===i+1?' hoy':'')+'"><span>'+esc(r.names[i])+'</span><span>mes '+(i+1)+'</span><span>'+(mesp*a)+'</span><span>'+((i+1)<=mesp?(n*a):0)+'</span></div>';
+  }
+  h+='<div class="acc"><button class="btn sec" data-act="mes" data-d="-1"'+((bloq||mesp<=0)?' disabled':'')+'>◀ Mes anterior</button><button class="btn sec" data-act="mes" data-d="1"'+((bloq||mesp>=n)?' disabled':'')+'>Mes siguiente ▶</button></div>';
+  $('pp').innerHTML=h;
+}
+function cambiarMes(d){
+  var r=RONDAS[idx];if(bloq||r.t!=='pandero')return;
+  var m=mesp+d;if(m<0||m>r.n)return;mesp=m;pintarPandero();
+}
+
+/* --- respuesta escrita (num y pandero) --- */
+function comprobar(){
+  if(bloq)return;
+  var v=parseInt(String($('in').value).replace(/[^0-9]/g,''),10);
+  if(isNaN(v)){$('fb').className='fb';$('fb').textContent='Escribe tu respuesta con números.';return}
+  resolver(v===RONDAS[idx].a,'');
+}
+
+/* --- resultado de la ronda (igual para todos los tipos) --- */
+function textoSolucion(r){
+  if(r.t==='cl')return r.cats.map(function(c,k){return c+': '+r.items.filter(function(it){return it[1]===k}).map(function(it){return it[0]}).join(', ')}).join('. ');
+  if(r.t==='suma'){var m=solSumaMask(r);return nombresMask(r,m).map(function(nm){return nm+' ('+r.items.filter(function(it){return it[0]===nm})[0][1]+')'}).join(' + ')+' = '+r.meta}
+  if(r.t==='presu'){var o=optPresu(r);return nombresMask(r,o.m).join(' + ')+': cuestan '+o.c+' Lumis y dan ⭐ '+o.p+' puntos'}
+  return r.s;
+}
+function textoEleccion(r){
+  if(r.t==='suma'){
+    var sel=r.items.filter(function(_,i){return selv[i]});
+    return sel.map(function(it){return it[0]+' ('+it[1]+')'}).join(' + ')+' = '+r.meta;
+  }
+  var t=presuTot(r,function(i){return selv[i]});
+  return r.items.filter(function(_,i){return selv[i]}).map(function(it){return it[0]}).join(' + ')+': cuestan '+t.c+' Lumis y dan ⭐ '+t.p+' puntos';
+}
+function resolver(ok,extra){
+  var r=RONDAS[idx],fb=$('fb');
+  if(ok){
+    bloq=true;fb.className='fb bien';
+    if($('in'))$('in').classList.add('okin');
+    var msg='¡Correcto! '+ELOGIOS[Math.floor(Math.random()*ELOGIOS.length)]+' ';
+    if(r.t==='num'||r.t==='opc'||r.t==='pandero')msg+=r.s+'. ';
+    else if(r.t==='suma'||r.t==='presu')msg+=textoEleccion(r)+'. ';
+    else msg+=textoSolucion(r)+'. ';
+    if(errores<=1){
+      var antes=aciertos;
+      aciertos++;racha++;if(racha>mejor)mejor=racha;
+      var p=pagar(r.id);
+      if(p==='ok'){ganadas+=HOJAS;msg+='🍃 +'+HOJAS+' hojas para el ranking. ';}
+      else if(p==='ya')msg+='(Esta ronda ya te dio sus hojas antes) ';
+      else if(p==='prueba')msg+='🧪 Modo prueba: no se contaron. ';
+      else msg+='No se pudieron guardar las hojas. ';
+      var ob=obraNueva(antes,aciertos);
+      if(ob)msg+='🏗️ ¡Con el fondo común se construyó '+ob.n+'! '+ob.e;
+      if($('fondo'))$('fondo').textContent=lineaFondo(aciertos);
+    }
+    fb.textContent=msg;pintarCab();terminarRonda();return;
+  }
+  errores++;fb.className='fb';
+  if(errores===1){
+    fb.textContent='Casi... '+(extra?extra+' ':'')+r.h;
+    guardarAqui();                                   /* recuerda el primer error aunque recargue la página */
+    if($('in')){try{$('in').select()}catch(e){}}
+    return;
+  }
+  bloq=true;racha=0;
+  if(r.t==='cl')asg=r.items.map(function(it){return it[1]});
+  if(r.t==='suma'){var m=solSumaMask(r);selv=r.items.map(function(_,i){return !!(m&(1<<i))})}
+  if(r.t==='presu'){var o=optPresu(r);selv=r.items.map(function(_,i){return !!(o.m&(1<<i))})}
+  if(r.t==='pandero')mesp=r.n;
+  fb.textContent=(r.t==='num'||r.t==='pandero'?'La respuesta es '+r.a+'. ':'Así queda bien: ')+textoSolucion(r)+'.';
+  terminarRonda();
+}
+function terminarRonda(){
+  var r=RONDAS[idx];
+  if(r.t==='num'){var i=$('in'),c=$('chk');if(i)i.disabled=true;if(c)c.disabled=true}
+  else if(r.t==='pandero'){var i2=$('in'),c2=$('chk');if(i2)i2.disabled=true;if(c2)c2.disabled=true;pintarPandero()}
+  else if(r.t==='opc')pintarOpc();
+  else if(r.t==='cl')pintarCl();
+  else pintarSel();
+  guardarAvance();siguiente();
+}
+function siguiente(){
+  var ult=idx>=RONDAS.length-1;
+  $('sig').innerHTML='<button class="btn" id="nx">'+(ult?'Ver resultado':'Continuar')+'</button>';
+  $('nx').onclick=function(){if(ult)resultado(aciertos,ganadas,mejor);else{idx++;errPend=0;ronda()}};
+}
+function rango(ac){
+  var p=ac/RONDAS.length;
+  if(p>=0.9)return 'Alcalde de Unidalia';
+  if(p>=0.7)return 'Líder del Barrio';
+  if(p>=0.5)return 'Vecino Solidario';
+  return 'Vecino Curioso';
+}
+function resultado(ac,ga,me){
+  $('bw').hidden=false;$('bi').style.width='100%';$('pau').hidden=true;pintarCab();
+  var ob=obrasDe(ac);
+  $('main').innerHTML='<div class="grande">'+ICONO+'</div><span class="rango">'+rango(ac)+'</span><h1>¡Plaza completada!</h1>'+
+    '<div class="res"><div class="caja"><b>'+ac+'/'+RONDAS.length+'</b><small>aciertos</small></div><div class="caja"><b>🍃 '+ga+'</b><small>hojas ganadas</small></div><div class="caja"><b>🔥 '+me+'</b><small>mejor racha</small></div></div>'+
+    '<p class="d" style="margin:0">🏘️ Fondo común: <b>'+fondo(ac)+' Lumis</b>'+(ob.length?'. Obras construidas:':'')+'</p>'+(ob.length?'<div class="obras">'+ob.map(function(o){return o.e}).join(' ')+'</div>':'')+
+    '<p class="d">Terminaste todas las rondas. Tus hojas ya se sumaron al ranking.</p>';
+}
+$('main').addEventListener('click',clic);
+$('pau').onclick=pausar;
+window.addEventListener('storage',function(){pintarCab()});
+inicio();
+</script>
+</body>
+</html>

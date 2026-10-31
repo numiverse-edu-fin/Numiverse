@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi aldea</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:10px;background:transparent;font-family:'Segoe UI',system-ui,sans-serif;color:#3B2A0E;user-select:none}
+.app{max-width:900px;margin:0 auto}
+.card{background:linear-gradient(135deg,#fffdf0,#f3faf6);border:2px solid #207168;border-radius:22px;padding:16px;box-shadow:0 8px 24px rgba(32,113,104,.15);margin-bottom:12px}
+h2{margin:0 0 4px;color:#2D5A3D;font-size:20px}
+.sub{margin:0 0 12px;color:#7a8a86;font-size:13px;font-weight:600}
+.tit{display:block;margin-top:4px}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:8px 0 14px}
+.opt{padding:8px 8px 10px;border:3px solid #e5d9b6;border-radius:14px;background:#fff;cursor:pointer;text-align:center;font-weight:800;color:#2D5A3D;font-size:14px;font-family:inherit}
+.opt:hover{border-color:#2ecc71}
+.opt small{display:block;font-size:11px;color:#7a8a86;font-weight:700}
+.opt img.th{width:100%;aspect-ratio:3/2;object-fit:contain;border-radius:9px;background:linear-gradient(#cfeefb,#eaf8ff);margin-bottom:4px}
+input[type=text]{width:100%;padding:12px 14px;font-size:16px;font-family:inherit;border:2px solid #e5e8ec;border-radius:12px;outline:none;margin:6px 0 14px}
+input[type=text]:focus{border-color:#2ecc71;box-shadow:0 0 0 4px rgba(46,204,113,.18)}
+textarea{width:100%;padding:10px;font-size:12px;height:70px;font-family:inherit;border:2px solid #e5e8ec;border-radius:12px;margin:8px 0}
+.btn{display:block;width:100%;padding:13px;border:0;border-radius:12px;background:#207168;color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 3px 0 #16524a;margin-top:8px}
+.btn:disabled{background:#cfd8dc;box-shadow:none;cursor:default}
+.btn.sec{background:#d7e0dd;color:#207168;box-shadow:none}
+.btn.oro{background:#d4af37;box-shadow:0 3px 0 #a98a1f}
+.top{border-radius:16px;padding:12px 14px;color:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.top h2{color:#fff;font-size:20px;margin:0;flex:1;min-width:140px;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.top .sub2{display:block;font-size:12px;font-weight:700;opacity:.95}
+.top .av{width:50px;height:50px;border-radius:50%;background:#fff;overflow:hidden;flex:none;border:2px solid #fff}
+.top .av svg,.top .av img{width:100%;height:100%;object-fit:contain;display:block}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:#fff;color:#2D5A3D;border-radius:14px;padding:5px 11px;font-weight:800;font-size:13px}
+.isla{position:relative;width:100%;aspect-ratio:3/2;border-radius:18px;background:linear-gradient(#cfeefb,#f0faff);border:3px solid rgba(32,113,104,.25);overflow:hidden}
+.isla .base{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.mk{position:absolute;transform:translate(-50%,-50%);aspect-ratio:2/1;border-radius:50%;border:3px dashed #fff;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:clamp(14px,3.2vw,28px);font-weight:900;text-shadow:0 1px 4px rgba(0,0,0,.55);cursor:pointer;padding:0;font-family:inherit;animation:lat 2.2s ease-in-out infinite}
+.mk:hover{background:rgba(255,255,255,.55)}
+@keyframes lat{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.7)}50%{box-shadow:0 0 0 8px rgba(255,255,255,0)}}
+.sp{position:absolute;transform:translate(-50%,-88%);background:none;border:0;padding:0;cursor:pointer}
+.sp svg,.sp img{width:100%;display:block;filter:drop-shadow(0 3px 3px rgba(0,0,0,.25))}
+.sp:hover svg,.sp:hover img{filter:drop-shadow(0 3px 3px rgba(0,0,0,.25)) brightness(1.08)}
+.stars,.etq{position:absolute;left:50%;transform:translateX(-50%);font-size:clamp(9px,1.7vw,13px);background:rgba(255,255,255,.85);border-radius:9px;padding:0 6px;white-space:nowrap;color:#8a4f00;font-weight:800}
+.stars{bottom:-4%}.etq{bottom:-10%;color:#2D5A3D}
+.exts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:10px}
+.ext{border-radius:16px;padding:8px;border:3px solid rgba(0,0,0,.12)}
+.ext h4{margin:0 0 6px;font-size:13px;color:#2D5A3D}
+.ext .tres{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pl{aspect-ratio:1/1;border-radius:12px;background:rgba(255,255,255,.4);border:2px dashed rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;padding:2px;font-weight:800;color:rgba(0,0,0,.5);font-size:11px;font-family:inherit}
+.pl:hover{background:rgba(255,255,255,.65)}
+.pl.ocupada{border-style:solid;background:rgba(255,255,255,.55)}
+.pl.bloq{cursor:default;opacity:.55}
+.pl svg,.pl img{width:88%;height:88%;object-fit:contain}
+.pl .mas{font-size:24px;line-height:1}
+.pl .est{position:absolute;bottom:1px;font-size:10px;color:#8a4f00;background:rgba(255,255,255,.75);border-radius:8px;padding:0 5px}
+.bloqueo{display:flex;align-items:center;gap:8px;margin:8px 0 14px;font-weight:800;color:#2D5A3D;font-size:14px;background:#eafaf1;border:2px solid #2ecc71;border-radius:12px;padding:8px 12px}
+.modal{position:fixed;inset:0;background:rgba(40,30,10,.55);display:flex;align-items:center;justify-content:center;padding:14px;z-index:50}
+.modal[hidden]{display:none}
+.mbox{background:#fffdf0;border:3px solid #207168;border-radius:20px;padding:16px;max-width:420px;width:100%;max-height:94vh;overflow:auto}
+.mbox.grande{max-width:760px}
+.mbox h3{margin:0 0 8px;color:#2D5A3D}
+.fila{display:flex;align-items:center;gap:10px;padding:8px;border:2px solid #e5d9b6;border-radius:12px;background:#fff;margin-bottom:6px}
+.fila .ico{font-size:26px}.fila .tx{flex:1;font-weight:800;font-size:14px}.fila small{display:block;color:#7a8a86;font-weight:700}
+.fila .btn{width:auto;margin:0;padding:9px 12px;font-size:13px}
+.barra{height:12px;border-radius:8px;background:#e3ece9;overflow:hidden;margin:6px 0}
+.barra i{display:block;height:100%;background:linear-gradient(#52b86b,#2e9d52)}
+.msg{min-height:18px;text-align:center;font-weight:800;font-size:13px;color:#b9650a;margin-top:6px}
+.msg.ok{color:#1c8f5a}
+details{margin-top:10px}summary{cursor:pointer;font-weight:800;color:#207168;font-size:14px}
+.peq{font-size:11px;color:#7a8a86;font-weight:700;margin:4px 0}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="card" id="crear" hidden>
+    <h2>🌱 Crea tu aldea</h2>
+    <p class="sub">Elige tu parcela y ponle nombre a tu aldea.</p>
+    <b class="tit">1. Elige tu parcela</b>
+    <div id="selP"></div>
+    <b class="tit">2. Ponle nombre a tu aldea</b>
+    <input type="text" id="nom" maxlength="16" placeholder="Ej.: Valle Brisa" autocomplete="off">
+    <button class="btn" id="crearBtn" disabled>🏡 Crear mi aldea</button>
+  </div>
+
+  <div id="aldea" hidden>
+    <div class="top" id="top"><div class="av" id="avTop"></div><h2 id="nomAldea"></h2><div class="chips"><span class="chip" id="chL"></span><span class="chip" id="chH"></span></div></div>
+    <div id="islaBox"></div>
+    <div class="exts" id="exts"></div>
+    <button class="btn oro" id="ampBtn"></button>
+    <div class="msg" id="msgA"></div>
+    <div class="card" style="margin-top:12px">
+      <details>
+        <summary>💾 Mi partida (guardar y recuperar todo)</summary>
+        <p class="peq">El código guarda tu perfil, tus hojas, tus Lumis, tus juegos y tu aldea. Cópialo para recuperarlo en otro equipo.</p>
+        <button class="btn sec" id="expBtn">Copiar mi código</button>
+        <textarea id="codigo" placeholder="Aquí aparece tu código o pega uno para cargarlo"></textarea>
+        <button class="btn sec" id="impBtn">Cargar el código de arriba</button>
+        <div class="msg" id="msgP"></div>
+      </details>
+      <details id="prueba" hidden>
+        <summary>🧪 Modo prueba</summary>
+        <button class="btn sec" id="p1">+50 Lumis de prueba</button>
+        <button class="btn sec" id="p2">+50 hojas de prueba</button>
+        <button class="btn sec" id="p3">Borrar mi aldea y empezar de nuevo</button>
+      </details>
+    </div>
+  </div>
+</div>
+<div class="modal" id="modal" hidden><div class="mbox" id="mbox"></div></div>
+
+<script>
+/* ===== AJUSTES (aquí cambias precios, posiciones y nombres de las imágenes) ===== */
+const CFG={
+  K_LUMIS:'lumis_actuales',        // clave de los Lumis (cámbiala si tu Billetera usa otra)
+  K_HOJAS:'hojas_actuales',        // hojas disponibles (las que se gastan)
+  REGALO_LUMIS:10,
+  POR_AMPLIACION:3,                // espacios que agrega cada ampliación
+  AMP_HOJAS:[15,30,50,80,120],     // costo en hojas de cada ampliación
+  /* Dónde va cada espacio sobre la isla, en % del ancho (x) y del alto (y). El 0 es la casa. w = ancho del edificio. */
+  ESPACIOS:[{x:49.8,y:43,w:15},{x:38.5,y:30,w:13},{x:62.5,y:30,w:13},{x:30,y:44,w:13},{x:71,y:46,w:13},{x:49,y:58,w:13}],
+  /* PARCELAS: img = isla grande, mini = miniatura. fondo = color de respaldo si falta la imagen */
+  PARCELAS:[
+    {id:'turquesa',n:'Turquesa',desc:'Mar tropical',color:'#1FB5A3',img:'parcela-turquesa.webp',mini:'parcela-turquesa-mini.webp',fondo:'linear-gradient(#c5f3ec,#5ccfc0)'},
+    {id:'plata',n:'Plata',desc:'Nieve y hielo',color:'#8FA3B5',img:'parcela-plata.webp',mini:'parcela-plata-mini.webp',fondo:'linear-gradient(#f7fafc,#c6d3dd)'},
+    {id:'chocolate',n:'Chocolate',desc:'Otoño y cañón',color:'#8B5A3C',img:'parcela-chocolate.webp',mini:'parcela-chocolate-mini.webp',fondo:'linear-gradient(#e0c3a5,#a87a52)'},
+    {id:'obsidiana',n:'Obsidiana',desc:'Noche con luces',color:'#4A5273',img:'parcela-obsidiana.webp',mini:'parcela-obsidiana-mini.webp',fondo:'linear-gradient(#5c6584,#2b2f42)'},
+    {id:'arena',n:'Arena',desc:'Desierto y oasis',color:'#C9962F',img:'parcela-arena.webp',mini:'parcela-arena-mini.webp',fondo:'linear-gradient(#f8ebc8,#e3c78e)'},
+    {id:'menta',n:'Menta',desc:'Praderas y nubes',color:'#4FBF95',img:'parcela-menta.webp',mini:'parcela-menta-mini.webp',fondo:'linear-gradient(#e4fbee,#a3e4c1)'}
+  ],
+  EDIF:{
+    panaderia:{n:'Panadería',e:'🥖',c:[20,40,80]},
+    vivero:{n:'Vivero',e:'🌻',c:[20,40,80]},
+    taller:{n:'Taller',e:'🔧',c:[25,50,100]},
+    reciclaje:{n:'Reciclaje',e:'♻️',c:[25,50,100]},
+    telar:{n:'Telar',e:'🧵',c:[30,60,120]},
+    bicis:{n:'Bicicletas',e:'🚲',c:[30,60,120]}
+  },
+  /* Imágenes de edificios (PNG o WebP transparente). Vacío = dibujo provisional. Ej.: panaderia:['pan1.png','pan2.png','pan3.png'] */
+  IMG:{casa:'',edificios:{panaderia:['','',''],vivero:['','',''],taller:['','',''],reciclaje:['','',''],telar:['','',''],bicis:['','','']}}
+};
+const CLAVES=['ranking_nombre','ranking_avatar','ranking_avatar_svg','ranking_guardado','ranking_exploradores_hojas','hojas_actuales',CFG.K_LUMIS,'aldea_partida','mascota_partida','cajero_progreso','reciclaje_progreso','hojas_cobradas','hojas_mejor','genially_aciertos','genially_cobrados'];
+
+const $=id=>document.getElementById(id);
+const leer=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const guardar=(k,v)=>{try{localStorage.setItem(k,v);return true}catch(e){return false}};
+const num=k=>parseInt(leer(k))||0;
+const prueba=()=>leer('modo_prueba')==='1';
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const imgOk=u=>/^[\w\-\.\/]+\.(png|jpe?g|webp|svg|gif)$/i.test(u||'');
+const parc=id=>CFG.PARCELAS.find(p=>p.id===id)||CFG.PARCELAS[0];
+let P=null,parSel=null;
+function msg(id,t,ok){const e=$(id);e.textContent=t;e.className='msg'+(ok?' ok':'')}
+/* La mascota se elige en su propia página ("Mi mascota"), que guarda aquí: mascota_partida = {nombre, img o svg} */
+function masc(){try{const m=JSON.parse(leer('mascota_partida'));return m&&m.nombre?m:null}catch(e){return null}}
+function fotoMasc(m){if(!m)return '';if(m.img&&imgOk(m.img))return '<img src="'+m.img+'" alt="">';return m.svg&&m.svg.indexOf('<svg')===0&&!/<script|\son\w+=/i.test(m.svg)?m.svg:''}
+
+/* ---------- partida ---------- */
+function sanear(p){
+  if(!p||p.v!==1)return null;
+  p.amp=Math.max(0,Math.min(CFG.AMP_HOJAS.length,parseInt(p.amp)||0));
+  if(!CFG.PARCELAS.some(x=>x.id===p.terreno))p.terreno=CFG.PARCELAS[0].id;
+  p.color=parc(p.terreno).color;
+  p.nombre=String(p.nombre||'Mi aldea').slice(0,16);
+  delete p.mascota;
+  const ed={},tot=CFG.ESPACIOS.length+CFG.POR_AMPLIACION*p.amp;
+  Object.entries(p.edif||{}).forEach(([i,e])=>{i=+i;if(i>=1&&i<tot&&e&&CFG.EDIF[e.t])ed[i]={t:e.t,n:Math.max(1,Math.min(3,parseInt(e.n)||1))}});
+  p.edif=ed;return p;
+}
+function cargar(){try{return sanear(JSON.parse(leer('aldea_partida')))}catch(e){return null}}
+function salvar(){guardar('aldea_partida',JSON.stringify(P))}
+
+/* ---------- dibujos provisionales de edificios ---------- */
+function svgEd(tipo,n,col){
+  const img=tipo==='casa'?CFG.IMG.casa:(CFG.IMG.edificios[tipo]||[])[n-1];
+  if(img&&imgOk(img))return '<img src="'+img+'" alt="">';
+  const e=tipo==='casa'?'🏠':CFG.EDIF[tipo].e,h=n===3?50:n===2?42:34,top=88-h;
+  let s='<svg viewBox="0 0 100 100"><ellipse cx="50" cy="90" rx="38" ry="6" fill="rgba(0,0,0,.2)"/>';
+  s+='<rect x="22" y="'+top+'" width="56" height="'+h+'" rx="4" fill="#FFF3D6" stroke="#8A6A30" stroke-width="2"/>';
+  s+='<path d="M15 '+(top+3)+' L50 '+(top-24)+' L85 '+(top+3)+' Z" fill="'+col+'" stroke="#5B4A2E" stroke-width="2"/>';
+  s+='<rect x="43" y="68" width="14" height="20" rx="3" fill="#8A5A25"/>';
+  if(n>=2)s+='<rect x="27" y="'+(top+9)+'" width="11" height="11" rx="2" fill="#BFE3F5" stroke="#5B4A2E"/><rect x="62" y="'+(top+9)+'" width="11" height="11" rx="2" fill="#BFE3F5" stroke="#5B4A2E"/>';
+  if(n>=3)s+='<line x1="50" y1="'+(top-24)+'" x2="50" y2="'+(top-38)+'" stroke="#5B4A2E" stroke-width="2"/><path d="M50 '+(top-38)+' L66 '+(top-33)+' L50 '+(top-28)+' Z" fill="'+col+'" stroke="#5B4A2E"/>';
+  return s+'<text x="50" y="'+(top-5)+'" font-size="20" text-anchor="middle">'+e+'</text></svg>';
+}
+const islaImg=p=>'<img class="base" src="'+p.img+'" alt="Parcela '+esc(p.n)+'">';
+function respaldo(cont,p){const im=cont.querySelector('.base');if(im)im.onerror=()=>{cont.style.background=p.fondo;im.style.display='none'}}
+
+/* ---------- creación: la parcela se elige una sola vez ---------- */
+function armarCrear(){
+  const c=$('selP');
+  if(!parSel){
+    c.innerHTML='<div class="opts">'+CFG.PARCELAS.map(p=>'<button class="opt" data-id="'+p.id+'"><img class="th" src="'+p.mini+'" alt="">'+esc(p.n)+'<small>'+esc(p.desc)+'</small></button>').join('')+'</div>';
+    c.querySelectorAll('.opt').forEach(b=>b.onclick=()=>confirmarParcela(b.dataset.id));
+  }else{
+    const p=parc(parSel);
+    c.innerHTML='<div class="isla" id="prevIsla" style="margin-top:8px">'+islaImg(p)+'</div><div class="bloqueo">🔒 Tu parcela: '+esc(p.n)+' · '+esc(p.desc)+'. Ya no se puede cambiar.</div>';
+    respaldo($('prevIsla'),p);
+  }
+  validarCrear();
+}
+function confirmarParcela(id){
+  const p=parc(id);
+  abrir('<h3>¿Elegir la parcela '+esc(p.n)+'?</h3><div class="isla" id="mIsla">'+islaImg(p)+'</div><p class="peq">'+esc(p.desc)+'. Después de elegirla no se puede cambiar.</p><button class="btn" id="siP">✅ Sí, esta es mi parcela</button><button class="btn sec" onclick="cerrar()">Volver a ver las otras</button>',true);
+  respaldo($('mIsla'),p);
+  $('siP').onclick=()=>{parSel=id;cerrar();armarCrear()};
+}
+function validarCrear(){$('crearBtn').disabled=!(parSel&&$('nom').value.trim())}
+$('nom').oninput=validarCrear;
+$('crearBtn').onclick=()=>{
+  const nombre=$('nom').value.trim().slice(0,16);if(!parSel||!nombre)return;
+  P={v:1,nombre,terreno:parSel,color:parc(parSel).color,amp:0,edif:{},regalo:true};salvar();
+  guardar(CFG.K_LUMIS,String(num(CFG.K_LUMIS)+CFG.REGALO_LUMIS));
+  mostrar('aldea');pintar();msg('msgA','🎁 Recibiste '+CFG.REGALO_LUMIS+' Lumis de regalo para empezar.',1);
+};
+function mostrar(c){$('crear').hidden=c!=='crear';$('aldea').hidden=c!=='aldea'}
+function inicio(){
+  P=cargar();
+  if(!P){armarCrear();mostrar('crear');return}
+  mostrar('aldea');pintar();
+}
+
+/* ---------- la aldea ---------- */
+function pintar(){
+  const col=P.color,pa=parc(P.terreno),ma=masc(),E=CFG.ESPACIOS;
+  $('top').style.background='linear-gradient(135deg,'+col+',#2D5A3D)';
+  $('nomAldea').innerHTML='🏡 '+esc(P.nombre)+(ma?'<span class="sub2">Mascota: '+esc(ma.nombre)+'</span>':'');
+  $('avTop').innerHTML=fotoMasc(ma);$('avTop').hidden=!ma;
+  let h='<div class="isla" id="isla">'+islaImg(pa);
+  E.forEach((s,i)=>{
+    const z=Math.round(s.y*10);
+    if(i===0)h+='<button class="sp" data-i="0" style="left:'+s.x+'%;top:'+s.y+'%;width:'+s.w+'%;z-index:'+z+'">'+svgEd('casa',2,col)+'<span class="etq">'+(ma?'Casa de '+esc(ma.nombre):'Mi casa')+'</span></button>';
+    else if(P.edif[i])h+='<button class="sp" data-i="'+i+'" style="left:'+s.x+'%;top:'+s.y+'%;width:'+s.w+'%;z-index:'+z+'">'+svgEd(P.edif[i].t,P.edif[i].n,col)+'<span class="stars">'+'⭐'.repeat(P.edif[i].n)+'</span></button>';
+    else h+='<button class="mk" data-i="'+i+'" style="left:'+s.x+'%;top:'+s.y+'%;width:'+(s.w*.85)+'%;z-index:'+z+'" aria-label="Construir aquí">＋</button>';
+  });
+  $('islaBox').innerHTML=h+'</div>';respaldo($('isla'),pa);
+  $('islaBox').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>abrirParcela(+b.dataset.i));
+  /* ampliaciones (provisionales hasta tener las islas con puentes) */
+  let x='';const base=E.length;
+  for(let k=0;k<P.amp;k++){
+    x+='<div class="ext" style="background:'+pa.fondo+'"><h4>Ampliación '+(k+1)+'</h4><div class="tres">';
+    for(let j=0;j<CFG.POR_AMPLIACION;j++){const i=base+k*CFG.POR_AMPLIACION+j,e=P.edif[i];
+      x+=e?'<button class="pl ocupada" data-i="'+i+'">'+svgEd(e.t,e.n,col)+'<span class="est">'+'⭐'.repeat(e.n)+'</span></button>':'<button class="pl" data-i="'+i+'"><span class="mas">＋</span>Construir</button>'}
+    x+='</div></div>';
+  }
+  if(P.amp<CFG.AMP_HOJAS.length)x+='<div class="ext" style="background:rgba(0,0,0,.08);text-align:center"><h4>🔒 Próxima ampliación</h4><div style="font-size:30px;padding:14px 0">🏝️</div></div>';
+  $('exts').innerHTML=x;
+  $('exts').querySelectorAll('button.pl').forEach(b=>b.onclick=()=>abrirParcela(+b.dataset.i));
+  if(P.amp>=CFG.AMP_HOJAS.length){$('ampBtn').textContent='🌳 Tu tierra ya está completa';$('ampBtn').disabled=true}
+  else{$('ampBtn').disabled=false;$('ampBtn').textContent='🌱 Ampliar tierra (+'+CFG.POR_AMPLIACION+' espacios) · '+CFG.AMP_HOJAS[P.amp]+' hojas'}
+  actualizarChips();$('prueba').hidden=!prueba();
+}
+function actualizarChips(){if(!P)return;$('chL').textContent='🪙 '+num(CFG.K_LUMIS)+' Lumis';$('chH').textContent='🍃 '+num(CFG.K_HOJAS)+' hojas'}
+window.addEventListener('storage',actualizarChips);setInterval(actualizarChips,800);
+
+/* ---------- ventanas ---------- */
+function abrir(html,grande){$('mbox').innerHTML=html;$('mbox').className='mbox'+(grande?' grande':'');$('modal').hidden=false}
+function cerrar(){$('modal').hidden=true}
+$('modal').onclick=e=>{if(e.target===$('modal'))cerrar()};
+function falta(tengo,cuesta,u){const p=Math.min(100,Math.round(tengo/cuesta*100));return '<div class="barra"><i style="width:'+p+'%"></i></div><div class="peq">Tienes '+tengo+' de '+cuesta+' '+u+'. Te faltan '+(cuesta-tengo)+'.</div>'}
+function confirmar(id,fn){const b=$(id);let a=false;b.onclick=()=>{if(!a){a=true;b.textContent='¿Seguro? Toca otra vez';setTimeout(()=>{if(b.isConnected){a=false;b.textContent=b.dataset.t}},3500);return}fn()}}
+
+function abrirParcela(i){
+  if(i===0){const m=masc();abrir('<h3>🏠 '+(m?'Casa de '+esc(m.nombre):'Mi casa')+'</h3><p style="font-weight:700">Aquí vivirá tu mascota. Muy pronto podrás elegirla y vestirla en Mi mascota.</p><button class="btn sec" onclick="cerrar()">Cerrar</button>');return}
+  const e=P.edif[i],L=num(CFG.K_LUMIS);
+  if(!e){
+    let h='<h3>🏗️ ¿Qué quieres construir?</h3><p class="peq">Tienes 🪙 '+L+' Lumis</p>';
+    Object.entries(CFG.EDIF).forEach(([k,v])=>{const c=v.c[0],ok=L>=c;
+      h+='<div class="fila"><span class="ico">'+v.e+'</span><span class="tx">'+v.n+'<small>🪙 '+c+' Lumis</small></span><button class="btn" id="b_'+k+'" data-t="Construir" '+(ok?'':'disabled')+'>'+(ok?'Construir':'Faltan '+(c-L))+'</button></div>'});
+    abrir(h+'<button class="btn sec" onclick="cerrar()">Cerrar</button>');
+    Object.entries(CFG.EDIF).forEach(([k,v])=>{if(L>=v.c[0])confirmar('b_'+k,()=>{
+      guardar(CFG.K_LUMIS,String(num(CFG.K_LUMIS)-v.c[0]));P.edif[i]={t:k,n:1};salvar();cerrar();pintar();msg('msgA','🎉 ¡Construiste tu '+v.n.toLowerCase()+'!',1)})});
+    return;
+  }
+  const v=CFG.EDIF[e.t];let h='<h3>'+v.e+' '+v.n+' · nivel '+e.n+'</h3><div style="text-align:center;width:150px;margin:0 auto">'+svgEd(e.t,e.n,P.color)+'</div>';
+  if(e.n>=3)h+='<p style="font-weight:800;color:#1c8f5a;text-align:center">⭐⭐⭐ ¡Nivel máximo!</p>';
+  else{const c=v.c[e.n],ok=L>=c;
+    h+='<p style="font-weight:700">Mejorar al nivel '+(e.n+1)+' cuesta 🪙 '+c+' Lumis.</p>'+(ok?'':falta(L,c,'Lumis'))+'<button class="btn" id="mej" data-t="Mejorar" '+(ok?'':'disabled')+'>'+(ok?'Mejorar':'Sigue ahorrando')+'</button>'}
+  abrir(h+'<button class="btn sec" onclick="cerrar()">Cerrar</button>');
+  if(e.n<3&&L>=v.c[e.n])confirmar('mej',()=>{guardar(CFG.K_LUMIS,String(num(CFG.K_LUMIS)-v.c[e.n]));e.n++;salvar();cerrar();pintar();msg('msgA','✨ ¡Tu '+v.n.toLowerCase()+' subió al nivel '+e.n+'!',1)});
+}
+$('ampBtn').onclick=()=>{
+  const c=CFG.AMP_HOJAS[P.amp],H=num(CFG.K_HOJAS),ok=H>=c;
+  abrir('<h3>🌱 Ampliar tu tierra</h3><p style="font-weight:700">Tendrás '+CFG.POR_AMPLIACION+' espacios más para construir.</p><p class="peq">Cuesta 🍃 '+c+' hojas de sabiduría. Tu ranking no baja: las hojas ganadas en total se conservan.</p>'+(ok?'':falta(H,c,'hojas'))+'<button class="btn" id="amp" data-t="Ampliar" '+(ok?'':'disabled')+'>'+(ok?'Ampliar':'Sigue juntando hojas')+'</button><button class="btn sec" onclick="cerrar()">Cerrar</button>');
+  if(ok)confirmar('amp',()=>{guardar(CFG.K_HOJAS,String(num(CFG.K_HOJAS)-c));P.amp++;salvar();cerrar();pintar();msg('msgA','🌳 ¡Tu tierra creció!',1)});
+};
+
+/* ---------- partida y pruebas ---------- */
+function exportar(){const o={v:1};CLAVES.forEach(k=>{const x=leer(k);if(x!==null)o[k]=x});return btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
+function importar(s){try{const o=JSON.parse(decodeURIComponent(escape(atob(s.trim()))));if(o.v!==1)return false;CLAVES.forEach(k=>{if(k in o)guardar(k,o[k])});return true}catch(e){return false}}
+$('expBtn').onclick=()=>{const c=exportar();$('codigo').value=c;try{navigator.clipboard.writeText(c).then(()=>msg('msgP','✅ Código copiado',1),()=>msg('msgP','Selecciona el texto y cópialo'))}catch(e){msg('msgP','Selecciona el texto y cópialo')}};
+$('impBtn').onclick=()=>{if(importar($('codigo').value)){msg('msgP','✅ Partida cargada',1);inicio()}else msg('msgP','Ese código no es válido')};
+$('p1').onclick=()=>{guardar(CFG.K_LUMIS,String(num(CFG.K_LUMIS)+50));actualizarChips()};
+$('p2').onclick=()=>{guardar(CFG.K_HOJAS,String(num(CFG.K_HOJAS)+50));actualizarChips()};
+$('p3').onclick=()=>{try{localStorage.removeItem('aldea_partida')}catch(e){}P=null;parSel=null;inicio()};
+inicio();
+</script>
+</body>
+</html>
